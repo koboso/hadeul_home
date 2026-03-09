@@ -1,17 +1,31 @@
 "use client";
 
-import Link from "next/link";
 import { motion, useScroll, useTransform, useInView, animate, useMotionValue } from "framer-motion";
 import { useRef, useEffect } from "react";
+import Link from "next/link";
+import Nav from "@/components/Nav";
+import PageFooter from "@/components/PageFooter";
 
-/* ─── Animated Counter ─── */
+/* ─── HADEUL Corporate Site ─── */
+
+const IMG = {
+  ai: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1600&q=80",
+  game: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1600&q=80",
+  dev: "https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=1600&q=80",
+  team: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1600&q=80",
+  space: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600&q=80",
+};
+
+const VID_HERO = "https://videos.pexels.com/video-files/8721940/8721940-uhd_2560_1440_24fps.mp4";
+const VID_MID = "https://videos.pexels.com/video-files/3141208/3141208-uhd_2560_1440_25fps.mp4";
+
+/* ─── Counter ─── */
 function Counter({ target, suffix = "" }: { target: number; suffix?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.5 });
   const count = useMotionValue(0);
-
   useEffect(() => {
-    if (isInView) {
+    if (isInView)
       animate(count, target, {
         duration: 2,
         ease: "easeOut",
@@ -19,18 +33,16 @@ function Counter({ target, suffix = "" }: { target: number; suffix?: string }) {
           if (ref.current) ref.current.textContent = Math.round(v) + suffix;
         },
       });
-    }
   }, [isInView, count, target, suffix]);
-
   return <span ref={ref}>0{suffix}</span>;
 }
 
-/* ─── Sticky Text Scene ─── */
+/* ─── StickyScene ─── */
 function StickyScene({
   children,
   height = "300vh",
 }: {
-  children: (progress: ReturnType<typeof useTransform<number, number>>) => React.ReactNode;
+  children: (p: ReturnType<typeof useScroll>["scrollYProgress"]) => React.ReactNode;
   height?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -38,7 +50,6 @@ function StickyScene({
     target: ref,
     offset: ["start start", "end end"],
   });
-
   return (
     <div ref={ref} style={{ height }} className="relative">
       <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden">
@@ -48,7 +59,7 @@ function StickyScene({
   );
 }
 
-/* ─── Hero ─── */
+/* ─── 1. Hero — Kinetic Typography over AI Video ─── */
 function Hero() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -57,139 +68,229 @@ function Hero() {
   });
   const opacity = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.4], [1, 0.85]);
+  const videoScale = useTransform(scrollYProgress, [0, 1], [1, 1.3]);
+
+  const words = [
+    { text: "CREATE", from: { x: -200, y: 0, rotate: -8 } },
+    { text: "INNOVATE", from: { x: 200, y: 0, rotate: 5 } },
+    { text: "TRANSFORM", from: { x: 0, y: 150, rotate: -3 } },
+  ];
 
   return (
-    <section ref={ref} className="relative h-screen flex items-center justify-center overflow-hidden">
-      {/* Video background */}
-      <video
-        autoPlay muted loop playsInline
-        className="absolute inset-0 w-full h-full object-cover opacity-25"
-      >
-        <source src="https://videos.pexels.com/video-files/3141208/3141208-uhd_2560_1440_25fps.mp4" type="video/mp4" />
-      </video>
-      <div className="absolute inset-0 bg-gradient-to-b from-surface/80 via-surface/60 to-surface" />
-      <motion.div
-        className="absolute w-[800px] h-[800px] bg-primary/10 rounded-full blur-[160px]"
-        animate={{ x: [0, 60, 0], y: [0, -40, 0] }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="absolute w-[600px] h-[600px] bg-accent/8 rounded-full blur-[140px] translate-x-40"
-        animate={{ x: [40, -30, 40], y: [0, 50, 0] }}
-        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-      />
-
-      <motion.div style={{ opacity, scale }} className="relative z-10 text-center px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
-        >
-          <p className="text-text-secondary text-sm tracking-[0.4em] uppercase mb-8">
-            AI · Game · Solution
-          </p>
+    <section ref={ref} className="relative h-screen">
+      <div className="sticky top-0 h-screen overflow-hidden flex items-center justify-center">
+        <motion.div style={{ scale: videoScale }} className="absolute inset-0">
+          <video autoPlay muted loop playsInline className="w-full h-full object-cover">
+            <source src={VID_HERO} type="video/mp4" />
+          </video>
         </motion.div>
 
-        <motion.h1
-          className="text-[clamp(3rem,8vw,8rem)] font-bold leading-[1.05] mb-8"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
-        >
-          <span className="text-text-primary">기술로 만드는</span>
-          <br />
-          <span className="gradient-text">새로운 경험</span>
-        </motion.h1>
+        <div className="absolute inset-0 bg-black/60" />
 
-        <motion.p
-          className="text-text-secondary text-lg md:text-xl max-w-lg mx-auto leading-relaxed"
+        <motion.div
+          style={{ opacity, scale }}
+          className="relative z-10 flex flex-col items-center justify-center gap-0"
+        >
+          {words.map((word, i) => (
+            <motion.h1
+              key={word.text}
+              initial={{
+                opacity: 0,
+                x: word.from.x,
+                y: word.from.y,
+                rotate: word.from.rotate,
+                scale: 0.7,
+              }}
+              animate={{ opacity: 1, x: 0, y: 0, rotate: 0, scale: 1 }}
+              transition={{
+                duration: 1.2,
+                delay: 0.3 + i * 0.25,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              className="text-[15vw] font-black leading-[0.85] tracking-tighter select-none"
+              style={{
+                color: i === 1 ? "transparent" : "white",
+                WebkitTextStroke: i === 1 ? "2px rgba(255,255,255,0.8)" : "none",
+                mixBlendMode: "difference",
+              }}
+            >
+              {word.text}
+            </motion.h1>
+          ))}
+
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 1.3, ease: "easeOut" }}
+            className="mt-8 text-white/30 text-lg md:text-xl tracking-[0.2em] uppercase"
+          >
+            AI &middot; Game &middot; Software
+          </motion.p>
+        </motion.div>
+
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.4 }}
+          transition={{ delay: 2 }}
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
         >
-          하들은 인공지능, 게임, 소프트웨어 솔루션으로
-          <br className="hidden md:block" />
-          디지털 혁신을 이끌어갑니다.
-        </motion.p>
-      </motion.div>
-
-      <motion.div
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2 }}
-      >
-        <span className="text-text-secondary text-xs tracking-[0.2em] uppercase">Scroll</span>
-        <motion.div
-          className="w-px h-8 bg-gradient-to-b from-text-secondary/60 to-transparent"
-          animate={{ scaleY: [1, 0.5, 1] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </motion.div>
+          <span className="text-white/20 text-[10px] tracking-[0.4em] uppercase">Scroll</span>
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            className="w-px h-8 bg-gradient-to-b from-white/40 to-transparent"
+          />
+        </motion.div>
+      </div>
     </section>
   );
 }
 
-/* ─── Intro Story (sticky text transition) ─── */
-function IntroStory() {
-  return (
-    <StickyScene height="400vh">
-      {(progress) => {
-        const o1 = useTransform(progress, [0, 0.1, 0.2, 0.28], [0, 1, 1, 0]);
-        const o2 = useTransform(progress, [0.25, 0.35, 0.45, 0.53], [0, 1, 1, 0]);
-        const o3 = useTransform(progress, [0.5, 0.6, 0.7, 0.78], [0, 1, 1, 0]);
-        const o4 = useTransform(progress, [0.75, 0.85, 0.95, 1], [0, 1, 1, 0.8]);
+/* ─── 2. Scroll-Pinned Text Reveal ─── */
+function ScrollTextReveal() {
+  const words = [
+    "We", "don't", "just", "build", "software.", "We", "architect",
+    "experiences", "that", "push", "the", "boundaries", "of", "what's",
+    "possible.", "From", "AI", "intelligence", "to", "immersive",
+    "gaming", "worlds,", "we", "transform", "bold", "visions",
+    "into", "digital", "reality.",
+  ];
 
-        const y1 = useTransform(progress, [0, 0.1, 0.2, 0.28], [40, 0, 0, -30]);
-        const y2 = useTransform(progress, [0.25, 0.35, 0.45, 0.53], [40, 0, 0, -30]);
-        const y3 = useTransform(progress, [0.5, 0.6, 0.7, 0.78], [40, 0, 0, -30]);
-        const y4 = useTransform(progress, [0.75, 0.85, 0.95, 1], [40, 0, 0, 0]);
+  return (
+    <StickyScene height="350vh">
+      {(scrollYProgress) => {
+        const bgHue = useTransform(scrollYProgress, [0, 0.3, 0.6], [270, 320, 200]);
+        const bgSaturation = useTransform(scrollYProgress, [0, 0.3, 0.6], [80, 70, 60]);
+        const bgGradient = useTransform(
+          [bgHue, bgSaturation],
+          ([h, s]) =>
+            `radial-gradient(ellipse at 50% 50%, hsla(${h}, ${s}%, 15%, 0.4) 0%, #0a0a0a 70%)`
+        );
+        const progressWidth = useTransform(scrollYProgress, [0, 0.6], ["0%", "100%"]);
 
         return (
-          <div className="relative w-full h-full flex items-center justify-center">
+          <div className="relative w-full h-full flex items-center justify-center overflow-hidden" id="about">
+            <motion.div className="absolute inset-0" style={{ background: bgGradient }} />
+
+            <div className="relative z-10 max-w-6xl mx-auto px-8 md:px-16">
+              <p className="text-3xl md:text-5xl lg:text-6xl font-black leading-[1.2] tracking-tight flex flex-wrap gap-x-[0.35em] gap-y-1 justify-center text-center">
+                {words.map((word, i) => (
+                  <ScrollWord
+                    key={`${word}-${i}`}
+                    word={word}
+                    progress={scrollYProgress}
+                    start={Math.max(0, ((i - 1) / words.length) * 0.6)}
+                    end={((i + 1) / words.length) * 0.6}
+                    isHighlight={["AI", "gaming", "transform", "reality."].includes(word)}
+                  />
+                ))}
+              </p>
+            </div>
+
             <motion.div
-              className="absolute w-[500px] h-[500px] rounded-full blur-[150px]"
-              style={{
-                opacity: useTransform(progress, [0, 0.5, 1], [0.1, 0.15, 0.1]),
-                background: "radial-gradient(circle, rgba(99,102,241,0.3), transparent)",
-                x: useTransform(progress, [0, 1], [-200, 200]),
-              }}
+              className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500"
+              style={{ width: progressWidth }}
             />
+          </div>
+        );
+      }}
+    </StickyScene>
+  );
+}
 
-            <motion.div style={{ opacity: o1, y: y1 }} className="absolute text-center px-6">
-              <p className="text-text-secondary text-sm tracking-[0.3em] uppercase mb-4">We Believe</p>
-              <h2 className="text-[clamp(2rem,6vw,5.5rem)] font-bold text-text-primary leading-[1.1]">
-                모든 사람이 AI의
-                <br />
-                <span className="gradient-text">가치를 체감</span>할 수 있도록
-              </h2>
+function ScrollWord({
+  word,
+  progress,
+  start,
+  end,
+  isHighlight,
+}: {
+  word: string;
+  progress: ReturnType<typeof useScroll>["scrollYProgress"];
+  start: number;
+  end: number;
+  isHighlight: boolean;
+}) {
+  const opacity = useTransform(progress, [start, end], [0.15, 1]);
+  const y = useTransform(progress, [start, end], [8, 0]);
+
+  if (isHighlight) {
+    return (
+      <motion.span style={{ opacity, y }}>
+        <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
+          {word}
+        </span>
+      </motion.span>
+    );
+  }
+
+  return (
+    <motion.span style={{ opacity, y }} className="text-white">
+      {word}
+    </motion.span>
+  );
+}
+
+/* ─── 3. Horizontal Scroll Gallery ─── */
+function HorizontalGallery() {
+  const projects = [
+    { img: IMG.ai, title: "AI Solutions", desc: "생성형 AI와 대규모 언어 모델 기반의 차세대 솔루션", tag: "Artificial Intelligence" },
+    { img: IMG.game, title: "Game Dev", desc: "크로스플랫폼 게임 개발과 라이브 서비스 운영", tag: "Interactive Entertainment" },
+    { img: IMG.dev, title: "Software", desc: "클라우드 네이티브 아키텍처와 엔터프라이즈 시스템", tag: "Engineering" },
+    { img: IMG.space, title: "Deep Tech", desc: "첨단 기술 연구와 미래 플랫폼 설계", tag: "Research & Innovation" },
+    { img: IMG.team, title: "Consulting", desc: "디지털 전환 전략 수립과 기술 컨설팅", tag: "Strategy" },
+  ];
+
+  return (
+    <StickyScene height="300vh">
+      {(scrollYProgress) => {
+        const x = useTransform(scrollYProgress, [0.1, 0.9], ["0%", "-75%"]);
+        const labelOpacity = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
+
+        return (
+          <div className="relative w-full h-full flex items-center overflow-hidden bg-[#0a0a0a]" id="services">
+            <motion.div className="absolute top-12 left-8 md:left-16 z-20" style={{ opacity: labelOpacity }}>
+              <span className="text-white/20 text-[10px] tracking-[0.5em] uppercase">Our Services</span>
             </motion.div>
 
-            <motion.div style={{ opacity: o2, y: y2 }} className="absolute text-center px-6">
-              <p className="text-text-secondary text-sm tracking-[0.3em] uppercase mb-4">We Create</p>
-              <h2 className="text-[clamp(2rem,6vw,5.5rem)] font-bold text-text-primary leading-[1.1]">
-                게임을 넘어선
-                <br />
-                <span className="gradient-text-warm">몰입의 경험</span>을 만듭니다
-              </h2>
-            </motion.div>
+            <motion.div style={{ x }} className="flex gap-8 pl-[10vw]">
+              {projects.map((project, i) => (
+                <motion.div
+                  key={project.title}
+                  className="relative flex-shrink-0 w-[75vw] md:w-[45vw] h-[70vh] rounded-2xl overflow-hidden group cursor-pointer"
+                  whileHover={{ scale: 0.98 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <img
+                    src={project.img}
+                    alt={project.title}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
 
-            <motion.div style={{ opacity: o3, y: y3 }} className="absolute text-center px-6">
-              <p className="text-text-secondary text-sm tracking-[0.3em] uppercase mb-4">We Solve</p>
-              <h2 className="text-[clamp(2rem,6vw,5.5rem)] font-bold text-text-primary leading-[1.1]">
-                기술로 비즈니스의
-                <br />
-                <span className="gradient-text-green">본질적 문제</span>를 해결합니다
-              </h2>
-            </motion.div>
+                  <div className="absolute top-6 left-6 z-10">
+                    <span className="px-3 py-1 text-[10px] tracking-[0.3em] uppercase text-white/60 border border-white/10 rounded-full">
+                      {project.tag}
+                    </span>
+                  </div>
 
-            <motion.div style={{ opacity: o4, y: y4 }} className="absolute text-center px-6">
-              <p className="text-accent text-sm tracking-[0.3em] uppercase mb-4">HADEUL</p>
-              <h2 className="text-[clamp(2.5rem,7vw,7rem)] font-bold gradient-text leading-[1.05]">
-                We Build
-                <br />
-                the Future
-              </h2>
+                  <div className="absolute top-6 right-6 z-10">
+                    <span
+                      className="text-[8vw] md:text-[4vw] font-black leading-none text-transparent"
+                      style={{ WebkitTextStroke: "1px rgba(255,255,255,0.1)" }}
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                  </div>
+
+                  <div className="absolute bottom-0 left-0 right-0 p-8 z-10">
+                    <h3 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-3">
+                      {project.title}
+                    </h3>
+                    <p className="text-white/40 text-sm md:text-base max-w-md">{project.desc}</p>
+                  </div>
+                </motion.div>
+              ))}
             </motion.div>
           </div>
         );
@@ -198,223 +299,217 @@ function IntroStory() {
   );
 }
 
-/* ─── Services (Horizontal scroll) ─── */
-function Services() {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end end"],
-  });
+/* ─── 4. Split-Reveal Section ─── */
+function SplitReveal() {
+  return (
+    <StickyScene height="250vh">
+      {(scrollYProgress) => {
+        const leftX = useTransform(scrollYProgress, [0, 0.4], [0, -120]);
+        const rightX = useTransform(scrollYProgress, [0, 0.4], [0, 120]);
+        const leftClip = useTransform(scrollYProgress, [0, 0.4], ["inset(0 0% 0 0)", "inset(0 30% 0 0)"]);
+        const rightClip = useTransform(scrollYProgress, [0, 0.4], ["inset(0 0 0 0%)", "inset(0 0 0 30%)"]);
+        const centerOpacity = useTransform(scrollYProgress, [0.2, 0.45], [0, 1]);
+        const centerScale = useTransform(scrollYProgress, [0.2, 0.45], [0.85, 1]);
+        const imgParallax = useTransform(scrollYProgress, [0, 1], [-40, 40]);
 
-  const services = [
-    {
-      num: "01",
-      title: "AI Solutions",
-      desc: "자연어 처리, 컴퓨터 비전, 생성형 AI 등\n최신 인공지능 기술 기반 솔루션",
-      gradient: "from-indigo-500/20 to-violet-500/20",
-      accent: "text-indigo-400",
-    },
-    {
-      num: "02",
-      title: "Game Dev",
-      desc: "몰입감 넘치는 게임 경험 설계,\n크로스 플랫폼 게임 개발",
-      gradient: "from-amber-500/20 to-red-500/20",
-      accent: "text-amber-400",
-    },
-    {
-      num: "03",
-      title: "Solutions",
-      desc: "기업 맞춤형 소프트웨어,\n클라우드 인프라, 데이터 파이프라인",
-      gradient: "from-emerald-500/20 to-cyan-500/20",
-      accent: "text-emerald-400",
-    },
+        return (
+          <div className="relative w-full h-full overflow-hidden bg-[#0a0a0a]" id="work">
+            <motion.div
+              className="absolute top-0 left-0 w-1/2 h-full overflow-hidden"
+              style={{ x: leftX, clipPath: leftClip }}
+            >
+              <motion.img src={IMG.space} alt="" className="w-full h-full object-cover" style={{ y: imgParallax }} />
+              <div className="absolute inset-0 bg-black/40" />
+            </motion.div>
+
+            <motion.div
+              className="absolute top-0 right-0 w-1/2 h-full overflow-hidden"
+              style={{ x: rightX, clipPath: rightClip }}
+            >
+              <motion.img src={IMG.dev} alt="" className="w-full h-full object-cover" style={{ y: imgParallax }} />
+              <div className="absolute inset-0 bg-black/40" />
+            </motion.div>
+
+            <motion.div
+              className="absolute inset-0 flex items-center justify-center z-20"
+              style={{ opacity: centerOpacity, scale: centerScale }}
+            >
+              <div className="text-center max-w-3xl px-8">
+                <p className="text-purple-400 text-sm tracking-[0.4em] uppercase font-bold mb-6">
+                  Our Philosophy
+                </p>
+                <h2 className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter mb-8">
+                  TECHNOLOGY
+                  <br />
+                  <span className="text-transparent" style={{ WebkitTextStroke: "2px rgba(139,92,246,0.6)" }}>
+                    MEETS
+                  </span>
+                  <br />
+                  ARTISTRY
+                </h2>
+                <p className="text-white/30 text-lg max-w-lg mx-auto">
+                  기술과 예술의 교차점에서 새로운 가능성을 창조합니다.
+                  우리는 단순한 개발을 넘어 경험을 설계합니다.
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        );
+      }}
+    </StickyScene>
+  );
+}
+
+/* ─── 5. Large Typography Stats ─── */
+function LargeStats() {
+  const stats = [
+    { target: 50, suffix: "+", label: "Projects Delivered", sublabel: "프로젝트 완료" },
+    { target: 99, suffix: "%", label: "Client Satisfaction", sublabel: "고객 만족도" },
+    { target: 20, suffix: "+", label: "Team Members", sublabel: "팀 구성원" },
+    { target: 10, suffix: "+", label: "Global Partners", sublabel: "글로벌 파트너" },
   ];
 
-  const x = useTransform(scrollYProgress, [0.1, 0.9], ["0%", "-66.666%"]);
-
   return (
-    <div ref={ref} className="h-[300vh] relative">
-      <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
-        <motion.div
-          className="px-8 md:px-16 mb-12"
-          style={{ opacity: useTransform(scrollYProgress, [0, 0.1], [0, 1]) }}
+    <section className="relative py-20 md:py-32 bg-[#050505] overflow-hidden">
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
+        <span
+          className="text-[40vw] font-black text-transparent leading-none"
+          style={{ WebkitTextStroke: "1px rgba(255,255,255,0.02)" }}
         >
-          <p className="text-text-secondary text-sm tracking-[0.3em] uppercase mb-2">What We Do</p>
-          <h2 className="text-3xl md:text-5xl font-bold text-text-primary">Services</h2>
-        </motion.div>
+          DATA
+        </span>
+      </div>
 
-        <motion.div style={{ x }} className="flex gap-8 px-8 md:px-16">
-          {services.map((s) => (
+      <div className="relative z-10 max-w-7xl mx-auto px-8 md:px-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+          {stats.map((stat, i) => (
             <div
-              key={s.num}
-              className="min-w-[80vw] md:min-w-[50vw] h-[50vh] rounded-3xl flex-shrink-0"
+              key={stat.label}
+              className={`relative py-16 md:py-24 px-6 md:px-12 ${
+                i % 2 === 0 ? "md:border-r" : ""
+              } ${i < 2 ? "border-b" : ""} border-white/5`}
             >
-              <div className={`w-full h-full rounded-3xl bg-gradient-to-br ${s.gradient} p-10 md:p-16 flex flex-col justify-between`}>
-                <div>
-                  <span className={`${s.accent} text-sm font-mono tracking-wider`}>{s.num}</span>
-                  <h3 className="text-4xl md:text-6xl font-bold text-text-primary mt-4">{s.title}</h3>
-                </div>
-                <p className="text-text-secondary text-lg md:text-xl leading-relaxed whitespace-pre-line max-w-md">
-                  {s.desc}
-                </p>
+              <div className="relative">
+                <span className="text-[20vw] md:text-[12vw] font-black leading-none tracking-tighter bg-gradient-to-br from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
+                  <Counter target={stat.target} suffix={stat.suffix} />
+                </span>
+              </div>
+              <div className="-mt-4 md:-mt-6 relative z-10">
+                <p className="text-white text-xl md:text-2xl font-black tracking-tight">{stat.label}</p>
+                <p className="text-white/20 text-sm mt-1">{stat.sublabel}</p>
               </div>
             </div>
           ))}
-        </motion.div>
-      </div>
-    </div>
-  );
-}
-
-/* ─── Stats ─── */
-function Stats() {
-  const stats = [
-    { num: 50, suffix: "+", label: "프로젝트 완료" },
-    { num: 20, suffix: "+", label: "팀 멤버" },
-    { num: 10, suffix: "+", label: "파트너사" },
-    { num: 3, suffix: "+", label: "글로벌 거점" },
-  ];
-
-  return (
-    <section className="py-40 px-6 relative overflow-hidden">
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-      />
-
-      <div className="relative max-w-6xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-y-16">
-          {stats.map((s, i) => (
-            <motion.div
-              key={s.label}
-              className="text-center"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.6 }}
-            >
-              <div className="text-5xl md:text-7xl font-bold gradient-text mb-3">
-                <Counter target={s.num} suffix={s.suffix} />
-              </div>
-              <p className="text-text-secondary text-sm md:text-base">{s.label}</p>
-            </motion.div>
-          ))}
         </div>
       </div>
     </section>
   );
 }
 
-/* ─── News ─── */
-function News() {
-  const news = [
-    { date: "2026.03", title: "AI 기반 신규 솔루션 출시 예정", summary: "차세대 AI 엔진을 활용한 새로운 서비스가 곧 공개됩니다." },
-    { date: "2026.02", title: "글로벌 게임 파트너십 체결", summary: "해외 주요 퍼블리셔와의 전략적 파트너십을 체결했습니다." },
-    { date: "2026.01", title: "시리즈 A 투자 유치", summary: "기술력과 성장 가능성을 인정받아 주요 VC로부터 투자를 유치했습니다." },
-  ];
+/* ─── 6. AI Video Interlude ─── */
+function VideoInterlude() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"],
+  });
+
+  const textOpacity = useTransform(scrollYProgress, [0.2, 0.4, 0.6, 0.8], [0, 1, 1, 0]);
+  const textY = useTransform(scrollYProgress, [0.2, 0.4, 0.6, 0.8], [60, 0, 0, -60]);
+  const overlayOpacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.8, 0.5, 0.5, 0.8]);
+  const videoScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.1, 1, 1.1]);
 
   return (
-    <section className="py-32 px-6 md:px-16">
-      <div className="max-w-7xl mx-auto">
-        <motion.div
-          className="flex items-end justify-between mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          <div>
-            <p className="text-text-secondary text-sm tracking-[0.3em] uppercase mb-2">News</p>
-            <h2 className="text-3xl md:text-5xl font-bold text-text-primary">새로운 소식</h2>
-          </div>
-          <Link href="#" className="text-text-secondary hover:text-text-primary text-sm tracking-wider transition-colors hidden md:block">
-            전체보기 →
-          </Link>
-        </motion.div>
+    <section ref={containerRef} className="relative h-[80vh] overflow-hidden">
+      <motion.div style={{ scale: videoScale }} className="absolute inset-0">
+        <video autoPlay muted loop playsInline className="w-full h-full object-cover">
+          <source src={VID_MID} type="video/mp4" />
+        </video>
+      </motion.div>
 
-        <div className="space-y-0 divide-y divide-white/5">
-          {news.map((n, i) => (
-            <motion.article
-              key={n.title}
-              className="group py-10 flex flex-col md:flex-row md:items-center gap-4 md:gap-12 cursor-pointer"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
-            >
-              <span className="text-text-secondary text-sm font-mono shrink-0 w-24">{n.date}</span>
-              <h3 className="text-xl md:text-2xl font-bold text-text-primary group-hover:text-primary transition-colors flex-1">
-                {n.title}
-              </h3>
-              <p className="text-text-secondary text-sm md:text-base max-w-sm">{n.summary}</p>
-              <span className="text-text-secondary group-hover:text-primary transition-colors text-xl hidden md:block">→</span>
-            </motion.article>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
+      <motion.div className="absolute inset-0 bg-black" style={{ opacity: overlayOpacity }} />
 
-/* ─── Marquee ─── */
-function Marquee() {
-  return (
-    <div className="py-20 overflow-hidden border-y border-white/5">
-      <div className="animate-marquee flex whitespace-nowrap">
-        {[...Array(2)].map((_, i) => (
-          <div key={i} className="flex items-center gap-12 mr-12">
-            {["Artificial Intelligence", "Game Development", "Cloud Solutions", "Data Pipeline", "Machine Learning", "Cross Platform"].map((t) => (
-              <span key={t + i} className="text-3xl md:text-5xl font-bold text-white/[0.03] select-none">
-                {t}
-              </span>
-            ))}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ─── CTA ─── */
-function CTA() {
-  return (
-    <section className="py-40 px-6 relative overflow-hidden">
       <motion.div
-        className="absolute w-[600px] h-[600px] bg-primary/10 rounded-full blur-[160px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-        animate={{ scale: [1, 1.2, 1] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-      />
-
-      <div className="relative max-w-3xl mx-auto text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          <h2 className="text-4xl md:text-6xl font-bold text-text-primary mb-6 leading-tight">
-            프로젝트를
-            <br />
-            <span className="gradient-text">시작해볼까요?</span>
-          </h2>
-          <p className="text-text-secondary text-lg mb-12 max-w-md mx-auto">
-            프로젝트 문의, 파트너십, 채용 등
-            무엇이든 편하게 연락주세요.
+        className="relative z-10 h-full flex items-center justify-center text-center px-8"
+        style={{ opacity: textOpacity, y: textY }}
+      >
+        <div>
+          <p className="text-cyan-400 text-sm tracking-[0.5em] uppercase font-bold mb-6">
+            The Future is Now
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <motion.a
+          <h2 className="text-4xl md:text-7xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter">
+            BUILDING
+            <br />
+            TOMORROW&apos;S
+            <br />
+            <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
+              DIGITAL WORLD
+            </span>
+          </h2>
+        </div>
+      </motion.div>
+    </section>
+  );
+}
+
+/* ─── 7. CTA ─── */
+function CTASection() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"],
+  });
+  const rotate = useTransform(scrollYProgress, [0, 1], [0, 360]);
+  const rotateReverse = useTransform(scrollYProgress, [0, 1], [360, 0]);
+  const orbScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.8, 1.2, 0.8]);
+
+  return (
+    <section ref={containerRef} className="relative py-28 md:py-40 overflow-hidden bg-[#0a0a0a]" id="contact">
+      <motion.div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full opacity-30 blur-[120px]"
+        style={{
+          rotate,
+          scale: orbScale,
+          background: "conic-gradient(from 0deg, #8b5cf6, #ec4899, #06b6d4, #8b5cf6)",
+        }}
+      />
+      <motion.div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full opacity-20 blur-[80px]"
+        style={{
+          rotate: rotateReverse,
+          background: "conic-gradient(from 180deg, #06b6d4, #ec4899, #8b5cf6, #06b6d4)",
+        }}
+      />
+
+      <div className="relative z-10 text-center px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <p className="text-white/20 text-sm tracking-[0.5em] uppercase mb-8">Ready to Start?</p>
+          <h2 className="text-6xl md:text-8xl lg:text-[10vw] font-black text-white leading-[0.85] tracking-tighter mb-4">
+            LET&apos;S
+          </h2>
+          <h2 className="text-6xl md:text-8xl lg:text-[10vw] font-black leading-[0.85] tracking-tighter mb-12 bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
+            CREATE
+          </h2>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <a
               href="mailto:info@hadeul.com"
-              className="px-10 py-4 bg-primary hover:bg-primary-dark rounded-full text-white font-medium text-lg transition-colors"
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.98 }}
+              className="group relative px-12 py-5 overflow-hidden rounded-full"
             >
-              문의하기
-            </motion.a>
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 transition-transform duration-500 group-hover:scale-110" />
+              <span className="relative text-white font-bold text-lg tracking-wider uppercase">
+                Contact Us
+              </span>
+            </a>
             <Link
-              href="/about"
-              className="px-10 py-4 border border-white/10 hover:border-white/30 rounded-full text-text-primary font-medium text-lg transition-colors text-center"
+              href="/company"
+              className="px-12 py-5 border border-white/10 text-white/40 font-bold tracking-wider uppercase rounded-full hover:border-white/30 hover:text-white/60 transition-all duration-300"
             >
-              회사 소개
+              About Us
             </Link>
           </div>
         </motion.div>
@@ -423,17 +518,19 @@ function CTA() {
   );
 }
 
-/* ─── Main ─── */
+/* ─── Main Page ─── */
 export default function Home() {
   return (
-    <>
+    <div className="bg-[#0a0a0a] text-white overflow-x-clip">
+      <Nav />
       <Hero />
-      <IntroStory />
-      <Marquee />
-      <Services />
-      <Stats />
-      <News />
-      <CTA />
-    </>
+      <ScrollTextReveal />
+      <HorizontalGallery />
+      <SplitReveal />
+      <LargeStats />
+      <VideoInterlude />
+      <CTASection />
+      <PageFooter />
+    </div>
   );
 }

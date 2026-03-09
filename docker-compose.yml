@@ -1,6 +1,9 @@
 services:
   hadeul-home:
-    build: .
+    build:
+      context: .
+      args:
+        CACHE_BUST: ${CACHE_BUST:-default}
     container_name: hadeul_home
     restart: unless-stopped
     ports:
