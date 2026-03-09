@@ -4,6 +4,6 @@ services:
     container_name: hadeul_home
     restart: unless-stopped
     ports:
-      - "3080:3000"
+      - "7080:3000"
     environment:
       - NODE_ENV=production

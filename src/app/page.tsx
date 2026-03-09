@@ -60,14 +60,21 @@ function Hero() {
 
   return (
     <section ref={ref} className="relative h-screen flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 bg-surface" />
+      {/* Video background */}
+      <video
+        autoPlay muted loop playsInline
+        className="absolute inset-0 w-full h-full object-cover opacity-25"
+      >
+        <source src="https://videos.pexels.com/video-files/3141208/3141208-uhd_2560_1440_25fps.mp4" type="video/mp4" />
+      </video>
+      <div className="absolute inset-0 bg-gradient-to-b from-surface/80 via-surface/60 to-surface" />
       <motion.div
-        className="absolute w-[800px] h-[800px] bg-primary/8 rounded-full blur-[160px]"
+        className="absolute w-[800px] h-[800px] bg-primary/10 rounded-full blur-[160px]"
         animate={{ x: [0, 60, 0], y: [0, -40, 0] }}
         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
-        className="absolute w-[600px] h-[600px] bg-accent/6 rounded-full blur-[140px] translate-x-40"
+        className="absolute w-[600px] h-[600px] bg-accent/8 rounded-full blur-[140px] translate-x-40"
         animate={{ x: [40, -30, 40], y: [0, 50, 0] }}
         transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
       />
