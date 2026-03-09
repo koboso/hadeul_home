@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useScroll, useTransform, useInView, animate, useMotionValue } from "framer-motion";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
@@ -17,7 +17,6 @@ const IMG = {
 };
 
 const VID_HERO = "https://videos.pexels.com/video-files/8721940/8721940-uhd_2560_1440_24fps.mp4";
-const VID_MID = "https://videos.pexels.com/video-files/3141208/3141208-uhd_2560_1440_25fps.mp4";
 
 /* ─── Counter ─── */
 function Counter({ target, suffix = "" }: { target: number; suffix?: string }) {
@@ -231,71 +230,106 @@ function ScrollWord({
   );
 }
 
-/* ─── 3. Horizontal Scroll Gallery ─── */
-function HorizontalGallery() {
-  const projects = [
-    { img: IMG.ai, title: "AI Solutions", desc: "생성형 AI와 대규모 언어 모델 기반의 차세대 솔루션", tag: "Artificial Intelligence" },
-    { img: IMG.game, title: "Game Dev", desc: "크로스플랫폼 게임 개발과 라이브 서비스 운영", tag: "Interactive Entertainment" },
-    { img: IMG.dev, title: "Software", desc: "클라우드 네이티브 아키텍처와 엔터프라이즈 시스템", tag: "Engineering" },
-    { img: IMG.space, title: "Deep Tech", desc: "첨단 기술 연구와 미래 플랫폼 설계", tag: "Research & Innovation" },
-    { img: IMG.team, title: "Consulting", desc: "디지털 전환 전략 수립과 기술 컨설팅", tag: "Strategy" },
-  ];
+/* ─── 3. Portfolio (DB featured items) ─── */
+interface PortfolioProject {
+  id: string;
+  client: string;
+  title: string;
+  description: string;
+  image: string;
+  category_name: string;
+}
+
+function Portfolio() {
+  const [projects, setProjects] = useState<PortfolioProject[]>([]);
+
+  useEffect(() => {
+    fetch("/api/portfolio?featured=1")
+      .then((r) => r.json())
+      .then((d) => setProjects(d.data || []));
+  }, []);
+
+  if (projects.length === 0) return null;
 
   return (
-    <StickyScene height="300vh">
-      {(scrollYProgress) => {
-        const x = useTransform(scrollYProgress, [0.1, 0.9], ["0%", "-75%"]);
-        const labelOpacity = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
-
-        return (
-          <div className="relative w-full h-full flex items-center overflow-hidden bg-[#0a0a0a]" id="services">
-            <motion.div className="absolute top-12 left-8 md:left-16 z-20" style={{ opacity: labelOpacity }}>
-              <span className="text-white/20 text-[10px] tracking-[0.5em] uppercase">Our Services</span>
-            </motion.div>
-
-            <motion.div style={{ x }} className="flex gap-8 pl-[10vw]">
-              {projects.map((project, i) => (
-                <motion.div
-                  key={project.title}
-                  className="relative flex-shrink-0 w-[75vw] md:w-[45vw] h-[70vh] rounded-2xl overflow-hidden group cursor-pointer"
-                  whileHover={{ scale: 0.98 }}
-                  transition={{ duration: 0.4 }}
-                >
-                  <img
-                    src={project.img}
-                    alt={project.title}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-
-                  <div className="absolute top-6 left-6 z-10">
-                    <span className="px-3 py-1 text-[10px] tracking-[0.3em] uppercase text-white/60 border border-white/10 rounded-full">
-                      {project.tag}
-                    </span>
-                  </div>
-
-                  <div className="absolute top-6 right-6 z-10">
-                    <span
-                      className="text-[8vw] md:text-[4vw] font-black leading-none text-transparent"
-                      style={{ WebkitTextStroke: "1px rgba(255,255,255,0.1)" }}
-                    >
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                  </div>
-
-                  <div className="absolute bottom-0 left-0 right-0 p-8 z-10">
-                    <h3 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-3">
-                      {project.title}
-                    </h3>
-                    <p className="text-white/40 text-sm md:text-base max-w-md">{project.desc}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
+    <section className="relative py-24 md:py-32 bg-[#0a0a0a]" id="portfolio">
+      <div className="max-w-7xl mx-auto px-6 md:px-16">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="mb-16 flex items-end justify-between"
+        >
+          <div>
+            <p className="text-purple-400 text-sm tracking-[0.4em] uppercase mb-4">Portfolio</p>
+            <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-[0.95]">
+              대표 프로젝트
+            </h2>
           </div>
-        );
-      }}
-    </StickyScene>
+          <Link
+            href="/portfolio"
+            className="hidden md:block text-white/30 text-sm hover:text-purple-400 transition-colors"
+          >
+            전체 보기 &rarr;
+          </Link>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {projects.slice(0, 6).map((project, i) => (
+            <motion.div
+              key={project.id}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.6, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="group relative rounded-2xl overflow-hidden bg-white/[0.03] border border-white/[0.06] hover:border-purple-500/30 transition-all duration-300"
+            >
+              <div className="relative h-52 overflow-hidden bg-white/[0.02]">
+                {project.image ? (
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-white/10 text-5xl font-black">
+                    {String(i + 1).padStart(2, "0")}
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
+                <span className="absolute top-4 right-4 text-white/10 text-5xl font-black leading-none">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+              </div>
+              <div className="p-6">
+                <span className="text-[10px] px-2 py-0.5 bg-purple-500/10 text-purple-400/80 rounded-full font-bold tracking-wide">
+                  {project.category_name}
+                </span>
+                <p className="text-white/50 text-xs font-bold tracking-wide mt-3 mb-1">
+                  {project.client}
+                </p>
+                <h3 className="text-lg font-black text-white tracking-tight mb-2 group-hover:text-purple-300 transition-colors">
+                  {project.title}
+                </h3>
+                <p className="text-white/30 text-sm leading-relaxed line-clamp-1">
+                  {project.description}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="mt-10 text-center md:hidden">
+          <Link
+            href="/portfolio"
+            className="text-white/30 text-sm hover:text-purple-400 transition-colors"
+          >
+            전체 보기 &rarr;
+          </Link>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -406,53 +440,7 @@ function LargeStats() {
   );
 }
 
-/* ─── 6. AI Video Interlude ─── */
-function VideoInterlude() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  });
-
-  const textOpacity = useTransform(scrollYProgress, [0.2, 0.4, 0.6, 0.8], [0, 1, 1, 0]);
-  const textY = useTransform(scrollYProgress, [0.2, 0.4, 0.6, 0.8], [60, 0, 0, -60]);
-  const overlayOpacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.8, 0.5, 0.5, 0.8]);
-  const videoScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.1, 1, 1.1]);
-
-  return (
-    <section ref={containerRef} className="relative h-[80vh] overflow-hidden">
-      <motion.div style={{ scale: videoScale }} className="absolute inset-0">
-        <video autoPlay muted loop playsInline className="w-full h-full object-cover">
-          <source src={VID_MID} type="video/mp4" />
-        </video>
-      </motion.div>
-
-      <motion.div className="absolute inset-0 bg-black" style={{ opacity: overlayOpacity }} />
-
-      <motion.div
-        className="relative z-10 h-full flex items-center justify-center text-center px-8"
-        style={{ opacity: textOpacity, y: textY }}
-      >
-        <div>
-          <p className="text-cyan-400 text-sm tracking-[0.5em] uppercase font-bold mb-6">
-            The Future is Now
-          </p>
-          <h2 className="text-4xl md:text-7xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter">
-            BUILDING
-            <br />
-            TOMORROW&apos;S
-            <br />
-            <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
-              DIGITAL WORLD
-            </span>
-          </h2>
-        </div>
-      </motion.div>
-    </section>
-  );
-}
-
-/* ─── 7. CTA ─── */
+/* ─── 6. CTA ─── */
 function CTASection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -525,10 +513,9 @@ export default function Home() {
       <Nav />
       <Hero />
       <ScrollTextReveal />
-      <HorizontalGallery />
+      <Portfolio />
       <SplitReveal />
       <LargeStats />
-      <VideoInterlude />
       <CTASection />
       <PageFooter />
     </div>

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Analytics from "@/components/Analytics";
+import MaintenanceGuard from "@/components/MaintenanceGuard";
 
 export const metadata: Metadata = {
   title: "HADEUL - AI & Game Solutions",
@@ -14,6 +16,8 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className="bg-[#0a0a0a] text-white antialiased">
+        <MaintenanceGuard />
+        <Analytics />
         {children}
       </body>
     </html>
