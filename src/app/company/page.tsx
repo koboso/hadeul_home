@@ -6,7 +6,7 @@ import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
 
 const timeline = [
-  { year: "2023", title: "회사 설립", desc: "AI와 게임 기술의 융합을 목표로 하들 창립" },
+  { year: "2023", title: "회사 설립", desc: "AI와 게임 기술의 융합을 목표로 (주)하들소프트 창립" },
   { year: "2024", title: "첫 AI 솔루션 출시", desc: "자체 개발 AI 엔진 기반 B2B 솔루션 런칭" },
   { year: "2025", title: "게임 사업부 확장", desc: "모바일/PC 크로스플랫폼 게임 개발 착수" },
   { year: "2026", title: "글로벌 진출", desc: "해외 파트너십 체결 및 글로벌 서비스 확대" },
@@ -78,7 +78,7 @@ export default function CompanyPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
           >
-            하들은 AI, 게임, 소프트웨어 솔루션 분야에서
+            (주)하들소프트는 AI, 게임, 소프트웨어 솔루션 분야에서
             혁신적인 기술로 디지털 세상을 변화시키고 있습니다.
           </motion.p>
         </div>
@@ -95,7 +95,7 @@ export default function CompanyPage() {
                 <br />새로운 가치를 창출합니다
               </h2>
               <p className="text-white/40 leading-relaxed text-lg mb-6">
-                하들은 인공지능, 게임 개발, 엔터프라이즈 소프트웨어 솔루션을 통해
+                (주)하들소프트는 인공지능, 게임 개발, 엔터프라이즈 소프트웨어 솔루션을 통해
                 고객과 사용자에게 최적의 디지털 경험을 제공합니다.
               </p>
               <p className="text-white/40 leading-relaxed text-lg">

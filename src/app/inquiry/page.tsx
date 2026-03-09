@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
 
@@ -44,6 +44,150 @@ function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
     >
       {children}
     </motion.div>
+  );
+}
+
+function InquiryForm() {
+  const [form, setForm] = useState({ name: "", email: "", type: "", message: "" });
+  const [honeypot, setHoneypot] = useState("");
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus("sending");
+    setErrorMsg("");
+
+    try {
+      const res = await fetch("/api/inquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          _hp: honeypot, // honeypot field
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setStatus("error");
+        setErrorMsg(data.error || "전송에 실패했습니다.");
+        return;
+      }
+
+      setStatus("success");
+      setForm({ name: "", email: "", type: "", message: "" });
+    } catch {
+      setStatus("error");
+      setErrorMsg("네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    }
+  };
+
+  if (status === "success") {
+    return (
+      <motion.div
+        className="text-center py-16"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-r from-purple-500 to-cyan-500 flex items-center justify-center text-2xl">
+          &#10003;
+        </div>
+        <h3 className="text-2xl font-black mb-3">문의가 접수되었습니다</h3>
+        <p className="text-white/40 mb-8">빠른 시일 내에 답변 드리겠습니다.</p>
+        <button
+          onClick={() => setStatus("idle")}
+          className="px-8 py-3 border border-white/10 rounded-full text-white/60 hover:text-white hover:border-white/30 transition-all"
+        >
+          추가 문의하기
+        </button>
+      </motion.div>
+    );
+  }
+
+  const inputClass =
+    "w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/50 transition-colors";
+
+  return (
+    <form className="space-y-6" onSubmit={handleSubmit}>
+      {/* Honeypot — hidden from users, bots fill it */}
+      <div className="absolute opacity-0 -z-10" aria-hidden="true">
+        <input
+          type="text"
+          name="website"
+          tabIndex={-1}
+          autoComplete="off"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-white/30 text-sm mb-2">이름 / 회사명</label>
+          <input
+            type="text"
+            required
+            className={inputClass}
+            placeholder="홍길동 / (주)하들소프트"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+          />
+        </div>
+        <div>
+          <label className="block text-white/30 text-sm mb-2">이메일</label>
+          <input
+            type="email"
+            required
+            className={inputClass}
+            placeholder="hello@example.com"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-white/30 text-sm mb-2">문의 유형</label>
+        <select
+          required
+          className={`${inputClass} ${form.type ? "text-white" : "text-white/30"}`}
+          value={form.type}
+          onChange={(e) => setForm({ ...form, type: e.target.value })}
+        >
+          <option value="" className="bg-[#1a1a1a] text-white/30">선택하세요</option>
+          <option value="project" className="bg-[#1a1a1a] text-white">프로젝트 문의</option>
+          <option value="partnership" className="bg-[#1a1a1a] text-white">파트너십</option>
+          <option value="careers" className="bg-[#1a1a1a] text-white">채용 문의</option>
+          <option value="other" className="bg-[#1a1a1a] text-white">기타</option>
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-white/30 text-sm mb-2">내용</label>
+        <textarea
+          required
+          rows={6}
+          className={`${inputClass} resize-none`}
+          placeholder="프로젝트 내용이나 문의사항을 자유롭게 작성해주세요."
+          value={form.message}
+          onChange={(e) => setForm({ ...form, message: e.target.value })}
+        />
+      </div>
+
+      {status === "error" && (
+        <p className="text-red-400 text-sm">{errorMsg}</p>
+      )}
+
+      <button
+        type="submit"
+        disabled={status === "sending"}
+        className="w-full md:w-auto px-12 py-4 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 rounded-full text-white font-bold text-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {status === "sending" ? "전송 중..." : "문의 보내기"}
+      </button>
+    </form>
   );
 }
 
@@ -120,53 +264,7 @@ export default function InquiryPage() {
           </FadeIn>
 
           <FadeIn delay={0.2}>
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-white/30 text-sm mb-2">이름 / 회사명</label>
-                  <input
-                    type="text"
-                    className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/50 transition-colors"
-                    placeholder="홍길동 / 하들"
-                  />
-                </div>
-                <div>
-                  <label className="block text-white/30 text-sm mb-2">이메일</label>
-                  <input
-                    type="email"
-                    className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/50 transition-colors"
-                    placeholder="hello@example.com"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-white/30 text-sm mb-2">문의 유형</label>
-                <select className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-5 py-4 text-white/60 focus:outline-none focus:border-purple-500/50 transition-colors">
-                  <option value="">선택하세요</option>
-                  <option value="project">프로젝트 문의</option>
-                  <option value="partnership">파트너십</option>
-                  <option value="careers">채용 문의</option>
-                  <option value="other">기타</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-white/30 text-sm mb-2">내용</label>
-                <textarea
-                  rows={6}
-                  className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/50 transition-colors resize-none"
-                  placeholder="프로젝트 내용이나 문의사항을 자유롭게 작성해주세요."
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full md:w-auto px-12 py-4 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 rounded-full text-white font-bold text-lg hover:opacity-90 transition-opacity"
-              >
-                문의 보내기
-              </button>
-            </form>
+            <InquiryForm />
           </FadeIn>
         </div>
       </section>

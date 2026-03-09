@@ -1,6 +1,6 @@
 # HADEUL Home
 
-AI, 게임, 소프트웨어 솔루션 기업 **하들(HADEUL)** 공식 웹사이트
+AI, 게임, 소프트웨어 솔루션 기업 **(주)하들소프트(HADEUL)** 공식 웹사이트
 
 ## Tech Stack
 

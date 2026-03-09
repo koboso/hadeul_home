@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "HADEUL - AI & Game Solutions",
-  description: "AI 기반 기술, 게임, 소프트웨어 솔루션 전문 기업 하들",
+  description: "AI 기반 기술, 게임, 소프트웨어 솔루션 전문 기업 (주)하들소프트",
 };
 
 export default function RootLayout({
