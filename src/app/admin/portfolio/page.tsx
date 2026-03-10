@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, lazy, Suspense } from "react";
 import Link from "next/link";
+
+const RichEditor = lazy(() => import("@/components/RichEditor"));
 
 interface Category {
   id: string;
@@ -341,13 +343,14 @@ export default function AdminPortfolio() {
 
           <div className="mb-4">
             <label className="block text-white/40 text-xs mb-1.5">상세 설명</label>
-            <textarea
-              rows={4}
-              placeholder="프로젝트에 대한 상세 설명을 작성하세요. (기술 스택, 성과, 주요 기능 등)"
-              value={form.detail}
-              onChange={(e) => setForm({ ...form, detail: e.target.value })}
-              className={`${inputClass} resize-none`}
-            />
+            <Suspense fallback={<div className={`${inputClass} min-h-[200px] animate-pulse`} />}>
+              <RichEditor
+                content={form.detail}
+                onChange={(html) => setForm({ ...form, detail: html })}
+                token={token}
+                placeholder="프로젝트에 대한 상세 설명을 작성하세요. (기술 스택, 성과, 주요 기능 등)"
+              />
+            </Suspense>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">

@@ -85,7 +85,14 @@ function initTables() {
       ["cat-mobility", "Mobility", "mobility", 8],
       ["cat-healthcare", "Healthcare", "healthcare", 9],
       ["cat-eco", "Eco · ESG", "eco-esg", 10],
-      ["cat-etc", "ETC", "etc", 11],
+      ["cat-maritime", "Maritime · 해양", "maritime", 11],
+      ["cat-defense", "Defense · 국방", "defense", 12],
+      ["cat-security", "Security · 보안", "security", 13],
+      ["cat-iot", "IoT · 사물인터넷", "iot", 14],
+      ["cat-robotics", "Robotics · 로보틱스", "robotics", 15],
+      ["cat-web", "Web · Platform", "web-platform", 16],
+      ["cat-media", "Media · Streaming", "media-streaming", 17],
+      ["cat-etc", "ETC", "etc", 18],
     ];
     const tx = db.transaction(() => {
       for (const [id, name, slug, order] of defaults) {

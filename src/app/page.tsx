@@ -283,39 +283,43 @@ function Portfolio() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.6, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="group relative rounded-2xl overflow-hidden bg-white/[0.03] border border-white/[0.06] hover:border-purple-500/30 transition-all duration-300"
             >
-              <div className="relative h-52 overflow-hidden bg-white/[0.02]">
-                {project.image ? (
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-white/10 text-5xl font-black">
+              <Link
+                href={`/portfolio/${project.id}`}
+                className="group block rounded-2xl overflow-hidden bg-white/[0.03] border border-white/[0.06] hover:border-purple-500/30 transition-all duration-300"
+              >
+                <div className="relative h-52 overflow-hidden bg-white/[0.02]">
+                  {project.image ? (
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-white/10 text-5xl font-black">
+                      {String(i + 1).padStart(2, "0")}
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
+                  <span className="absolute top-4 right-4 text-white/10 text-5xl font-black leading-none">
                     {String(i + 1).padStart(2, "0")}
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
-                <span className="absolute top-4 right-4 text-white/10 text-5xl font-black leading-none">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-              </div>
-              <div className="p-6">
-                <span className="text-[10px] px-2 py-0.5 bg-purple-500/10 text-purple-400/80 rounded-full font-bold tracking-wide">
-                  {project.category_name}
-                </span>
-                <p className="text-white/50 text-xs font-bold tracking-wide mt-3 mb-1">
-                  {project.client}
-                </p>
-                <h3 className="text-lg font-black text-white tracking-tight mb-2 group-hover:text-purple-300 transition-colors">
-                  {project.title}
-                </h3>
-                <p className="text-white/30 text-sm leading-relaxed line-clamp-1">
-                  {project.description}
-                </p>
-              </div>
+                  </span>
+                </div>
+                <div className="p-6">
+                  <span className="text-[10px] px-2 py-0.5 bg-purple-500/10 text-purple-400/80 rounded-full font-bold tracking-wide">
+                    {project.category_name}
+                  </span>
+                  <p className="text-white/50 text-xs font-bold tracking-wide mt-3 mb-1">
+                    {project.client}
+                  </p>
+                  <h3 className="text-lg font-black text-white tracking-tight mb-2 group-hover:text-purple-300 transition-colors">
+                    {project.title}
+                  </h3>
+                  <p className="text-white/30 text-sm leading-relaxed line-clamp-1">
+                    {project.description}
+                  </p>
+                </div>
+              </Link>
             </motion.div>
           ))}
         </div>

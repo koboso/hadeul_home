@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
 
@@ -16,10 +17,7 @@ interface PortfolioItem {
   client: string;
   title: string;
   description: string;
-  detail: string;
   image: string;
-  year: number;
-  month: number;
   category_name: string;
   category_slug: string;
 }
@@ -27,7 +25,7 @@ interface PortfolioItem {
 export default function PortfolioPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [items, setItems] = useState<PortfolioItem[]>([]);
-  const [active, setActive] = useState("all");
+  const [activeCategory, setActiveCategory] = useState("all");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -38,14 +36,15 @@ export default function PortfolioPage() {
 
   useEffect(() => {
     setLoading(true);
-    const url = active === "all" ? "/api/portfolio" : `/api/portfolio?category=${active}`;
+    const url =
+      activeCategory === "all" ? "/api/portfolio" : `/api/portfolio?category=${activeCategory}`;
     fetch(url)
       .then((r) => r.json())
       .then((d) => {
         setItems(d.data || []);
         setLoading(false);
       });
-  }, [active]);
+  }, [activeCategory]);
 
   return (
     <div className="bg-[#0a0a0a] text-white min-h-screen">
@@ -89,14 +88,15 @@ export default function PortfolioPage() {
         </div>
       </section>
 
-      {/* Category Filter */}
+      {/* Filters */}
       <section className="py-8 px-6">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto space-y-4">
+          {/* Category Filter */}
           <div className="flex flex-wrap gap-3 justify-center">
             <button
-              onClick={() => setActive("all")}
+              onClick={() => setActiveCategory("all")}
               className={`px-5 py-2 rounded-full text-sm font-bold tracking-wide transition-all ${
-                active === "all"
+                activeCategory === "all"
                   ? "bg-gradient-to-r from-purple-500 to-cyan-500 text-white"
                   : "border border-white/10 text-white/40 hover:text-white hover:border-white/30"
               }`}
@@ -106,9 +106,9 @@ export default function PortfolioPage() {
             {categories.map((cat) => (
               <button
                 key={cat.slug}
-                onClick={() => setActive(cat.slug)}
+                onClick={() => setActiveCategory(cat.slug)}
                 className={`px-5 py-2 rounded-full text-sm font-bold tracking-wide transition-all ${
-                  active === cat.slug
+                  activeCategory === cat.slug
                     ? "bg-gradient-to-r from-purple-500 to-cyan-500 text-white"
                     : "border border-white/10 text-white/40 hover:text-white hover:border-white/30"
                 }`}
@@ -117,6 +117,7 @@ export default function PortfolioPage() {
               </button>
             ))}
           </div>
+
         </div>
       </section>
 
@@ -136,48 +137,42 @@ export default function PortfolioPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.6, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
-                  className="group relative rounded-2xl overflow-hidden bg-white/[0.03] border border-white/[0.06] hover:border-purple-500/30 transition-all duration-300"
                 >
-                  <div className="relative h-52 overflow-hidden bg-white/[0.02]">
-                    {item.image ? (
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-white/10 text-6xl font-black">
-                        {String(i + 1).padStart(2, "0")}
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center gap-3 mb-3">
-                      <span className="px-2.5 py-1 text-[10px] tracking-[0.15em] uppercase text-purple-400/80 border border-purple-500/20 rounded-full font-bold">
-                        {item.category_name}
-                      </span>
-                      {item.year > 0 && (
-                        <span className="text-[10px] text-white/20 font-mono">
-                          {item.year}.{String(item.month).padStart(2, "0")}
-                        </span>
+                  <Link
+                    href={`/portfolio/${item.id}`}
+                    className="group block rounded-2xl overflow-hidden bg-white/[0.03] border border-white/[0.06] hover:border-purple-500/30 transition-all duration-300"
+                  >
+                    <div className="relative h-52 overflow-hidden bg-white/[0.02]">
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-white/10 text-6xl font-black">
+                          {String(i + 1).padStart(2, "0")}
+                        </div>
                       )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
                     </div>
-                    <p className="text-white/50 text-xs font-bold tracking-wide mb-1">
-                      {item.client}
-                    </p>
-                    <h3 className="text-lg font-black text-white tracking-tight mb-2 group-hover:text-purple-300 transition-colors">
-                      {item.title}
-                    </h3>
-                    <p className="text-white/30 text-sm leading-relaxed line-clamp-1">
-                      {item.description}
-                    </p>
-                    {item.detail && (
-                      <p className="text-white/20 text-xs mt-2 leading-relaxed line-clamp-2">
-                        {item.detail}
+                    <div className="p-6">
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="px-2.5 py-1 text-[10px] tracking-[0.15em] uppercase text-purple-400/80 border border-purple-500/20 rounded-full font-bold">
+                          {item.category_name}
+                        </span>
+                      </div>
+                      <p className="text-white/50 text-xs font-bold tracking-wide mb-1">
+                        {item.client}
                       </p>
-                    )}
-                  </div>
+                      <h3 className="text-lg font-black text-white tracking-tight mb-2 group-hover:text-purple-300 transition-colors">
+                        {item.title}
+                      </h3>
+                      <p className="text-white/30 text-sm leading-relaxed line-clamp-1">
+                        {item.description}
+                      </p>
+                    </div>
+                  </Link>
                 </motion.div>
               ))}
             </div>
