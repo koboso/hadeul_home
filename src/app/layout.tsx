@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Analytics from "@/components/Analytics";
 import MaintenanceGuard from "@/components/MaintenanceGuard";
+import { TransitionProvider, PageContent } from "@/components/PageTransition";
 
 export const metadata: Metadata = {
   title: {
@@ -47,7 +48,9 @@ export default function RootLayout({
       <body className="bg-[#0a0a0a] text-white antialiased">
         <MaintenanceGuard />
         <Analytics />
-        {children}
+        <TransitionProvider>
+          <PageContent>{children}</PageContent>
+        </TransitionProvider>
       </body>
     </html>
   );

@@ -59,7 +59,7 @@ export async function generateMetadata({
       type: "article",
       siteName: "HADEUL - 주식회사 하들소프트",
       images: item.image
-        ? [{ url: item.image, width: 1200, height: 630, alt: item.title }]
+        ? [{ url: item.image.split(",")[0].trim(), width: 1200, height: 630, alt: item.title }]
         : [],
       url: `/news/${item.id}`,
       publishedTime: item.published_at,
@@ -68,7 +68,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: item.title,
       description: item.summary,
-      images: item.image ? [item.image] : [],
+      images: item.image ? [item.image.split(",")[0].trim()] : [],
     },
     alternates: {
       canonical: `/news/${item.id}`,
@@ -99,7 +99,7 @@ export default async function NewsDetailPage({
         "@type": "NewsArticle",
         headline: item.title,
         description: item.summary,
-        image: item.image || undefined,
+        image: item.image ? item.image.split(",")[0].trim() : undefined,
         datePublished: item.published_at,
         dateModified: item.updated_at || item.published_at,
         articleSection: item.category || undefined,

@@ -4,6 +4,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
+import { InquiryHeroBg } from "@/components/HeroBackgrounds";
 
 const inquiryTypes = [
   {
@@ -98,7 +99,7 @@ function InquiryForm() {
         <p className="text-white/40 mb-8">빠른 시일 내에 답변 드리겠습니다.</p>
         <button
           onClick={() => setStatus("idle")}
-          className="px-8 py-3 border border-white/10 rounded-full text-white/60 hover:text-white hover:border-white/30 transition-all"
+          className="px-8 py-3 border border-white/10 rounded-full text-white/60 hover:text-white btn-glow-outline"
         >
           추가 문의하기
         </button>
@@ -183,7 +184,7 @@ function InquiryForm() {
       <button
         type="submit"
         disabled={status === "sending"}
-        className="w-full md:w-auto px-12 py-4 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 rounded-full text-white font-bold text-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full md:w-auto px-12 py-4 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 rounded-full text-white font-bold text-lg btn-glow disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {status === "sending" ? "전송 중..." : "문의 보내기"}
       </button>
@@ -198,11 +199,7 @@ export default function InquiryPage() {
 
       {/* Hero */}
       <section className="relative min-h-[60vh] flex items-center justify-center pt-16 overflow-hidden">
-        <motion.div
-          className="absolute top-1/2 right-1/3 w-[600px] h-[600px] bg-purple-500/8 rounded-full blur-[160px]"
-          animate={{ scale: [1, 1.15, 1] }}
-          transition={{ duration: 10, repeat: Infinity }}
-        />
+        <InquiryHeroBg />
         <div className="relative z-10 text-center px-6">
           <motion.p
             className="text-purple-400 text-sm tracking-[0.4em] uppercase mb-6"

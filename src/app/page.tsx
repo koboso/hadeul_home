@@ -306,17 +306,17 @@ function Portfolio() {
                     {String(i + 1).padStart(2, "0")}
                   </span>
                 </div>
-                <div className="p-6">
-                  <span className="text-[10px] px-2 py-0.5 bg-purple-500/10 text-purple-400/80 rounded-full font-bold tracking-wide">
+                <div className="p-6 h-[160px] flex flex-col">
+                  <span className="text-[10px] px-2 py-0.5 bg-purple-500/10 text-purple-400/80 rounded-full font-bold tracking-wide self-start">
                     {project.category_name}
                   </span>
-                  <p className="text-white/50 text-xs font-bold tracking-wide mt-3 mb-1">
+                  <p className="text-white/50 text-xs font-bold tracking-wide mt-3 mb-1 truncate">
                     {project.client}
                   </p>
                   <h3 className="text-lg font-black text-white tracking-tight mb-2 group-hover:text-purple-300 transition-colors line-clamp-1">
                     {project.title}
                   </h3>
-                  <p className="text-white/30 text-sm leading-relaxed line-clamp-1">
+                  <p className="text-white/30 text-sm leading-relaxed line-clamp-1 mt-auto">
                     {project.description}
                   </p>
                 </div>
@@ -415,7 +415,7 @@ function SplitReveal() {
 /* ─── 5. Large Typography Stats ─── */
 function LargeStats() {
   const stats = [
-    { target: 500, suffix: "+", label: "프로젝트 완료" },
+    { target: 200, suffix: "+", label: "프로젝트 완료" },
     { target: 50, suffix: "+", label: "파트너사" },
     { target: 15, suffix: "yr", label: "업력" },
     { target: 8, suffix: "+", label: "전문 분야" },
@@ -589,7 +589,7 @@ function CTASection() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
               href="/inquiry"
-              className="group relative px-12 py-5 overflow-hidden rounded-full"
+              className="group relative px-12 py-5 overflow-hidden rounded-full btn-glow"
             >
               <motion.div
                 className="absolute inset-0 bg-[length:200%_200%]"
@@ -603,7 +603,7 @@ function CTASection() {
             </Link>
             <Link
               href="/company"
-              className="group relative px-12 py-5 overflow-hidden rounded-full border border-white/10"
+              className="group relative px-12 py-5 overflow-hidden rounded-full border border-white/10 btn-glow-outline"
             >
               <motion.div
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-[length:200%_200%] transition-opacity duration-300"

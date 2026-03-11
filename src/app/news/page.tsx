@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
+import { NewsHeroBg } from "@/components/HeroBackgrounds";
 
 interface NewsItem {
   id: string;
@@ -65,8 +66,9 @@ export default function NewsPage() {
       <Nav />
 
       {/* Hero */}
-      <section className="pt-32 pb-16 px-6">
-        <div className="max-w-7xl mx-auto">
+      <section className="relative pt-32 pb-16 px-6 overflow-hidden">
+        <NewsHeroBg />
+        <div className="max-w-7xl mx-auto relative z-10">
           <motion.p
             className="text-purple-400 text-sm tracking-[0.4em] uppercase mb-6"
             initial={{ opacity: 0, y: 20 }}
@@ -146,7 +148,7 @@ export default function NewsPage() {
                     {item.image && (
                       <div className="relative h-52 overflow-hidden bg-white/[0.02]">
                         <img
-                          src={item.image}
+                          src={item.image.split(",")[0].trim()}
                           alt={item.title}
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                           onError={(e) => {

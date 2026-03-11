@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
+import { PortfolioHeroBg } from "@/components/HeroBackgrounds";
 
 interface Category {
   id: string;
@@ -70,11 +71,7 @@ export default function PortfolioPage() {
 
       {/* Hero */}
       <section className="relative min-h-[50vh] flex items-center justify-center pt-16 overflow-hidden">
-        <motion.div
-          className="absolute top-1/2 left-1/3 w-[600px] h-[600px] bg-purple-500/8 rounded-full blur-[160px]"
-          animate={{ scale: [1, 1.15, 1] }}
-          transition={{ duration: 10, repeat: Infinity }}
-        />
+        <PortfolioHeroBg />
         <div className="relative z-10 text-center px-6">
           <motion.p
             className="text-purple-400 text-sm tracking-[0.4em] uppercase mb-6"
@@ -115,8 +112,8 @@ export default function PortfolioPage() {
               onClick={() => handleCategoryClick("all")}
               className={`px-5 py-2 rounded-full text-sm font-bold tracking-wide transition-all ${
                 activeCategory === "all"
-                  ? "bg-gradient-to-r from-purple-500 to-cyan-500 text-white"
-                  : "border border-white/10 text-white/40 hover:text-white hover:border-white/30"
+                  ? "bg-gradient-to-r from-purple-500 to-cyan-500 text-white btn-glow"
+                  : "border border-white/10 text-white/40 hover:text-white btn-glow-outline"
               }`}
             >
               All
@@ -127,8 +124,8 @@ export default function PortfolioPage() {
                 onClick={() => handleCategoryClick(cat.slug)}
                 className={`px-5 py-2 rounded-full text-sm font-bold tracking-wide transition-all ${
                   activeCategory === cat.slug
-                    ? "bg-gradient-to-r from-purple-500 to-cyan-500 text-white"
-                    : "border border-white/10 text-white/40 hover:text-white hover:border-white/30"
+                    ? "bg-gradient-to-r from-purple-500 to-cyan-500 text-white btn-glow"
+                    : "border border-white/10 text-white/40 hover:text-white btn-glow-outline"
                 }`}
               >
                 {cat.name}
@@ -162,26 +159,26 @@ export default function PortfolioPage() {
                   >
                     <div className="relative h-52 overflow-hidden bg-white/[0.02]">
                       <img
-                        src={item.image || "/images/default-portfolio.svg"}
+                        src={(item.image ? item.image.split(",")[0].trim() : "") || "/images/default-portfolio.svg"}
                         alt={item.title}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         onError={(e) => { (e.target as HTMLImageElement).src = "/images/default-portfolio.svg"; }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
                     </div>
-                    <div className="p-6">
+                    <div className="p-6 h-[160px] flex flex-col">
                       <div className="flex items-center gap-3 mb-3">
                         <span className="px-2.5 py-1 text-[10px] tracking-[0.15em] uppercase text-purple-400/80 border border-purple-500/20 rounded-full font-bold">
                           {item.category_name}
                         </span>
                       </div>
-                      <p className="text-white/50 text-xs font-bold tracking-wide mb-1">
+                      <p className="text-white/50 text-xs font-bold tracking-wide mb-1 truncate">
                         {item.client}
                       </p>
-                      <h3 className="text-lg font-black text-white tracking-tight mb-2 group-hover:text-purple-300 transition-colors">
+                      <h3 className="text-lg font-black text-white tracking-tight mb-2 group-hover:text-purple-300 transition-colors line-clamp-1">
                         {item.title}
                       </h3>
-                      <p className="text-white/30 text-sm leading-relaxed line-clamp-1">
+                      <p className="text-white/30 text-sm leading-relaxed line-clamp-1 mt-auto">
                         {item.description}
                       </p>
                     </div>

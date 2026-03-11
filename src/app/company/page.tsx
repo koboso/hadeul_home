@@ -4,13 +4,8 @@ import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { useRef } from "react";
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
+import { CompanyHeroBg } from "@/components/HeroBackgrounds";
 
-const timeline = [
-  { year: "2023", title: "회사 설립", desc: "AI와 게임 기술의 융합을 목표로 (주)하들소프트 창립" },
-  { year: "2024", title: "첫 AI 솔루션 출시", desc: "자체 개발 AI 엔진 기반 B2B 솔루션 런칭" },
-  { year: "2025", title: "게임 사업부 확장", desc: "모바일/PC 크로스플랫폼 게임 개발 착수" },
-  { year: "2026", title: "글로벌 진출", desc: "해외 파트너십 체결 및 글로벌 서비스 확대" },
-];
 
 const ceoMessage = [
   "안녕하십니까.",
@@ -119,17 +114,8 @@ export default function CompanyPage() {
       {/* ═══ Hero — Kinetic Typography ═══ */}
       <section ref={heroRef} className="relative h-screen">
         <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden">
-          {/* Animated gradient orbs */}
-          <motion.div
-            className="absolute top-1/4 right-1/4 w-[600px] h-[600px] bg-purple-500/8 rounded-full blur-[160px]"
-            animate={{ x: [0, 40, 0], y: [0, -30, 0], scale: [1, 1.2, 1] }}
-            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div
-            className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] bg-cyan-500/6 rounded-full blur-[120px]"
-            animate={{ x: [0, -30, 0], y: [0, 20, 0] }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          />
+          {/* Animated gradient orbs + particles */}
+          <CompanyHeroBg />
 
           <motion.div
             style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
@@ -234,8 +220,8 @@ export default function CompanyPage() {
                       창출합니다
                     </h2>
                     <p className="text-white/35 leading-relaxed text-lg">
-                      (주)하들소프트는 인공지능, 게임 개발, 엔터프라이즈 소프트웨어 솔루션을 통해
-                      고객과 사용자에게 최적의 디지털 경험을 제공합니다.
+                      (주)하들소프트는 단순한 협업을 넘어, 새로운 기술과 지식을 끊임없이 공유하며 
+                      조직 전체가 함께 진화합니다.
                     </p>
                   </motion.div>
 
@@ -245,13 +231,13 @@ export default function CompanyPage() {
                       style={{ opacity: visionOpacity, y: visionY }}
                     >
                       <p className="text-purple-400/60 text-xs tracking-[0.3em] uppercase mb-4">Vision 2030</p>
-                      <h3 className="text-3xl md:text-4xl font-black tracking-tighter leading-tight">
-                        &ldquo;아시아를 대표하는
+                      <h3 className="text-2xl md:text-3xl font-black tracking-tighter leading-tight">
+                        변화에 앞서가는 AI 에이전트 기반
                         <br />
                         <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
-                          AI·게임 기술 기업
+                           글로벌 서비스 리더
                         </span>
-                        &rdquo;
+                        
                       </h3>
                     </motion.div>
                   </motion.div>
@@ -289,7 +275,7 @@ export default function CompanyPage() {
                   <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-purple-500/20 to-cyan-500/20 border border-white/[0.06] flex items-center justify-center">
                     <span className="text-4xl font-black text-white/20">CEO</span>
                   </div>
-                  <p className="text-white font-bold mt-4 text-lg">OOO</p>
+                  <p className="text-white font-bold mt-4 text-lg">김재식</p>
                   <p className="text-white/30 text-sm">대표이사</p>
                 </div>
               </ParallaxReveal>
@@ -327,7 +313,7 @@ export default function CompanyPage() {
               <ParallaxReveal delay={0.5}>
                 <div className="pt-12 mt-8 border-t border-white/5">
                   <p className="text-white/50 font-bold text-lg">주식회사 하들소프트</p>
-                  <p className="text-white/50 font-bold text-lg">대표이사 OOO</p>
+                  <p className="text-white/50 font-bold text-lg">대표이사 김재식</p>
                 </div>
               </ParallaxReveal>
             </div>
@@ -335,57 +321,164 @@ export default function CompanyPage() {
         </div>
       </section>
 
-      {/* ═══ Timeline — Horizontal scroll reveal ═══ */}
-      <section className="relative py-32 px-6 bg-[#050505]">
+      {/* ═══ Core Competence — Interactive cards ═══ */}
+      <section className="relative py-32 px-6 bg-[#050505] overflow-hidden">
+        {/* Background watermark */}
         <div className="absolute inset-0 pointer-events-none select-none flex items-center justify-center">
-          <span
-            className="text-[25vw] font-black text-transparent leading-none"
+          <motion.span
+            className="text-[20vw] font-black text-transparent leading-none"
             style={{ WebkitTextStroke: "1px rgba(255,255,255,0.02)" }}
+            animate={{ scale: [1, 1.02, 1], opacity: [1, 0.6, 1] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
           >
-            SINCE
-          </span>
+            CORE
+          </motion.span>
         </div>
 
         <div className="max-w-6xl mx-auto relative z-10">
           <ParallaxReveal>
-            <p className="text-purple-400 text-sm tracking-[0.4em] uppercase mb-4 text-center">Our Journey</p>
-            <h2 className="text-4xl md:text-6xl font-black text-center mb-20 tracking-tighter">
-              작은 시작에서{" "}
+            <p className="text-purple-400 text-sm tracking-[0.4em] uppercase mb-4 text-center">Core Competence</p>
+            <h2 className="text-4xl md:text-6xl font-black text-center mb-6 tracking-tighter">
+              우리가 잘하는{" "}
               <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
-                글로벌로
+                것들
+              </span>
+            </h2>
+            <p className="text-white/30 text-center max-w-2xl mx-auto mb-20">
+              다양한 산업 분야에서 축적한 기술력으로 최적의 솔루션을 제공합니다.
+            </p>
+          </ParallaxReveal>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {COMPETENCES.map((c, i) => (
+              <CompetenceCard key={c.title} item={c} index={i} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ Tech Stack & Process — Animated flow ═══ */}
+      <section className="relative py-32 px-6 overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-500/5 rounded-full blur-[200px]"
+            animate={{ scale: [1, 1.15, 1] }}
+            transition={{ duration: 12, repeat: Infinity }}
+          />
+        </div>
+
+        <div className="max-w-6xl mx-auto relative z-10">
+          {/* Tech Stack */}
+          <ParallaxReveal>
+            <p className="text-cyan-400 text-sm tracking-[0.4em] uppercase mb-4 text-center">Technology</p>
+            <h2 className="text-4xl md:text-6xl font-black text-center mb-20 tracking-tighter">
+              기술{" "}
+              <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                스택
               </span>
             </h2>
           </ParallaxReveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-0">
-            {timeline.map((item, i) => (
-              <ParallaxReveal key={item.year} delay={i * 0.15}>
-                <div className="relative p-8 md:p-6 group">
-                  {/* Connector line */}
-                  {i < timeline.length - 1 && (
-                    <div className="hidden md:block absolute top-14 right-0 w-full h-px bg-gradient-to-r from-purple-500/30 to-cyan-500/30 translate-x-1/2" />
-                  )}
-
-                  {/* Dot */}
-                  <div className="relative z-10 mb-6">
-                    <motion.div
-                      className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-cyan-500 flex items-center justify-center"
-                      whileHover={{ scale: 1.3 }}
-                      transition={{ type: "spring", stiffness: 400 }}
-                    >
-                      <div className="w-3 h-3 rounded-full bg-[#050505]" />
-                    </motion.div>
-                  </div>
-
-                  <span className="text-purple-400 font-mono font-black text-3xl md:text-4xl">{item.year}</span>
-                  <h3 className="text-xl font-black mt-3 tracking-tight group-hover:text-purple-400 transition-colors">
-                    {item.title}
-                  </h3>
-                  <p className="text-white/30 mt-2 leading-relaxed">{item.desc}</p>
-                </div>
-              </ParallaxReveal>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {TECH_STACKS.map((stack, i) => (
+              <TechStackColumn key={stack.category} stack={stack} index={i} />
             ))}
           </div>
+
+          {/* More tech hint */}
+          <ParallaxReveal>
+            <p className="text-center text-white/15 text-sm mt-10 tracking-wide">
+              +40개 이상의 기술 스택을 프로젝트 요구사항에 맞춰 유연하게 적용합니다
+            </p>
+          </ParallaxReveal>
+        </div>
+      </section>
+
+      {/* ═══ Confident CTA — Staff expertise ═══ */}
+      <section className="relative py-32 px-6 bg-[#050505] overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.div
+            className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-purple-500/[0.04] rounded-full blur-[200px]"
+            animate={{ x: [0, 50, 0], y: [0, -30, 0] }}
+            transition={{ duration: 15, repeat: Infinity }}
+          />
+          <motion.div
+            className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/[0.04] rounded-full blur-[200px]"
+            animate={{ x: [0, -40, 0], y: [0, 30, 0] }}
+            transition={{ duration: 12, repeat: Infinity }}
+          />
+        </div>
+
+        <div className="max-w-4xl mx-auto relative z-10 text-center">
+          <ParallaxReveal>
+            <motion.div
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-purple-500/20 bg-purple-500/5 mb-10"
+              animate={{ boxShadow: ["0 0 20px rgba(139,92,246,0.05)", "0 0 30px rgba(139,92,246,0.15)", "0 0 20px rgba(139,92,246,0.05)"] }}
+              transition={{ duration: 3, repeat: Infinity }}
+            >
+              <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
+              <span className="text-purple-400/80 text-xs tracking-[0.2em] uppercase font-bold">Why HADEUL SOFT</span>
+            </motion.div>
+          </ParallaxReveal>
+
+          <ParallaxReveal delay={0.1}>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-[0.95] mb-8">
+              최고의 경험을 가진
+              <br />
+              <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
+                전문가
+              </span>
+              가 함께합니다
+            </h2>
+          </ParallaxReveal>
+
+          <ParallaxReveal delay={0.2}>
+            <p className="text-white/40 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-6">
+              다양한 산업 현장에서 검증된 임직원들이
+              고객의 비즈니스를 깊이 이해하고, 진짜 문제를 찾아 해결합니다.
+            </p>
+          </ParallaxReveal>
+
+          <ParallaxReveal delay={0.3}>
+            <p className="text-white/25 text-base leading-relaxed max-w-xl mx-auto mb-12">
+              복잡하고 난해한 기술적 과제도 걱정하지 마세요.
+              <br />
+              하들소프트가 고객 만족을 위해 끝까지 책임지겠습니다.
+            </p>
+          </ParallaxReveal>
+
+          <ParallaxReveal delay={0.4}>
+            <div className="flex flex-wrap justify-center gap-8 mb-14">
+              {[
+                { num: "7+", label: "년 평균 경력" },
+                { num: "200+", label: "프로젝트 수행" },
+                { num: "98%", label: "고객 만족도" },
+              ].map((stat, i) => (
+                <motion.div
+                  key={stat.label}
+                  className="text-center"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.5 + i * 0.1 }}
+                >
+                  <p className="text-3xl md:text-4xl font-black bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                    {stat.num}
+                  </p>
+                  <p className="text-white/30 text-sm mt-1">{stat.label}</p>
+                </motion.div>
+              ))}
+            </div>
+          </ParallaxReveal>
+
+          <ParallaxReveal delay={0.5}>
+            <a
+              href="/inquiry"
+              className="inline-block px-10 py-4 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 rounded-full text-white font-bold text-lg btn-glow"
+            >
+              프로젝트 문의하기
+            </a>
+          </ParallaxReveal>
         </div>
       </section>
 
@@ -393,3 +486,188 @@ export default function CompanyPage() {
     </div>
   );
 }
+
+/* ═══ Core Competence Data & Component ═══ */
+const COMPETENCES = [
+  {
+    title: "AI / ML",
+    subtitle: "인공지능",
+    desc: "LLM, 컴퓨터 비전, 자연어 처리 등 최신 AI 기술을 활용한 맞춤형 솔루션",
+    tags: ["LLM", "RAG", "Vision", "NLP", "Fine-tuning", "Embedding", "Prompt Engineering", "MLOps"],
+    accent: "from-purple-500 to-indigo-500",
+    iconPath: "M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5",
+  },
+  {
+    title: "Game Dev",
+    subtitle: "게임 개발",
+    desc: "모바일·PC 크로스플랫폼 게임 개발, 라이브 서비스 운영",
+    tags: ["Unity", "Unreal", "Cocos", "Godot", "C#", "C++"],
+    accent: "from-pink-500 to-amber-500",
+    iconPath: "M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
+  },
+  {
+    title: "Web / App",
+    subtitle: "웹·앱 플랫폼",
+    desc: "기업형 웹 애플리케이션, 모바일 앱, SaaS 플랫폼 설계·구축",
+    tags: ["React", "Next.js", "Vue", "Flutter", "React Native", "TypeScript", "GraphQL", "Micro Frontend"],
+    accent: "from-cyan-500 to-emerald-500",
+    iconPath: "M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
+  },
+  {
+    title: "IoT / Smart",
+    subtitle: "IoT·스마트팩토리",
+    desc: "센서 데이터 수집, 실시간 모니터링, 스마트 팩토리 자동화 시스템",
+    tags: ["MQTT", "Edge AI", "Dashboard", "PLC", "OPC-UA", "Digital Twin", "Sensor Fusion", "SCADA"],
+    accent: "from-emerald-500 to-teal-500",
+    iconPath: "M13 10V3L4 14h7v7l9-11h-7z",
+  },
+  {
+    title: "Defense / Marine",
+    subtitle: "국방·해양",
+    desc: "국방 시뮬레이션, 해양 관제 시스템, 보안 솔루션 개발",
+    tags: ["Simulation", "GIS", "보안", "관제", "C4I", "ECDIS", "전술체계", "데이터 링크"],
+    accent: "from-blue-500 to-indigo-500",
+    iconPath: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z",
+  },
+  {
+    title: "DevOps",
+    subtitle: "인프라·자동화",
+    desc: "CI/CD 파이프라인, 클라우드 아키텍처, 모니터링 체계 구축",
+    tags: ["AWS", "Docker", "K8s", "Terraform", "GitHub Actions", "ArgoCD", "Prometheus", "Grafana"],
+    accent: "from-orange-500 to-red-500",
+    iconPath: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15",
+  },
+];
+
+function CompetenceCard({ item, index }: { item: typeof COMPETENCES[0]; index: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, amount: 0.3 });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 50, scale: 0.95 }}
+      animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
+      transition={{ duration: 0.7, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+      className="group relative rounded-2xl p-8 bg-white/[0.02] border border-white/[0.06] hover:border-purple-500/30 transition-all duration-500 overflow-hidden"
+    >
+      {/* Hover glow */}
+      <motion.div
+        className={`absolute -top-20 -right-20 w-40 h-40 rounded-full bg-gradient-to-br ${item.accent} opacity-0 group-hover:opacity-[0.08] blur-[60px] transition-opacity duration-500`}
+      />
+
+      {/* Icon */}
+      <motion.div
+        className="relative mb-6"
+        animate={{ rotate: [0, 2, -2, 0] }}
+        transition={{ duration: 6, repeat: Infinity, delay: index * 0.5 }}
+      >
+        <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${item.accent} p-[1px]`}>
+          <div className="w-full h-full rounded-xl bg-[#0a0a0a] flex items-center justify-center">
+            <svg className="w-6 h-6 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d={item.iconPath} />
+            </svg>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Content */}
+      <h3 className="text-xl font-black tracking-tight mb-1 group-hover:text-purple-300 transition-colors">
+        {item.title}
+      </h3>
+      <p className="text-white/30 text-xs font-bold tracking-wide mb-3">{item.subtitle}</p>
+      <p className="text-white/40 text-sm leading-relaxed mb-5">{item.desc}</p>
+
+      {/* Tags */}
+      <div className="flex flex-wrap gap-2">
+        {item.tags.map((tag) => (
+          <span
+            key={tag}
+            className="px-2.5 py-1 text-[10px] tracking-wider uppercase text-white/30 border border-white/[0.06] rounded-full group-hover:border-purple-500/20 group-hover:text-purple-400/60 transition-all"
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+
+      {/* Animated corner accent */}
+      <motion.div
+        className={`absolute bottom-0 right-0 w-16 h-16 bg-gradient-to-tl ${item.accent} opacity-[0.03] group-hover:opacity-[0.08] transition-opacity`}
+        style={{ borderTopLeftRadius: "100%" }}
+      />
+    </motion.div>
+  );
+}
+
+/* ═══ Tech Stack Data & Component ═══ */
+const TECH_STACKS = [
+  {
+    category: "Frontend",
+    color: "cyan",
+    items: ["React", "Next.js", "Vue.js", "Angular", "TypeScript", "Flutter", "React Native", "Tailwind CSS", "Svelte"],
+  },
+  {
+    category: "Backend",
+    color: "purple",
+    items: ["Node.js", "Python", "Go", "Java", "Spring Boot", "NestJS", "PostgreSQL", "MongoDB", "Redis"],
+  },
+  {
+    category: "AI / Data",
+    color: "pink",
+    items: ["PyTorch", "TensorFlow", "LangChain", "OpenAI", "HuggingFace", "Pandas", "Spark", "Airflow", "Elasticsearch"],
+  },
+  {
+    category: "Infra / DevOps",
+    color: "emerald",
+    items: ["AWS", "GCP", "Azure", "Docker", "Kubernetes", "Terraform", "GitHub Actions", "ArgoCD", "Nginx"],
+  },
+];
+
+const STACK_COLORS: Record<string, string> = {
+  cyan: "from-cyan-500 to-cyan-400",
+  purple: "from-purple-500 to-purple-400",
+  pink: "from-pink-500 to-pink-400",
+  emerald: "from-emerald-500 to-emerald-400",
+};
+
+function TechStackColumn({ stack, index }: { stack: typeof TECH_STACKS[0]; index: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, amount: 0.2 });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 40 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.7, delay: index * 0.12, ease: [0.16, 1, 0.3, 1] }}
+      className="relative group"
+    >
+      {/* Category header */}
+      <div className="mb-5">
+        <motion.div
+          className={`inline-block h-1 rounded-full bg-gradient-to-r ${STACK_COLORS[stack.color]}`}
+          initial={{ width: 0 }}
+          animate={isInView ? { width: 40 } : {}}
+          transition={{ duration: 0.8, delay: index * 0.12 + 0.3 }}
+        />
+        <h3 className="text-lg font-black tracking-tight mt-3">{stack.category}</h3>
+      </div>
+
+      {/* Tech items as flowing tags */}
+      <div className="flex flex-wrap gap-2">
+        {stack.items.map((item, i) => (
+          <motion.span
+            key={item}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 0.4, delay: index * 0.12 + i * 0.05 + 0.4 }}
+            className="px-3 py-1.5 text-xs font-medium text-white/50 bg-white/[0.04] border border-white/[0.06] rounded-lg hover:text-white/80 hover:border-purple-500/30 hover:bg-white/[0.06] transition-all duration-300 cursor-default"
+          >
+            {item}
+          </motion.span>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+

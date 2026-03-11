@@ -11,6 +11,7 @@ interface PortfolioRow {
   image: string;
   tech_stack: string;
   architecture: string;
+  target_device: string;
   category_name: string;
   category_slug: string;
 }
@@ -68,7 +69,7 @@ export async function generateMetadata({
       type: "article",
       siteName: "HADEUL - 주식회사 하들소프트",
       images: item.image
-        ? [{ url: item.image, width: 1200, height: 630, alt: item.title }]
+        ? [{ url: item.image.split(",")[0].trim(), width: 1200, height: 630, alt: item.title }]
         : [],
       url: `/portfolio/${item.id}`,
     },
@@ -76,7 +77,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: `${item.title} — ${item.client}`,
       description: item.description,
-      images: item.image ? [item.image] : [],
+      images: item.image ? [item.image.split(",")[0].trim()] : [],
     },
     alternates: {
       canonical: `/portfolio/${item.id}`,
@@ -121,7 +122,7 @@ export default async function PortfolioDetailPage({
           "@type": "Organization",
           name: item.client,
         },
-        image: item.image || undefined,
+        image: item.image ? item.image.split(",")[0].trim() : undefined,
         keywords: item.tech_stack || undefined,
         url: `https://www.hadeul.com/portfolio/${item.id}`,
       }

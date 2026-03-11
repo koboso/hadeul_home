@@ -58,7 +58,7 @@ export default function NewsDetailClient({ item }: { item: NewsDetail | null }) 
         {item.image ? (
           <div className="relative h-[50vh] md:h-[60vh] overflow-hidden">
             <img
-              src={item.image}
+              src={item.image.split(",")[0].trim()}
               alt={item.title}
               className="w-full h-full object-cover"
               onError={(e) => {

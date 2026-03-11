@@ -21,6 +21,7 @@ interface PortfolioItem {
   image: string;
   tech_stack: string;
   architecture: string;
+  target_device: string;
   category_name: string;
   created_at: string;
 }
@@ -34,6 +35,7 @@ const emptyForm = {
   image: "",
   tech_stack: "",
   architecture: "",
+  target_device: "pc",
 };
 
 export default function AdminPortfolio() {
@@ -103,24 +105,30 @@ export default function AdminPortfolio() {
   }, [authed, loadItems]);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
     setUploading(true);
-    const fd = new FormData();
-    fd.append("file", file);
-    const res = await fetch("/api/portfolio/upload", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: fd,
-    });
-    const data = await res.json();
-    setUploading(false);
-    if (data.url) {
-      setForm({ ...form, image: data.url });
-      setMsg("이미지 업로드 완료");
-    } else {
-      setMsg(data.error || "업로드 실패");
+    const urls: string[] = [];
+    for (let i = 0; i < files.length; i++) {
+      const fd = new FormData();
+      fd.append("file", files[i]);
+      const res = await fetch("/api/portfolio/upload", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: fd,
+      });
+      const data = await res.json();
+      if (data.url) urls.push(data.url);
     }
+    setUploading(false);
+    if (urls.length > 0) {
+      const existing = form.image ? form.image.split(",").map((s) => s.trim()).filter(Boolean) : [];
+      setForm({ ...form, image: [...existing, ...urls].join(",") });
+      setMsg(`이미지 ${urls.length}개 업로드 완료`);
+    } else {
+      setMsg("업로드 실패");
+    }
+    e.target.value = "";
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -165,6 +173,7 @@ export default function AdminPortfolio() {
       image: item.image,
       tech_stack: item.tech_stack || "",
       architecture: item.architecture || "",
+      target_device: item.target_device || "pc",
     });
     setTechInput("");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -351,6 +360,27 @@ export default function AdminPortfolio() {
             </div>
           </div>
 
+          {/* Target Device */}
+          <div className="mb-4">
+            <label className="block text-white/40 text-xs mb-1.5">Target Device</label>
+            <div className="flex gap-3">
+              {(["pc", "mobile"] as const).map((device) => (
+                <button
+                  key={device}
+                  type="button"
+                  onClick={() => setForm({ ...form, target_device: device })}
+                  className={`px-5 py-2.5 rounded-xl text-sm font-bold border transition-all ${
+                    form.target_device === device
+                      ? "bg-purple-500/20 border-purple-500/40 text-purple-300"
+                      : "bg-white/5 border-white/10 text-white/30 hover:text-white/60"
+                  }`}
+                >
+                  {device === "pc" ? "🖥 PC" : "📱 Mobile"}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="mb-4">
             <label className="block text-white/40 text-xs mb-1.5">프로젝트 제목 *</label>
             <input
@@ -447,21 +477,38 @@ export default function AdminPortfolio() {
           </div>
 
           <div className="mb-6">
-            <label className="block text-white/40 text-xs mb-1.5">이미지</label>
+            <label className="block text-white/40 text-xs mb-1.5">이미지 (여러 장 가능)</label>
             <div className="flex gap-2">
               <input
-                placeholder="이미지 URL 또는 업로드"
+                placeholder="이미지 URL (콤마로 구분)"
                 value={form.image}
                 onChange={(e) => setForm({ ...form, image: e.target.value })}
                 className={`${inputClass} flex-1`}
               />
               <label className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white/40 text-sm cursor-pointer hover:bg-white/10 transition-colors whitespace-nowrap">
                 {uploading ? "..." : "업로드"}
-                <input type="file" accept="image/*" onChange={handleUpload} className="hidden" />
+                <input type="file" accept="image/*" multiple onChange={handleUpload} className="hidden" />
               </label>
             </div>
             {form.image && (
-              <img src={form.image} alt="preview" className="mt-2 h-20 rounded-lg object-cover" />
+              <div className="flex flex-wrap gap-2 mt-2">
+                {form.image.split(",").map((url) => url.trim()).filter(Boolean).map((url, idx) => (
+                  <div key={idx} className="relative group">
+                    <img src={url} alt={`preview ${idx + 1}`} className="h-20 rounded-lg object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const imgs = form.image.split(",").map((s) => s.trim()).filter(Boolean);
+                        imgs.splice(idx, 1);
+                        setForm({ ...form, image: imgs.join(",") });
+                      }}
+                      className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      &times;
+                    </button>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
 
@@ -508,7 +555,7 @@ export default function AdminPortfolio() {
               className="flex items-center gap-4 bg-[#1a1a1a] rounded-xl p-4 border border-white/5"
             >
               {item.image ? (
-                <img src={item.image} alt="" className="w-16 h-12 rounded-lg object-cover flex-shrink-0" />
+                <img src={item.image.split(",")[0].trim()} alt="" className="w-16 h-12 rounded-lg object-cover flex-shrink-0" />
               ) : (
                 <div className="w-16 h-12 rounded-lg bg-white/5 flex-shrink-0" />
               )}

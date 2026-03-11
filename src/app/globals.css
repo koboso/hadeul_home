@@ -48,6 +48,27 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+/* Glow button — primary gradient CTA */
+.btn-glow {
+  position: relative;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.25), 0 0 40px rgba(139, 92, 246, 0.1);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.btn-glow:hover {
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.4), 0 0 60px rgba(139, 92, 246, 0.2), 0 0 90px rgba(236, 72, 153, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Glow button — secondary/outlined CTA */
+.btn-glow-outline {
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+}
+.btn-glow-outline:hover {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.2), 0 0 40px rgba(139, 92, 246, 0.08);
+  border-color: rgba(139, 92, 246, 0.4) !important;
+  transform: translateY(-1px);
+}
+
 /* Horizontal scrolling text */
 @keyframes marquee {
   0% { transform: translateX(0); }
