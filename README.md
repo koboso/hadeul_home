@@ -9,43 +9,167 @@ AI, 게임, 소프트웨어 솔루션 기업 **(주)하들소프트(HADEUL)** �
 | **Framework** | Next.js 16 (App Router, TypeScript) |
 | **UI** | React 19, Tailwind CSS 4 |
 | **Animation** | Framer Motion (scroll-driven, kinetic typography) |
+| **Rich Editor** | TipTap v3 (YouTube embed, multi-image upload) |
+| **Database** | SQLite (better-sqlite3, WAL mode) |
+| **Email** | Nodemailer |
+| **Auth** | Bearer Token (admin API) |
 | **Styling** | PostCSS, @tailwindcss/postcss |
 | **Build** | Turbopack |
 | **Deploy** | Docker (multi-stage build, standalone output) |
+
+## Database Schema (SQLite)
+
+데이터베이스 파일: `data/hadeul.db`
+
+### categories
+| Column | Type | Description |
+|--------|------|-------------|
+| id | TEXT PK | 카테고리 ID |
+| name | TEXT | 카테고리명 (예: AI · Machine Learning) |
+| slug | TEXT UNIQUE | URL 슬러그 |
+| sort_order | INTEGER | 정렬 순서 |
+
+### portfolio
+| Column | Type | Description |
+|--------|------|-------------|
+| id | TEXT PK | UUID |
+| category_id | TEXT FK | 카테고리 참조 |
+| client | TEXT | 의뢰사명 |
+| title | TEXT | 프로젝트 제목 |
+| description | TEXT | 한줄 설명 |
+| detail | TEXT | 상세 설명 (HTML, TipTap) |
+| architecture | TEXT | 기술 아키텍처 (HTML) |
+| image | TEXT | 대표 이미지 URL |
+| tech_stack | TEXT | 기술 스택 (쉼표 구분) |
+| is_featured | INTEGER | 홈 노출 여부 (0/1) |
+| sort_order | INTEGER | 정렬 순서 |
+| year | INTEGER | 연도 (레거시) |
+| month | INTEGER | 월 (레거시) |
+| created_at | TEXT | 생성일 |
+| updated_at | TEXT | 수정일 |
+
+### news
+| Column | Type | Description |
+|--------|------|-------------|
+| id | TEXT PK | UUID |
+| title | TEXT | 제목 |
+| summary | TEXT | 요약 |
+| content | TEXT | 본문 (HTML, TipTap) |
+| category | TEXT | 카테고리 (Product/Partnership/Investment/Award/Company/Notice) |
+| image | TEXT | 대표 이미지 URL |
+| is_published | INTEGER | 공개 여부 (0/1) |
+| published_at | TEXT | 게시일 |
+| created_at | TEXT | 생성일 |
+| updated_at | TEXT | 수정일 |
+
+### job_postings
+| Column | Type | Description |
+|--------|------|-------------|
+| id | TEXT PK | UUID |
+| title | TEXT | 포지션명 |
+| department | TEXT | 부서 |
+| job_type | TEXT | 근무 형태 (정규직/계약직/인턴/프리랜서) |
+| location | TEXT | 근무지 |
+| description | TEXT | 직무 설명 (HTML) |
+| requirements | TEXT | 자격 요건 (HTML) |
+| is_active | INTEGER | 활성 여부 (0/1) |
+| created_at | TEXT | 생성일 |
+| updated_at | TEXT | 수정일 |
+
+### settings
+| Column | Type | Description |
+|--------|------|-------------|
+| key | TEXT PK | 설정 키 |
+| value | TEXT | 설정 값 |
+
+### page_views
+| Column | Type | Description |
+|--------|------|-------------|
+| id | INTEGER PK | 자동 증가 |
+| path | TEXT | 페이지 경로 |
+| referrer | TEXT | 리퍼러 |
+| user_agent | TEXT | 브라우저 UA |
+| ip | TEXT | IP 주소 |
+| created_at | TEXT | 조회 시각 |
 
 ## Project Structure
 
 ```
 src/
 ├── app/
-│   ├── layout.tsx            # Root layout (dark theme)
-│   ├── page.tsx              # Index - immersive scroll + kinetic typography
-│   ├── globals.css           # Theme, gradients, animations
-│   ├── company/
-│   │   └── page.tsx          # Company - mission, values, timeline, leadership
-│   ├── services/
-│   │   └── page.tsx          # Services - AI, game, software detail
+│   ├── layout.tsx              # Root layout (dark theme, SEO metadata)
+│   ├── page.tsx                # 메인 - Hero, 스크롤 텍스트, 포트폴리오, Stats, 파트너 마퀴, CTA
+│   ├── globals.css             # Theme, gradients, YouTube embed, chart styles
+│   ├── company/page.tsx        # 회사 소개
+│   ├── services/page.tsx       # 서비스 상세
+│   ├── portfolio/
+│   │   ├── page.tsx            # 포트폴리오 목록 (카테고리 필터)
+│   │   └── [id]/
+│   │       ├── page.tsx        # 상세 (Server Component, SEO/JSON-LD)
+│   │       └── PortfolioDetailClient.tsx  # 클라이언트 렌더링
 │   ├── news/
-│   │   └── page.tsx          # News - category filter, article list
-│   ├── careers/
-│   │   └── page.tsx          # Careers - perks, open positions
-│   └── inquiry/
-│       └── page.tsx          # Inquiry - contact types, form
-└── components/
-    ├── Nav.tsx               # Fixed navigation (transparent → blur on scroll)
-    └── PageFooter.tsx        # Shared footer
+│   │   ├── page.tsx            # 뉴스 목록
+│   │   └── [id]/
+│   │       ├── page.tsx        # 뉴스 상세 (Server Component, SEO/JSON-LD)
+│   │       └── NewsDetailClient.tsx
+│   ├── careers/page.tsx        # 채용 (DB 연동 + 빈 상태 처리)
+│   ├── inquiry/page.tsx        # 문의 폼
+│   ├── admin/
+│   │   ├── page.tsx            # 대시보드 (Analytics)
+│   │   ├── portfolio/page.tsx  # 포트폴리오 CRUD
+│   │   ├── news/page.tsx       # 뉴스 CRUD
+│   │   ├── careers/page.tsx    # 채용 CRUD
+│   │   └── settings/page.tsx   # 사이트 설정
+│   └── api/
+│       ├── portfolio/          # GET (목록/필터), POST (생성)
+│       │   ├── route.ts
+│       │   ├── [id]/route.ts   # GET/PUT/DELETE
+│       │   └── upload/route.ts # 이미지 업로드
+│       ├── news/               # GET/POST, [id] GET/PUT/DELETE
+│       ├── careers/            # GET/POST, [id] GET/PUT/DELETE
+│       ├── categories/route.ts
+│       ├── inquiry/route.ts    # 문의 메일 발송
+│       ├── admin/
+│       │   ├── login/route.ts
+│       │   ├── settings/route.ts
+│       │   └── analytics/route.ts
+│       ├── analytics/track/route.ts
+│       └── maintenance/route.ts
+├── components/
+│   ├── Nav.tsx                 # Fixed navigation (glassmorphism)
+│   ├── PageFooter.tsx          # 공통 푸터
+│   └── RichEditor.tsx          # TipTap 에디터 (YouTube, 다중 이미지, 링크)
+├── lib/
+│   ├── db.ts                   # SQLite 초기화 + 마이그레이션
+│   └── auth.ts                 # Bearer token 인증
+data/
+└── hadeul.db                   # SQLite 데이터베이스
+public/
+├── images/
+│   ├── default-portfolio.svg   # 포트폴리오 기본 이미지
+│   └── partners/               # 협력사 SVG 로고 (30개)
+└── uploads/
+    └── portfolio/              # 업로드된 포트폴리오 이미지
+scripts/
+├── seed-portfolio.cjs          # 초기 포트폴리오 데이터 시드
+├── gen-partner-logos.cjs       # 협력사 로고 SVG 생성
+└── fix-architecture.cjs        # 아키텍처 필드 마이그레이션
 ```
 
 ## Pages
 
 | Route | Description |
 |-------|-------------|
-| `/` | 메인 - Hero(AI 영상 + kinetic text), 스크롤 텍스트 리빌, 수평 갤러리, 스플릿 리빌, 통계, 비디오, CTA |
+| `/` | 메인 - Hero(AI 영상 + IMAGINE BEYOND REALITY), 스크롤 텍스트, 포트폴리오, Split Reveal, Stats, 파트너 마퀴, CTA |
 | `/company` | 회사 소개 - 미션, 비전, 핵심 가치, 연혁, 리더십 |
-| `/services` | 서비스 - AI Solutions, Game Development, Software Solutions 상세 |
-| `/news` | 뉴스 - 카테고리별 소식 리스트 |
-| `/careers` | 채용 - 복리후생, 채용 포지션 |
+| `/services` | 서비스 - AI Solutions, Game Development, Software Solutions |
+| `/portfolio` | 포트폴리오 - 카테고리 필터, 디폴트 이미지 폴백 |
+| `/portfolio/[id]` | 포트폴리오 상세 - SEO 메타, JSON-LD, 아키텍처, 기술스택 배지 |
+| `/news` | 뉴스 - DB 기반, 빈 상태 처리 |
+| `/news/[id]` | 뉴스 상세 - SEO 메타, JSON-LD |
+| `/careers` | 채용 - DB 기반, 빈 상태 처리 |
 | `/inquiry` | 문의 - 문의 유형, 연락 폼, 오피스 정보 |
+| `/admin` | 관리자 대시보드 (Analytics, Portfolio, News, Careers, Settings) |
 
 ## Getting Started
 
@@ -80,13 +204,14 @@ docker compose up -d --force-recreate
 
 ## Key Features
 
-- **Scroll-synced animations** — StickyScene 패턴으로 스크롤과 컨텐츠 완벽 동기화
-- **Kinetic typography** — Hero 섹션 텍스트 애니메이션 (CREATE / INNOVATE / TRANSFORM)
-- **Scroll text reveal** — 스크롤에 따라 단어별 opacity 활성화 + 프로그레스 바
-- **Horizontal scroll gallery** — 서비스 카드 횡스크롤 (sticky + translateX)
-- **Split reveal** — 좌우 이미지 분리 + 중앙 텍스트 등장
-- **AI video backgrounds** — Pexels 로열티프리 AI 관련 영상
-- **Animated counters** — 뷰포트 진입 시 숫자 카운트업
-- **Dark theme** — #0a0a0a 베이스, purple/pink/cyan 그라데이션 악센트
-- **Fixed nav** — 스크롤 시 glassmorphism 배경 전환
-- **Multi-stage Docker** — Node.js standalone 빌드, 경량 프로덕션 이미지
+- **SQLite Database** — better-sqlite3, WAL 모드, 자동 마이그레이션
+- **Admin System** — 포트폴리오/뉴스/채용 CRUD, 이미지 업로드, 리치 에디터
+- **SEO/AEO** — generateMetadata, Open Graph, Twitter Cards, JSON-LD 구조화 데이터
+- **Portfolio** — 80+ 프로젝트, 18개 산업 카테고리, 기술 스택 태그, 아키텍처 다이어그램
+- **Partner Marquee** — 30개 협력사 SVG 로고 무한 스크롤
+- **Rich Editor** — TipTap v3 (YouTube embed, 다중 이미지 업로드, 링크)
+- **Scroll Animations** — StickyScene 스크롤 동기화, kinetic typography, 카운터
+- **Dark Theme** — #0a0a0a 베이스, purple/pink/cyan 그라데이션
+- **Animated Buttons** — 그라데이션 무한 순환 애니메이션
+- **Default Fallback** — 깨진/미등록 이미지 자동 대체
+- **Docker** — Multi-stage build, standalone output

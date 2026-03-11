@@ -10,6 +10,7 @@ interface PortfolioRow {
   detail: string;
   image: string;
   tech_stack: string;
+  architecture: string;
   category_name: string;
   category_slug: string;
 }

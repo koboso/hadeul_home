@@ -96,6 +96,7 @@ function initTables() {
   if (!colNames.includes("year")) db.exec("ALTER TABLE portfolio ADD COLUMN year INTEGER DEFAULT 0");
   if (!colNames.includes("month")) db.exec("ALTER TABLE portfolio ADD COLUMN month INTEGER DEFAULT 0");
   if (!colNames.includes("tech_stack")) db.exec("ALTER TABLE portfolio ADD COLUMN tech_stack TEXT DEFAULT ''");
+  if (!colNames.includes("architecture")) db.exec("ALTER TABLE portfolio ADD COLUMN architecture TEXT DEFAULT ''");
 
   // Seed default categories if empty
   const count = db.prepare("SELECT COUNT(*) as cnt FROM categories").get() as { cnt: number };

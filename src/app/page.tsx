@@ -243,7 +243,7 @@ function Portfolio() {
   const [projects, setProjects] = useState<PortfolioProject[]>([]);
 
   useEffect(() => {
-    fetch("/api/portfolio?featured=1")
+    fetch("/api/portfolio")
       .then((r) => r.json())
       .then((d) => setProjects(d.data || []));
   }, []);
@@ -268,9 +268,16 @@ function Portfolio() {
           </div>
           <Link
             href="/portfolio"
-            className="hidden md:block text-white/30 text-sm hover:text-purple-400 transition-colors"
+            className="hidden md:flex items-center gap-2 group"
           >
-            전체 보기 &rarr;
+            <span className="text-white/30 text-sm group-hover:text-purple-400 transition-colors">전체 보기</span>
+            <motion.span
+              className="text-white/30 group-hover:text-purple-400 transition-colors"
+              animate={{ x: [0, 4, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            >
+              &rarr;
+            </motion.span>
           </Link>
         </motion.div>
 
@@ -288,17 +295,12 @@ function Portfolio() {
                 className="group block rounded-2xl overflow-hidden bg-white/[0.03] border border-white/[0.06] hover:border-purple-500/30 transition-all duration-300"
               >
                 <div className="relative h-52 overflow-hidden bg-white/[0.02]">
-                  {project.image ? (
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-white/10 text-5xl font-black">
-                      {String(i + 1).padStart(2, "0")}
-                    </div>
-                  )}
+                  <img
+                    src={project.image || "/images/default-portfolio.svg"}
+                    alt={project.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    onError={(e) => { (e.target as HTMLImageElement).src = "/images/default-portfolio.svg"; }}
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
                   <span className="absolute top-4 right-4 text-white/10 text-5xl font-black leading-none">
                     {String(i + 1).padStart(2, "0")}
@@ -311,7 +313,7 @@ function Portfolio() {
                   <p className="text-white/50 text-xs font-bold tracking-wide mt-3 mb-1">
                     {project.client}
                   </p>
-                  <h3 className="text-lg font-black text-white tracking-tight mb-2 group-hover:text-purple-300 transition-colors">
+                  <h3 className="text-lg font-black text-white tracking-tight mb-2 group-hover:text-purple-300 transition-colors line-clamp-1">
                     {project.title}
                   </h3>
                   <p className="text-white/30 text-sm leading-relaxed line-clamp-1">
@@ -326,9 +328,9 @@ function Portfolio() {
         <div className="mt-10 text-center md:hidden">
           <Link
             href="/portfolio"
-            className="text-white/30 text-sm hover:text-purple-400 transition-colors"
+            className="inline-flex items-center gap-2 text-white/30 text-sm hover:text-purple-400 transition-colors"
           >
-            전체 보기 &rarr;
+            전체 보기 <span>&rarr;</span>
           </Link>
         </div>
       </div>
@@ -372,22 +374,35 @@ function SplitReveal() {
               style={{ opacity: centerOpacity, scale: centerScale }}
             >
               <div className="text-center max-w-3xl px-8">
-                <p className="text-purple-400 text-sm tracking-[0.4em] uppercase font-bold mb-6">
+                <motion.p
+                  className="text-purple-400 text-sm tracking-[0.4em] uppercase font-bold mb-6"
+                  animate={{ opacity: [0.6, 1, 0.6] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                >
                   Our Philosophy
-                </p>
+                </motion.p>
                 <h2 className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter mb-8">
                   TECHNOLOGY
                   <br />
-                  <span className="text-transparent" style={{ WebkitTextStroke: "2px rgba(139,92,246,0.6)" }}>
+                  <motion.span
+                    className="inline-block text-transparent"
+                    style={{ WebkitTextStroke: "2px rgba(139,92,246,0.6)" }}
+                    animate={{ letterSpacing: ["-0.05em", "0.05em", "-0.05em"] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  >
                     MEETS
-                  </span>
+                  </motion.span>
                   <br />
                   ARTISTRY
                 </h2>
-                <p className="text-white/30 text-lg max-w-lg mx-auto">
+                <motion.p
+                  className="text-white/30 text-lg max-w-lg mx-auto"
+                  animate={{ y: [0, -4, 0] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                >
                   기술과 예술의 교차점에서 새로운 가능성을 창조합니다.
                   우리는 단순한 개발을 넘어 경험을 설계합니다.
-                </p>
+                </motion.p>
               </div>
             </motion.div>
           </div>
@@ -409,12 +424,14 @@ function LargeStats() {
   return (
     <section className="relative py-20 md:py-32 bg-[#050505] overflow-hidden">
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
-        <span
+        <motion.span
           className="text-[40vw] font-black text-transparent leading-none"
           style={{ WebkitTextStroke: "1px rgba(255,255,255,0.02)" }}
+          animate={{ scale: [1, 1.03, 1], opacity: [1, 0.7, 1] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         >
           DATA
-        </span>
+        </motion.span>
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-8 md:px-16">
@@ -564,26 +581,39 @@ function CTASection() {
         >
           <p className="text-white/20 text-sm tracking-[0.5em] uppercase mb-8">Ready to Start?</p>
           <h2 className="text-6xl md:text-8xl lg:text-[10vw] font-black text-white leading-[0.85] tracking-tighter mb-4">
-            LET&apos;S
+            BUILD YOUR
           </h2>
           <h2 className="text-6xl md:text-8xl lg:text-[10vw] font-black leading-[0.85] tracking-tighter mb-12 bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
-            CREATE
+            VISION
           </h2>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a
-              href="mailto:info@hadeul.com"
+            <Link
+              href="/inquiry"
               className="group relative px-12 py-5 overflow-hidden rounded-full"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 transition-transform duration-500 group-hover:scale-110" />
+              <motion.div
+                className="absolute inset-0 bg-[length:200%_200%]"
+                style={{ backgroundImage: "linear-gradient(135deg, #8b5cf6, #ec4899, #06b6d4, #8b5cf6)" }}
+                animate={{ backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              />
               <span className="relative text-white font-bold text-lg tracking-wider uppercase">
-                Contact Us
+                프로젝트 문의
               </span>
-            </a>
+            </Link>
             <Link
               href="/company"
-              className="px-12 py-5 border border-white/10 text-white/40 font-bold tracking-wider uppercase rounded-full hover:border-white/30 hover:text-white/60 transition-all duration-300"
+              className="group relative px-12 py-5 overflow-hidden rounded-full border border-white/10"
             >
-              About Us
+              <motion.div
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-[length:200%_200%] transition-opacity duration-300"
+                style={{ backgroundImage: "linear-gradient(135deg, rgba(139,92,246,0.15), rgba(236,72,153,0.15), rgba(6,182,212,0.15), rgba(139,92,246,0.15))" }}
+                animate={{ backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              />
+              <span className="relative text-white/40 font-bold tracking-wider uppercase group-hover:text-white/70 transition-colors">
+                About Us
+              </span>
             </Link>
           </div>
         </motion.div>

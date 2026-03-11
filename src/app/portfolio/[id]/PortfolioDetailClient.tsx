@@ -14,6 +14,7 @@ interface PortfolioDetail {
   detail: string;
   image: string;
   tech_stack: string;
+  architecture: string;
   category_name: string;
   category_slug: string;
 }
@@ -102,6 +103,22 @@ export default function PortfolioDetailClient({ item }: { item: PortfolioDetail 
               </div>
             )}
           </motion.div>
+
+          {/* Architecture */}
+          {item.architecture && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+              className="border-t border-white/5 pt-12 pb-8"
+            >
+              <h2 className="text-2xl font-black tracking-tight mb-8 text-white/80">System Architecture</h2>
+              <div
+                className="tiptap max-w-none"
+                dangerouslySetInnerHTML={{ __html: item.architecture }}
+              />
+            </motion.div>
+          )}
 
           {/* Detail Content */}
           {item.detail && (

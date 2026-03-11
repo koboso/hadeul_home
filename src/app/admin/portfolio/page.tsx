@@ -20,8 +20,7 @@ interface PortfolioItem {
   detail: string;
   image: string;
   tech_stack: string;
-  is_featured: number;
-  sort_order: number;
+  architecture: string;
   category_name: string;
   created_at: string;
 }
@@ -34,8 +33,7 @@ const emptyForm = {
   detail: "",
   image: "",
   tech_stack: "",
-  is_featured: false,
-  sort_order: 0,
+  architecture: "",
 };
 
 export default function AdminPortfolio() {
@@ -130,10 +128,7 @@ export default function AdminPortfolio() {
     setSaving(true);
     setMsg("");
 
-    const payload = {
-      ...form,
-      is_featured: form.is_featured ? 1 : 0,
-    };
+    const payload = { ...form };
 
     const url = editingId ? `/api/portfolio/${editingId}` : "/api/portfolio";
     const method = editingId ? "PUT" : "POST";
@@ -169,8 +164,7 @@ export default function AdminPortfolio() {
       detail: item.detail || "",
       image: item.image,
       tech_stack: item.tech_stack || "",
-      is_featured: item.is_featured === 1,
-      sort_order: item.sort_order,
+      architecture: item.architecture || "",
     });
     setTechInput("");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -391,6 +385,27 @@ export default function AdminPortfolio() {
             </Suspense>
           </div>
 
+          {/* Architecture */}
+          <div className="mb-4">
+            <label className="block text-white/40 text-xs mb-1.5">기술 아키텍처 (HTML)</label>
+            <textarea
+              placeholder="시스템 아키텍처 HTML을 입력하세요. 예: <div style='display:flex;...'>...</div>"
+              value={form.architecture}
+              onChange={(e) => setForm({ ...form, architecture: e.target.value })}
+              className={`${inputClass} min-h-[120px] font-mono text-xs`}
+              rows={5}
+            />
+            {form.architecture && (
+              <details className="mt-2">
+                <summary className="text-white/30 text-xs cursor-pointer hover:text-white/50">미리보기</summary>
+                <div
+                  className="mt-2 p-4 bg-[#111] rounded-xl border border-white/5 tiptap"
+                  dangerouslySetInnerHTML={{ __html: form.architecture }}
+                />
+              </details>
+            )}
+          </div>
+
           {/* Tech Stack Tags */}
           <div className="mb-4">
             <label className="block text-white/40 text-xs mb-1.5">기술 스택</label>
@@ -428,29 +443,6 @@ export default function AdminPortfolio() {
               >
                 추가
               </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-white/40 text-xs mb-1.5">정렬 순서</label>
-              <input
-                type="number"
-                value={form.sort_order}
-                onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })}
-                className={inputClass}
-              />
-            </div>
-            <div className="flex items-end pb-3">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={form.is_featured}
-                  onChange={(e) => setForm({ ...form, is_featured: e.target.checked })}
-                  className="w-4 h-4 accent-purple-500"
-                />
-                <span className="text-white/40 text-sm">홈 노출</span>
-              </label>
             </div>
           </div>
 
@@ -525,11 +517,6 @@ export default function AdminPortfolio() {
                   <span className="text-[10px] px-2 py-0.5 bg-purple-500/10 text-purple-400 rounded-full font-bold">
                     {item.category_name}
                   </span>
-                  {item.is_featured === 1 && (
-                    <span className="text-[10px] px-2 py-0.5 bg-cyan-500/10 text-cyan-400 rounded-full font-bold">
-                      HOME
-                    </span>
-                  )}
                 </div>
                 <p className="text-white font-bold text-sm truncate">
                   {item.client} — {item.title}
