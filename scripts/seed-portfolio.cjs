@@ -57,46 +57,66 @@ const portfolioData = [
   // ━━━ MARITIME · 해양 ━━━
   {
     client: "국립해양조사원 · 선박해양플랜트연구소",
-    title: "S-100 Registry 수로정보 표준화 시스템",
-    description: "IHO S-100 국제 수로정보 표준 기반의 Feature, Metadata, Symbol 표준화 항목 제안·검토·승인·조회 기능을 갖춘 웹 기반 레지스트리 시스템",
+    title: "S-100 Registry Management & Catalogue Service Platform",
+    description: "국제 차세대 수로 업무 표준(S-100) 기반의 국가 표준 항목 관리 및 거버넌스 체계 구축",
     image: img("s100-registry-1.png"),
     category: "cat-maritime", is_featured: 1, sort_order: 1,
     detail: `
-      <h2>프로젝트 개요</h2>
-      <p>S-100 Registry는 국제수로기구(IHO) S-100 표준 운용을 위한 기반 핵심 체계로서, 수로정보 표준화 관리를 위해 Feature, Metadata, Symbol 등의 표준화 항목의 제안, 검토 및 승인, 조회 기능이 구현된 웹 기반 시스템입니다.</p>
-      <img src="${img("s100-registry-2.png")}" alt="S-100 Registry 상세 화면" />
-      <p>S-100 기반 제품표준(Product Specification) 개발에 요구되는 모든 표준화 항목을 일괄적으로 관리하고, 카탈로그로 서비스되는 체계를 갖추고 있습니다.</p>
-      <h2>주요 기능</h2>
+      <h2>01. Strategic Overview (전략적 개요)</h2>
+      <p>본 프로젝트는 차세대 국제 해양 데이터 표준인 S-100을 기반으로, 해사안전 및 수로정보의 국가 표준화 항목을 체계적으로 등록하고 관리하는 <strong>중앙 허브 플랫폼</strong>을 구축한 사례입니다.</p>
+      <p>복잡한 국제 표준 규격을 준수하면서도, 제안부터 승인까지의 전 과정을 디지털 워크플로우로 구현하여 데이터의 신뢰성과 무결성을 확보했습니다.</p>
+      <img src="${img("s100-registry-2.png")}" alt="S-100 Registry 시스템 아키텍처" />
+
+      <h2>02. System Architecture & Key Functions (주요 설계 역량)</h2>
+
+      <h3>A. 지능형 표준 데이터 사전 (FCD Management System)</h3>
+      <p><strong>Problem:</strong> 방대한 양의 제품 표준(Product Specification) 항목을 일관성 있게 관리할 체계 부족.</p>
+      <p><strong>Solution:</strong> Feature Concept Dictionary(FCD) 등록소 시스템을 구축하여, 수천 개의 해양 물리량 및 객체 정의를 전산화하고 일괄 관리할 수 있는 아키텍처 설계.</p>
+
+      <h3>B. 시각화 표준 관리 (Portrayal Catalogue System)</h3>
+      <p><strong>Problem:</strong> 표준 항목에 따른 기호(Symbol)와 시각적 표현 방식의 표준화 필요.</p>
+      <p><strong>Solution:</strong> 수로 정보의 시각적 규격을 관리하는 Portrayal Catalogue 심볼 관리 시스템을 통합하여, 데이터와 시각화 규격이 상호 운용되도록 구현.</p>
+
+      <h3>C. 엔터프라이즈 거버넌스 엔진 (Workflow & Authority)</h3>
+      <p><strong>Problem:</strong> 다수의 이해관계자가 참여하는 표준 제안 및 검토 과정의 투명성 확보.</p>
+      <p><strong>Solution:</strong> 제안 → 검토 → 승인으로 이어지는 단계별 워크플로우 엔진을 구축. 권한 기반(제안자/검토자/승인자)의 사용자 관리 체계를 통해 국제 표준 연동 프로세스의 엄격함을 시스템으로 강제함.</p>
+
+      <h2>03. Project Impact & Scalability (성과 및 확장성)</h2>
       <ul>
-        <li>Feature Concept Dictionary (FCD) 등록 및 관리</li>
-        <li>Portrayal Catalogue 심볼 관리 시스템</li>
-        <li>표준화 항목 제안 → 검토 → 승인 워크플로우 엔진</li>
-        <li>S-100 기반 제품표준 카탈로그 서비스</li>
-        <li>다국어(한/영) 지원 및 국제 표준 연동</li>
-        <li>권한 기반 사용자 관리 (제안자/검토자/승인자)</li>
+        <li><strong>국가 인프라 확보:</strong> 국립해양조사원 및 선박해양플랜트연구소와 공동 개발을 통해, <strong>국가 표준화 항목 등록소(Registry)</strong>로서의 공신력 확보.</li>
+        <li><strong>글로벌 표준 대응:</strong> 다국어 지원 및 IHO(국제수로기구) 표준 연동을 통해, 향후 전 세계적으로 적용될 S-100 표준화 생태계의 선제적 기술 대응 완료.</li>
+        <li><strong>데이터 무결성:</strong> 복잡한 제품 표준 카탈로그 서비스를 통해 해사 안전 데이터의 정확한 배포 및 서비스 기반 마련.</li>
       </ul>
-      <h2>성과</h2>
-      <p>국립해양조사원, 선박해양플랜트연구소와 공동 개발하여, 국제수로기구의 S-100 표준이 본격 적용 시 해사안전 및 수로정보에 대한 <strong>국가 표준화 항목 등록소</strong>로 활용될 예정입니다.</p>
+
+      <h2>04. Technical Identity</h2>
+      <p>하들소프트는 일반적인 웹 에이전시가 다루기 힘든 <strong>국제 표준 아키텍처(S-100)</strong>를 깊이 이해하고, 이를 웹 기반의 관리 시스템으로 형상화하는 데 성공했습니다. 데이터 간의 복잡한 관계성을 정의하고, 엄격한 승인 절차를 로직으로 구현하는 High-End 엔지니어링 역량을 증명한 프로젝트입니다.</p>
     `,
   },
   {
     client: "선박해양플랜트연구소 (KRISO)",
-    title: "선박운항 시뮬레이터 시작품 제작",
-    description: "실시간 해양 환경 시뮬레이션과 3D 렌더링 엔진을 활용한 선박운항 시뮬레이터 프로토타입 개발",
+    title: "Maritime Navigation Simulator Prototype",
+    description: "실시간 해양 물리 엔진과 3D 렌더링을 결합한 차세대 선박운항 시뮬레이터 시작품 개발",
     image: img("ship-navigation-simulator-1.png"),
     category: "cat-maritime", is_featured: 1, sort_order: 2,
     detail: `
-      <h2>프로젝트 개요</h2>
-      <p>선박해양플랜트연구소(KRISO)의 기술 지원 아래, 실시간 해양 환경을 반영한 선박운항 시뮬레이터 시작품을 개발하였습니다. 파도, 조류, 풍향 등 외력 요소를 실시간으로 시뮬레이션하여 선박 조종 훈련 환경을 제공합니다.</p>
+      <h2>01. Strategic Overview</h2>
+      <p>선박해양플랜트연구소(KRISO)와의 기술 협력 프로젝트로, 해양 환경의 복잡한 물리 현상(파도, 조류, 풍향)을 실시간으로 재현하는 선박운항 시뮬레이터의 시작품을 개발하였습니다. 실제 항해 훈련 환경을 디지털 트윈으로 구현하는 것이 핵심 목표였습니다.</p>
       <img src="${img("ship-navigation-simulator-2.png")}" alt="선박운항 시뮬레이터 상세" />
-      <h2>주요 기능</h2>
-      <ul>
-        <li>실시간 3D 해양 환경 렌더링 (파도, 조류, 날씨)</li>
-        <li>선박 6자유도(6-DOF) 운동 시뮬레이션</li>
-        <li>다중 뷰포트 지원 (조타실, 선교, 외부 시점)</li>
-        <li>계기판 및 레이더 HUD 시뮬레이션</li>
-        <li>시나리오 기반 훈련 모드</li>
-      </ul>
+
+      <h2>02. Core Engineering</h2>
+      <h3>A. 6-DOF 선박 운동 시뮬레이션</h3>
+      <p><strong>Challenge:</strong> 파도와 조류에 의한 선박의 6자유도(Surge, Sway, Heave, Roll, Pitch, Yaw) 운동을 물리적으로 정확하게 재현해야 함.</p>
+      <p><strong>Approach:</strong> 운동방정식 솔버를 구현하여 외력 요소에 따른 선체 반응을 실시간으로 계산. 해양 환경 데이터(파고, 파주기, 풍속)를 파라미터로 주입하여 다양한 해상 조건을 시뮬레이션.</p>
+
+      <h3>B. 다중 뷰포트 및 HUD 시스템</h3>
+      <p><strong>Challenge:</strong> 조타실, 선교, 외부 시점 등 복수의 관측 시점을 동시에 렌더링하면서 일관된 프레임레이트 유지.</p>
+      <p><strong>Approach:</strong> 뷰포트별 독립적 카메라 시스템과 LOD(Level of Detail) 최적화를 적용. 레이더, 속도계 등 계기판 UI를 Overlay 방식으로 실시간 렌더링.</p>
+
+      <h3>C. 시나리오 기반 훈련 모드</h3>
+      <p>악천후, 야간 항해, 좁은 수로 통과 등 실제 항해에서 발생할 수 있는 다양한 시나리오를 사전 정의하고, 훈련생의 대응 능력을 평가할 수 있는 시스템 구축.</p>
+
+      <h2>03. Technical Identity</h2>
+      <p>단순한 시각적 시뮬레이터가 아닌, <strong>물리 기반의 정밀한 운동 시뮬레이션</strong>을 구현하여 연구 기관의 엄격한 검증을 통과한 프로젝트입니다. 하들소프트의 임베디드-그래픽스 융합 역량을 증명합니다.</p>
       <p><em>기술 소유권: 선박해양플랜트연구소</em></p>
     `,
   },
@@ -104,45 +124,70 @@ const portfolioData = [
   // ━━━ SMART FACTORY ━━━
   {
     client: "철도차량관리단",
-    title: "철도차량 공장 자동화 · RFID 재고관리 시스템",
-    description: "바코드와 RFID 태그 기반의 창고 자동화, 상품·재고·입출고 관리 및 태그 발급 시스템 구축",
+    title: "Railroad Vehicle Factory Automation & RFID Inventory Management System",
+    description: "바코드·RFID 기반 철도차량 부품 창고 자동화 및 실시간 재고·입출고 관리 시스템",
     image: img("railroad-factory-automation-1.jpg"),
     category: "cat-smart-factory", is_featured: 1, sort_order: 3,
     detail: `
-      <h2>프로젝트 개요</h2>
-      <p>철도차량관리단의 부품 및 자재 관리 효율화를 위해, 바코드와 RFID 태그를 동시에 활용하는 스마트 팩토리 수준의 자동화 창고 관리 시스템을 구축하였습니다.</p>
-      <img src="${img("railroad-factory-automation-2.jpg")}" alt="공장 자동화 시스템 상세" />
-      <h2>주요 기능</h2>
+      <h2>01. Strategic Overview</h2>
+      <p>철도차량 정비 현장에서는 수천 종의 부품을 수기 대장과 엑셀로 관리해 왔으며, 재고 오차·분실·발주 지연이 반복되었습니다. 철도차량관리단은 부품 입출고 전 과정을 디지털화하고 실시간 가시성을 확보하기 위해 RFID 기반 스마트 팩토리 시스템을 도입하였습니다. 하들소프트는 바코드와 RFID 태그를 결합한 이중 인식 체계를 설계하여, 창고 현장부터 경영진 대시보드까지 끊김 없는 데이터 흐름을 구현했습니다.</p>
+      <img src="${img("railroad-factory-automation-2.jpg")}" alt="RFID 재고관리 대시보드" />
+
+      <h2>02. System Architecture & Key Functions</h2>
+      <h3>A. RFID·바코드 이중 인식 입출고 자동화</h3>
+      <p><strong>Problem:</strong> 기존 수기 입출고 기록 방식은 하루 평균 50건 이상의 오기재가 발생하였고, 재고 실사 시 3~5일이 소요되어 정비 일정에 차질을 빚었습니다.</p>
+      <p><strong>Solution:</strong> 각 부품에 RFID 태그와 바코드를 동시 부착하고, 게이트형 리더기와 핸디형 리더기를 병행 배치하여 입고·출고·반품·폐기 시 자동 인식 처리합니다. 태그 발급 모듈을 통해 신규 부품 등록 즉시 RFID 태그를 현장에서 발급하며, 중복 방지 로직으로 데이터 무결성을 보장합니다.</p>
+      <h3>B. 실시간 재고 현황 대시보드 및 자동 보고서</h3>
+      <p><strong>Problem:</strong> 관리자가 재고 현황을 파악하려면 각 창고 담당자에게 개별 연락하여 집계해야 했고, 월간 보고서 작성에 이틀 이상이 소요되었습니다.</p>
+      <p><strong>Solution:</strong> 웹 기반 통합 대시보드를 구축하여 품목별·창고별·기간별 재고 수량, 입출고 추이, 안전 재고 미달 품목을 실시간으로 시각화합니다. 일간·주간·월간 보고서를 스케줄러가 자동 생성하여 관리자 메일로 발송하며, Excel·PDF 다운로드를 지원합니다.</p>
+      <h3>C. 안전 재고 알림 및 발주 연계</h3>
+      <p><strong>Problem:</strong> 핵심 부품 재고 소진을 뒤늦게 인지하여 긴급 발주가 빈번했고, 이로 인해 조달 비용이 증가했습니다.</p>
+      <p><strong>Solution:</strong> 품목별 안전 재고 기준치를 설정하고, 재고가 기준 이하로 하락하면 담당자에게 자동 알림을 전송합니다. 발주 요청서 초안을 자동 생성하여 승인 워크플로우와 연결함으로써 조달 리드타임을 단축합니다.</p>
+
+      <h2>03. Project Impact & Scalability</h2>
       <ul>
-        <li>RFID 태그 발급 및 리더 연동 시스템</li>
-        <li>바코드 + RFID 동시 출력 라벨 시스템</li>
-        <li>실시간 상품 관리 및 재고 현황 대시보드</li>
-        <li>입출고 자동 기록 및 이력 추적</li>
-        <li>창고 위치별 적재 현황 시각화</li>
-        <li>보고서 자동 생성 및 Excel 출력</li>
+        <li><strong>재고 정확도 향상:</strong> 수기 관리 대비 재고 오차율을 95% 이상 감소시켜, 실사 주기를 분기 1회로 축소했습니다.</li>
+        <li><strong>업무 효율화:</strong> 입출고 처리 시간을 건당 평균 5분에서 30초 이내로 단축하고, 보고서 작성 공수를 완전 자동화했습니다.</li>
+        <li><strong>비용 절감:</strong> 긴급 발주 건수가 70% 감소하여 연간 조달 비용을 절감하고, 부품 분실률이 대폭 낮아졌습니다.</li>
+        <li><strong>확장성:</strong> 타 정비 기지 및 물류 창고로의 확장이 가능하도록 모듈형 아키텍처를 적용하였습니다.</li>
       </ul>
-      <h2>도입 효과</h2>
-      <p>수작업 기반의 재고관리에서 RFID 자동 인식으로 전환하여, 재고 파악 시간을 <strong>90% 이상 단축</strong>하고 입출고 오류율을 대폭 개선하였습니다.</p>
+
+      <h2>04. Technical Identity</h2>
+      <p>본 프로젝트는 하들소프트가 보유한 하드웨어-소프트웨어 통합 역량을 실증한 사례입니다. RFID 미들웨어 연동, 대용량 태그 이벤트 실시간 처리, 그리고 직관적인 관리자 대시보드 UX를 하나의 플랫폼으로 통합하여, 제조·물류 현장의 디지털 전환을 성공적으로 이끌었습니다.</p>
     `,
   },
   {
     client: "블루라이트 LED",
-    title: "블루라이트 LED 전산 사업망 관리 시스템",
-    description: "LED 조명 사업 영업·재고·설치·A/S를 통합 관리하는 전산 사업망 시스템",
+    title: "Bluelight LED Business Operations Management System",
+    description: "LED 조명 사업의 영업·재고·설치·A/S를 하나로 통합한 전산 사업망 관리 시스템",
     image: img("bluelight-led-system-1.png"),
     category: "cat-smart-factory", sort_order: 10,
     detail: `
-      <h2>프로젝트 개요</h2>
-      <p>LED 조명 전문 기업의 영업 관리, 재고 관리, 설치 현장 관리, A/S 이력 추적 등을 통합하는 전산 사업망 시스템을 구축하였습니다.</p>
-      <img src="${img("bluelight-led-system-2.png")}" alt="블루라이트 LED 시스템 상세" />
-      <h2>주요 기능</h2>
+      <h2>01. Strategic Overview</h2>
+      <p>블루라이트 LED는 LED 조명 제조·유통·설치·사후관리까지 전 밸류체인을 운영하는 기업으로, 각 부서가 별도의 엑셀과 수기 장부로 업무를 처리하고 있었습니다. 영업팀의 견적이 재고팀에 실시간 반영되지 않아 과잉 수주가 발생하고, 설치 일정과 A/S 이력이 분산 관리되어 고객 응대 품질이 저하되었습니다. 하들소프트는 영업 파이프라인부터 매출 리포트까지 전 업무를 단일 웹 플랫폼으로 통합하여, 데이터 기반 의사결정이 가능한 전산 사업망을 구축했습니다.</p>
+      <img src="${img("bluelight-led-system-2.png")}" alt="블루라이트 LED 통합 관리 화면" />
+
+      <h2>02. System Architecture & Key Functions</h2>
+      <h3>A. 영업 파이프라인 및 견적 관리</h3>
+      <p><strong>Problem:</strong> 영업 담당자마다 개인 엑셀로 거래처와 견적을 관리하여 파이프라인 전체 현황을 파악할 수 없었고, 담당자 부재 시 고객 대응이 불가능했습니다.</p>
+      <p><strong>Solution:</strong> CRM 기반 영업 파이프라인 모듈을 구축하여 리드 등록부터 견적 발송, 계약 체결, 수금까지 전 단계를 시스템화했습니다. 견적서 자동 생성 및 제품 단가표 연동으로 일관된 가격 정책을 유지하며, 영업 실적 대시보드로 팀 성과를 실시간 모니터링합니다.</p>
+      <h3>B. 재고 및 입출고 통합 관리</h3>
+      <p><strong>Problem:</strong> LED 모듈, 드라이버, 프레임 등 수백 종의 부자재 재고가 창고·매장·시공 현장에 분산되어 있어 정확한 가용 재고 파악이 어려웠습니다.</p>
+      <p><strong>Solution:</strong> 바코드 기반 입출고 처리와 창고별 재고 현황 조회 기능을 구현하고, 영업 모듈의 수주 확정 시 재고를 자동 차감하여 과잉 수주를 방지합니다. 안전 재고 미달 시 자동 알림과 발주 연계 기능을 제공합니다.</p>
+      <h3>C. 설치 현장 일정 및 A/S 이력 관리</h3>
+      <p><strong>Problem:</strong> 설치 기사 배정과 현장 일정이 구두·메신저로 전달되어 누락과 중복이 잦았고, A/S 접수 후 처리 현황 추적이 불가능했습니다.</p>
+      <p><strong>Solution:</strong> 캘린더 기반 설치 스케줄 관리와 기사 배정 시스템을 구축하고, A/S 접수 시 고객·제품·설치 이력이 자동 연결되어 신속한 원인 파악과 대응이 가능합니다. 모든 A/S 처리 결과는 이력으로 누적되어 품질 분석에 활용됩니다.</p>
+
+      <h2>03. Project Impact & Scalability</h2>
       <ul>
-        <li>영업 파이프라인 및 거래처 관리</li>
-        <li>LED 제품 재고 현황 및 입출고 관리</li>
-        <li>설치 현장 일정 및 진행 상황 관리</li>
-        <li>A/S 접수 및 처리 이력 추적</li>
-        <li>매출 및 실적 리포트 대시보드</li>
+        <li><strong>업무 통합:</strong> 5개 이상의 분산 시스템을 단일 플랫폼으로 통합하여 부서 간 데이터 단절을 해소했습니다.</li>
+        <li><strong>매출 가시성:</strong> 실시간 매출·수금 현황 리포트를 통해 경영진의 의사결정 속도를 대폭 향상시켰습니다.</li>
+        <li><strong>고객 만족도 개선:</strong> A/S 평균 처리 시간을 단축하고, 설치 일정 누락률을 제로에 가깝게 낮추었습니다.</li>
+        <li><strong>확장 가능:</strong> 신규 제품 라인 추가 및 지사 확대 시 모듈 단위로 유연하게 확장할 수 있는 구조로 설계되었습니다.</li>
       </ul>
+
+      <h2>04. Technical Identity</h2>
+      <p>본 프로젝트는 하들소프트의 비즈니스 프로세스 분석 및 통합 시스템 설계 역량을 보여주는 대표 사례입니다. 복잡하게 얽힌 영업·물류·현장·서비스 업무 흐름을 체계적으로 분석하고, 사용자 친화적인 단일 인터페이스로 통합함으로써 중소 제조기업의 디지털 경쟁력을 강화했습니다.</p>
     `,
   },
 

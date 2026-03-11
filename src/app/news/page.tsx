@@ -1,50 +1,21 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
 
-const news = [
-  {
-    date: "2026.03",
-    category: "Product",
-    title: "AI 기반 신규 솔루션 출시 예정",
-    summary: "차세대 AI 엔진을 활용한 새로운 서비스가 곧 공개됩니다. 기업용 AI 어시스턴트와 자동화 플랫폼을 통해 업무 효율을 혁신합니다.",
-  },
-  {
-    date: "2026.02",
-    category: "Partnership",
-    title: "글로벌 게임 파트너십 체결",
-    summary: "해외 주요 퍼블리셔와의 전략적 파트너십을 체결했습니다. 아시아 시장을 넘어 글로벌 게임 시장에 본격 진출합니다.",
-  },
-  {
-    date: "2026.01",
-    category: "Investment",
-    title: "시리즈 A 투자 유치",
-    summary: "기술력과 성장 가능성을 인정받아 주요 VC로부터 투자를 유치했습니다. 확보된 자금은 AI 연구 및 글로벌 확장에 투입됩니다.",
-  },
-  {
-    date: "2025.11",
-    category: "Award",
-    title: "AI Innovation Award 수상",
-    summary: "자체 개발 AI 엔진의 기술력을 인정받아 아시아 AI 혁신상을 수상했습니다.",
-  },
-  {
-    date: "2025.09",
-    category: "Product",
-    title: "크로스플랫폼 게임 오픈 베타 시작",
-    summary: "2년간 개발한 첫 번째 자체 IP 게임의 오픈 베타 테스트가 시작되었습니다.",
-  },
-  {
-    date: "2025.06",
-    category: "Company",
-    title: "신규 오피스 이전",
-    summary: "팀 확장에 따라 판교 신사옥으로 이전했습니다. 최적의 개발 환경을 구축했습니다.",
-  },
-];
-
-const categories = ["All", "Product", "Partnership", "Investment", "Award", "Company"];
+interface NewsItem {
+  id: string;
+  title: string;
+  summary: string;
+  content: string;
+  category: string;
+  image: string;
+  is_published: number;
+  published_at: string;
+}
 
 function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -62,6 +33,33 @@ function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
 }
 
 export default function NewsPage() {
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState("All");
+
+  useEffect(() => {
+    fetch("/api/news?published=1")
+      .then((r) => r.json())
+      .then((d) => {
+        setNews(d.data || []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  // Dynamically extract categories from fetched news items
+  const categories = [
+    "All",
+    ...Array.from(new Set(news.map((n) => n.category).filter(Boolean))),
+  ];
+
+  const filtered =
+    activeCategory === "All"
+      ? news
+      : news.filter((n) => n.category === activeCategory);
+
   return (
     <div className="bg-[#0a0a0a] text-white min-h-screen">
       <Nav />
@@ -93,8 +91,9 @@ export default function NewsPage() {
           {categories.map((cat, i) => (
             <motion.button
               key={cat}
+              onClick={() => setActiveCategory(cat)}
               className={`text-sm tracking-wider uppercase whitespace-nowrap pb-3 border-b-2 transition-colors ${
-                i === 0
+                activeCategory === cat
                   ? "text-white border-purple-500"
                   : "text-white/30 border-transparent hover:text-white/60"
               }`}
@@ -108,34 +107,78 @@ export default function NewsPage() {
         </div>
       </section>
 
-      {/* News list */}
+      {/* News grid */}
       <section className="py-16 px-6">
-        <div className="max-w-7xl mx-auto divide-y divide-white/5">
-          {news.map((n, i) => (
-            <FadeIn key={n.title} delay={i * 0.05}>
-              <article className="group py-10 cursor-pointer">
-                <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-12">
-                  <div className="flex items-center gap-4 md:w-48 shrink-0">
-                    <span className="text-white/20 text-sm font-mono">{n.date}</span>
-                    <span className="px-2 py-0.5 text-[10px] tracking-[0.2em] uppercase text-purple-400 border border-purple-400/20 rounded-full">
-                      {n.category}
-                    </span>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl md:text-2xl font-black tracking-tight group-hover:text-purple-400 transition-colors mb-2">
-                      {n.title}
-                    </h3>
-                    <p className="text-white/30 text-sm md:text-base leading-relaxed max-w-2xl">
-                      {n.summary}
-                    </p>
-                  </div>
-                  <span className="text-white/10 group-hover:text-purple-400 transition-colors text-xl hidden md:block mt-2">
-                    &rarr;
-                  </span>
-                </div>
-              </article>
-            </FadeIn>
-          ))}
+        <div className="max-w-7xl mx-auto">
+          {loading ? (
+            <div className="text-center py-20 text-white/20">로딩 중...</div>
+          ) : filtered.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-32 text-center">
+              <svg
+                className="w-16 h-16 text-white/10 mb-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+                />
+              </svg>
+              <p className="text-white/30 text-lg">아직 등록된 소식이 없습니다.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filtered.map((item, i) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ duration: 0.6, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <Link
+                    href={`/news/${item.id}`}
+                    className="group block rounded-2xl overflow-hidden bg-white/[0.03] border border-white/[0.06] hover:border-purple-500/30 transition-all duration-300"
+                  >
+                    {item.image && (
+                      <div className="relative h-52 overflow-hidden bg-white/[0.02]">
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = "none";
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
+                      </div>
+                    )}
+                    <div className="p-6">
+                      <div className="flex items-center gap-3 mb-3">
+                        {item.category && (
+                          <span className="px-2.5 py-1 text-[10px] tracking-[0.15em] uppercase text-purple-400/80 border border-purple-500/20 rounded-full font-bold">
+                            {item.category}
+                          </span>
+                        )}
+                        <span className="text-white/20 text-xs font-mono">
+                          {item.published_at?.slice(0, 10)}
+                        </span>
+                      </div>
+                      <h3 className="text-lg font-black text-white tracking-tight mb-2 group-hover:text-purple-300 transition-colors">
+                        {item.title}
+                      </h3>
+                      <p className="text-white/30 text-sm leading-relaxed line-clamp-2">
+                        {item.summary}
+                      </p>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

@@ -141,6 +141,18 @@ export default function AdminDashboard() {
             Portfolio
           </Link>
           <Link
+            href="/admin/news"
+            className="px-4 py-2 text-white/30 hover:text-white hover:bg-white/5 rounded-lg text-sm font-bold transition-colors"
+          >
+            News
+          </Link>
+          <Link
+            href="/admin/careers"
+            className="px-4 py-2 text-white/30 hover:text-white hover:bg-white/5 rounded-lg text-sm font-bold transition-colors"
+          >
+            Careers
+          </Link>
+          <Link
             href="/admin/settings"
             className="px-4 py-2 text-white/30 hover:text-white hover:bg-white/5 rounded-lg text-sm font-bold transition-colors"
           >

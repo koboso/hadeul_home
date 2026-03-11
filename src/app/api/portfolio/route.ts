@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
 
   const db = getDb();
   const body = await req.json();
-  const { category_id, client, title, description, detail, image, year, month, is_featured, sort_order } = body;
+  const { category_id, client, title, description, detail, image, year, month, is_featured, sort_order, tech_stack } = body;
 
   if (!category_id || !client || !title || !description) {
     return NextResponse.json({ error: "필수 항목을 입력해주세요." }, { status: 400 });
@@ -51,9 +51,9 @@ export async function POST(req: NextRequest) {
 
   const id = uuid();
   db.prepare(`
-    INSERT INTO portfolio (id, category_id, client, title, description, detail, image, year, month, is_featured, sort_order)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(id, category_id, client, title, description, detail || "", image || "", year || 0, month || 0, is_featured ? 1 : 0, sort_order || 0);
+    INSERT INTO portfolio (id, category_id, client, title, description, detail, image, year, month, is_featured, sort_order, tech_stack)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(id, category_id, client, title, description, detail || "", image || "", year || 0, month || 0, is_featured ? 1 : 0, sort_order || 0, tech_stack || "");
 
   return NextResponse.json({ success: true, id });
 }

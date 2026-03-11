@@ -19,8 +19,7 @@ interface PortfolioItem {
   description: string;
   detail: string;
   image: string;
-  year: number;
-  month: number;
+  tech_stack: string;
   is_featured: number;
   sort_order: number;
   category_name: string;
@@ -34,8 +33,7 @@ const emptyForm = {
   description: "",
   detail: "",
   image: "",
-  year: new Date().getFullYear(),
-  month: new Date().getMonth() + 1,
+  tech_stack: "",
   is_featured: false,
   sort_order: 0,
 };
@@ -53,6 +51,8 @@ export default function AdminPortfolio() {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
+  const [techInput, setTechInput] = useState("");
+  const [filterCategory, setFilterCategory] = useState("all");
 
   const login = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -155,6 +155,7 @@ export default function AdminPortfolio() {
     setMsg(editingId ? "수정 완료" : "등록 완료");
     setForm(emptyForm);
     setEditingId(null);
+    setTechInput("");
     loadItems();
   };
 
@@ -167,11 +168,11 @@ export default function AdminPortfolio() {
       description: item.description,
       detail: item.detail || "",
       image: item.image,
-      year: item.year || new Date().getFullYear(),
-      month: item.month || 1,
+      tech_stack: item.tech_stack || "",
       is_featured: item.is_featured === 1,
       sort_order: item.sort_order,
     });
+    setTechInput("");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -194,6 +195,7 @@ export default function AdminPortfolio() {
   const cancelEdit = () => {
     setEditingId(null);
     setForm(emptyForm);
+    setTechInput("");
     setMsg("");
   };
 
@@ -202,6 +204,33 @@ export default function AdminPortfolio() {
     setToken("");
     localStorage.removeItem("admin_token");
   };
+
+  /* ─── Tech Stack helpers ─── */
+  const techTags = form.tech_stack ? form.tech_stack.split(",").filter(Boolean) : [];
+
+  const addTechTag = () => {
+    const tag = techInput.trim();
+    if (!tag || techTags.includes(tag)) return;
+    setForm({ ...form, tech_stack: [...techTags, tag].join(",") });
+    setTechInput("");
+  };
+
+  const removeTechTag = (tag: string) => {
+    setForm({ ...form, tech_stack: techTags.filter((t) => t !== tag).join(",") });
+  };
+
+  const handleTechKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      addTechTag();
+    }
+  };
+
+  /* ─── Filtered items ─── */
+  const filteredItems =
+    filterCategory === "all"
+      ? items
+      : items.filter((item) => item.category_id === filterCategory);
 
   /* ─── Login ─── */
   if (!authed) {
@@ -239,9 +268,6 @@ export default function AdminPortfolio() {
   const inputClass =
     "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-purple-500/50";
 
-  const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i);
-  const months = Array.from({ length: 12 }, (_, i) => i + 1);
-
   return (
     <div className="min-h-screen bg-[#111] text-white">
       <div className="max-w-5xl mx-auto px-6 py-8">
@@ -271,6 +297,18 @@ export default function AdminPortfolio() {
           </Link>
           <Link href="/admin/portfolio" className="px-4 py-2 bg-purple-500/20 text-purple-400 rounded-lg text-sm font-bold">
             Portfolio
+          </Link>
+          <Link
+            href="/admin/news"
+            className="px-4 py-2 text-white/30 hover:text-white hover:bg-white/5 rounded-lg text-sm font-bold transition-colors"
+          >
+            News
+          </Link>
+          <Link
+            href="/admin/careers"
+            className="px-4 py-2 text-white/30 hover:text-white hover:bg-white/5 rounded-lg text-sm font-bold transition-colors"
+          >
+            Careers
           </Link>
           <Link
             href="/admin/settings"
@@ -353,31 +391,47 @@ export default function AdminPortfolio() {
             </Suspense>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-            <div>
-              <label className="block text-white/40 text-xs mb-1.5">년도</label>
-              <select
-                value={form.year}
-                onChange={(e) => setForm({ ...form, year: parseInt(e.target.value) })}
-                className={inputClass}
-              >
-                {years.map((y) => (
-                  <option key={y} value={y} className="bg-[#1a1a1a] text-white">{y}</option>
+          {/* Tech Stack Tags */}
+          <div className="mb-4">
+            <label className="block text-white/40 text-xs mb-1.5">기술 스택</label>
+            {techTags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-2">
+                {techTags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/15 text-purple-300 rounded-full text-xs font-bold border border-purple-500/20"
+                  >
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => removeTechTag(tag)}
+                      className="text-purple-400/50 hover:text-red-400 transition-colors"
+                    >
+                      &times;
+                    </button>
+                  </span>
                 ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-white/40 text-xs mb-1.5">월</label>
-              <select
-                value={form.month}
-                onChange={(e) => setForm({ ...form, month: parseInt(e.target.value) })}
-                className={inputClass}
+              </div>
+            )}
+            <div className="flex gap-2">
+              <input
+                placeholder="React, Node.js, Python 등 (Enter로 추가)"
+                value={techInput}
+                onChange={(e) => setTechInput(e.target.value)}
+                onKeyDown={handleTechKeyDown}
+                className={`${inputClass} flex-1`}
+              />
+              <button
+                type="button"
+                onClick={addTechTag}
+                className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white/40 text-sm hover:bg-white/10 hover:text-white transition-colors whitespace-nowrap"
               >
-                {months.map((m) => (
-                  <option key={m} value={m} className="bg-[#1a1a1a] text-white">{m}월</option>
-                ))}
-              </select>
+                추가
+              </button>
             </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-white/40 text-xs mb-1.5">정렬 순서</label>
               <input
@@ -439,10 +493,24 @@ export default function AdminPortfolio() {
           </div>
         </form>
 
-        {/* List */}
-        <h2 className="text-lg font-bold mb-4">등록된 프로젝트 ({items.length})</h2>
+        {/* Category Filter for List */}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-bold">등록된 프로젝트 ({filteredItems.length})</h2>
+          <select
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white/60 focus:outline-none focus:border-purple-500/50"
+          >
+            <option value="all" className="bg-[#1a1a1a]">전체 카테고리</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.id} className="bg-[#1a1a1a]">
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="space-y-3">
-          {items.map((item) => (
+          {filteredItems.map((item) => (
             <div
               key={item.id}
               className="flex items-center gap-4 bg-[#1a1a1a] rounded-xl p-4 border border-white/5"
@@ -462,16 +530,20 @@ export default function AdminPortfolio() {
                       HOME
                     </span>
                   )}
-                  {item.year > 0 && (
-                    <span className="text-[10px] text-white/20">
-                      {item.year}.{String(item.month).padStart(2, "0")}
-                    </span>
-                  )}
                 </div>
                 <p className="text-white font-bold text-sm truncate">
                   {item.client} — {item.title}
                 </p>
                 <p className="text-white/30 text-xs truncate">{item.description}</p>
+                {item.tech_stack && (
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {item.tech_stack.split(",").filter(Boolean).slice(0, 5).map((t) => (
+                      <span key={t} className="text-[10px] px-1.5 py-0.5 bg-blue-500/10 text-blue-400/70 rounded font-medium">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="flex gap-2 flex-shrink-0">
                 <button
@@ -489,7 +561,7 @@ export default function AdminPortfolio() {
               </div>
             </div>
           ))}
-          {items.length === 0 && (
+          {filteredItems.length === 0 && (
             <p className="text-center text-white/20 py-12">등록된 프로젝트가 없습니다.</p>
           )}
         </div>

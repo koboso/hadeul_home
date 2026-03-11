@@ -1,143 +1,140 @@
-"use client";
+import type { Metadata } from "next";
+import getDb from "@/lib/db";
+import PortfolioDetailClient from "./PortfolioDetailClient";
 
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
-import Nav from "@/components/Nav";
-import PageFooter from "@/components/PageFooter";
-
-interface PortfolioDetail {
+interface PortfolioRow {
   id: string;
   client: string;
   title: string;
   description: string;
   detail: string;
   image: string;
+  tech_stack: string;
   category_name: string;
   category_slug: string;
 }
 
-export default function PortfolioDetailPage() {
-  const { id } = useParams();
-  const router = useRouter();
-  const [item, setItem] = useState<PortfolioDetail | null>(null);
-  const [loading, setLoading] = useState(true);
+function getPortfolioItem(id: string): PortfolioRow | null {
+  const db = getDb();
+  const row = db.prepare(`
+    SELECT p.*, c.name as category_name, c.slug as category_slug
+    FROM portfolio p
+    JOIN categories c ON p.category_id = c.id
+    WHERE p.id = ?
+  `).get(id) as PortfolioRow | undefined;
+  return row || null;
+}
 
-  useEffect(() => {
-    if (!id) return;
-    fetch(`/api/portfolio/${id}`)
-      .then((r) => {
-        if (!r.ok) throw new Error("not found");
-        return r.json();
-      })
-      .then((d) => {
-        setItem(d.data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setLoading(false);
-      });
-  }, [id]);
-
-  if (loading) {
-    return (
-      <div className="bg-[#0a0a0a] text-white min-h-screen">
-        <Nav />
-        <div className="flex items-center justify-center min-h-screen text-white/20">로딩 중...</div>
-      </div>
-    );
-  }
+/* ─── SEO: Dynamic Metadata ─── */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const item = getPortfolioItem(id);
 
   if (!item) {
-    return (
-      <div className="bg-[#0a0a0a] text-white min-h-screen">
-        <Nav />
-        <div className="flex flex-col items-center justify-center min-h-screen">
-          <p className="text-white/30 text-lg mb-4">프로젝트를 찾을 수 없습니다.</p>
-          <Link href="/portfolio" className="text-purple-400 hover:text-purple-300 transition-colors">
-            &larr; 목록으로
-          </Link>
-        </div>
-      </div>
-    );
+    return {
+      title: "프로젝트를 찾을 수 없습니다 | HADEUL",
+    };
   }
 
+  const techTags = item.tech_stack ? item.tech_stack.split(",").filter(Boolean) : [];
+  const keywords = [
+    item.category_name,
+    item.client,
+    ...techTags,
+    "하들소프트",
+    "HADEUL",
+    "소프트웨어 개발",
+    "포트폴리오",
+  ];
+
+  // Strip HTML for clean description
+  const cleanDetail = item.detail
+    ? item.detail.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim().slice(0, 300)
+    : "";
+  const seoDescription = `${item.description}${cleanDetail ? ` — ${cleanDetail}` : ""}`.slice(0, 300);
+
+  return {
+    title: `${item.title} | ${item.client} | HADEUL Portfolio`,
+    description: seoDescription,
+    keywords: keywords.join(", "),
+    openGraph: {
+      title: `${item.title} — ${item.client}`,
+      description: item.description,
+      type: "article",
+      siteName: "HADEUL - 주식회사 하들소프트",
+      images: item.image
+        ? [{ url: item.image, width: 1200, height: 630, alt: item.title }]
+        : [],
+      url: `/portfolio/${item.id}`,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${item.title} — ${item.client}`,
+      description: item.description,
+      images: item.image ? [item.image] : [],
+    },
+    alternates: {
+      canonical: `/portfolio/${item.id}`,
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+    other: {
+      "article:section": item.category_name,
+      "article:tag": techTags.join(", "),
+    },
+  };
+}
+
+/* ─── Page Component ─── */
+export default async function PortfolioDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const item = getPortfolioItem(id);
+
+  // JSON-LD structured data for SEO/AEO
+  const jsonLd = item
+    ? {
+        "@context": "https://schema.org",
+        "@type": "CreativeWork",
+        name: item.title,
+        description: item.description,
+        creator: {
+          "@type": "Organization",
+          name: "주식회사 하들소프트",
+          url: "https://www.hadeul.com",
+        },
+        about: {
+          "@type": "Thing",
+          name: item.category_name,
+        },
+        provider: {
+          "@type": "Organization",
+          name: item.client,
+        },
+        image: item.image || undefined,
+        keywords: item.tech_stack || undefined,
+        url: `https://www.hadeul.com/portfolio/${item.id}`,
+      }
+    : null;
+
   return (
-    <div className="bg-[#0a0a0a] text-white min-h-screen">
-      <Nav />
-
-      {/* Hero Image */}
-      <section className="relative pt-16">
-        {item.image ? (
-          <div className="relative h-[50vh] md:h-[60vh] overflow-hidden">
-            <img
-              src={item.image}
-              alt={item.title}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/30 to-transparent" />
-          </div>
-        ) : (
-          <div className="h-32" />
-        )}
-      </section>
-
-      {/* Content */}
-      <section className={`relative px-6 ${item.image ? "-mt-32" : "pt-16"}`}>
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          >
-            {/* Back */}
-            <button
-              onClick={() => router.back()}
-              className="text-white/30 text-sm hover:text-purple-400 transition-colors mb-8 inline-block"
-            >
-              &larr; 목록으로
-            </button>
-
-            {/* Meta */}
-            <div className="flex flex-wrap items-center gap-3 mb-6">
-              <span className="px-3 py-1 text-[10px] tracking-[0.15em] uppercase text-purple-400/80 border border-purple-500/20 rounded-full font-bold">
-                {item.category_name}
-              </span>
-            </div>
-
-            {/* Client & Title */}
-            <p className="text-purple-400/60 text-sm font-bold tracking-wide mb-2">
-              {item.client}
-            </p>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[0.95] mb-6">
-              {item.title}
-            </h1>
-            <p className="text-white/40 text-lg leading-relaxed mb-12 max-w-2xl">
-              {item.description}
-            </p>
-          </motion.div>
-
-          {/* Detail Content */}
-          {item.detail && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="border-t border-white/5 pt-12 pb-24"
-            >
-              <div
-                className="tiptap max-w-none"
-                dangerouslySetInnerHTML={{ __html: item.detail }}
-              />
-            </motion.div>
-          )}
-
-          {!item.detail && <div className="pb-24" />}
-        </div>
-      </section>
-
-      <PageFooter />
-    </div>
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      <PortfolioDetailClient item={item} />
+    </>
   );
 }

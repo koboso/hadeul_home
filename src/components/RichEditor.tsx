@@ -7,6 +7,7 @@ import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import TextAlign from "@tiptap/extension-text-align";
 import Underline from "@tiptap/extension-underline";
+import Youtube from "@tiptap/extension-youtube";
 import { useCallback, useEffect, useRef } from "react";
 
 interface RichEditorProps {
@@ -55,6 +56,10 @@ export default function RichEditor({ content, onChange, token, placeholder }: Ri
       Link.configure({ openOnClick: false }),
       Placeholder.configure({ placeholder: placeholder || "상세 내용을 작성하세요..." }),
       TextAlign.configure({ types: ["heading", "paragraph"] }),
+      Youtube.configure({
+        inline: false,
+        ccLanguage: "ko",
+      }),
     ],
     content: content || "",
     editorProps: {
@@ -79,17 +84,20 @@ export default function RichEditor({ content, onChange, token, placeholder }: Ri
   }, [content]);
 
   const handleImageUpload = useCallback(
-    async (file: File) => {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await fetch("/api/portfolio/upload", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: fd,
-      });
-      const data = await res.json();
-      if (data.url && editor) {
-        editor.chain().focus().setImage({ src: data.url }).run();
+    async (files: FileList) => {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const fd = new FormData();
+        fd.append("file", file);
+        const res = await fetch("/api/portfolio/upload", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: fd,
+        });
+        const data = await res.json();
+        if (data.url && editor) {
+          editor.chain().focus().setImage({ src: data.url }).run();
+        }
       }
     },
     [editor, token]
@@ -100,6 +108,13 @@ export default function RichEditor({ content, onChange, token, placeholder }: Ri
     const url = window.prompt("URL을 입력하세요:");
     if (!url) return;
     editor.chain().focus().setLink({ href: url, target: "_blank" }).run();
+  }, [editor]);
+
+  const addYoutube = useCallback(() => {
+    if (!editor) return;
+    const url = window.prompt("YouTube URL을 입력하세요:");
+    if (!url) return;
+    editor.commands.setYoutubeVideo({ src: url, width: 640, height: 360 });
   }, [editor]);
 
   if (!editor) return null;
@@ -185,9 +200,15 @@ export default function RichEditor({ content, onChange, token, placeholder }: Ri
         </ToolbarButton>
         <ToolbarButton
           onClick={() => fileInputRef.current?.click()}
-          title="이미지 업로드"
+          title="이미지 업로드 (복수 선택 가능)"
         >
           Image
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={addYoutube}
+          title="YouTube 동영상 삽입"
+        >
+          YouTube
         </ToolbarButton>
 
         <span className="w-px h-5 bg-white/10 mx-1" />
@@ -203,15 +224,16 @@ export default function RichEditor({ content, onChange, token, placeholder }: Ri
       {/* Editor */}
       <EditorContent editor={editor} />
 
-      {/* Hidden file input */}
+      {/* Hidden file input — multiple enabled */}
       <input
         ref={fileInputRef}
         type="file"
         accept="image/*"
+        multiple
         className="hidden"
         onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) handleImageUpload(file);
+          const files = e.target.files;
+          if (files && files.length > 0) handleImageUpload(files);
           e.target.value = "";
         }}
       />

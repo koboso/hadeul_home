@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+  <rect width="800" height="600" fill="#141414"/>
+  <rect x="320" y="220" width="160" height="160" rx="24" fill="#1a1a2e" stroke="#8b5cf6" stroke-width="2" opacity="0.5"/>
+  <path d="M370 290 L400 260 L430 290 L415 290 L415 320 L385 320 L385 290 Z" fill="#8b5cf6" opacity="0.4"/>
+  <circle cx="400" cy="340" r="8" fill="#8b5cf6" opacity="0.3"/>
+  <text x="400" y="420" text-anchor="middle" fill="#ffffff" opacity="0.15" font-family="system-ui" font-size="18" font-weight="700">HADEUL</text>
+</svg>

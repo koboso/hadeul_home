@@ -61,6 +61,32 @@ function initTables() {
 
     CREATE INDEX IF NOT EXISTS idx_page_views_path ON page_views(path);
     CREATE INDEX IF NOT EXISTS idx_page_views_created ON page_views(created_at);
+
+    CREATE TABLE IF NOT EXISTS news (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      summary TEXT NOT NULL,
+      content TEXT DEFAULT '',
+      category TEXT DEFAULT '',
+      image TEXT DEFAULT '',
+      is_published INTEGER DEFAULT 1,
+      published_at TEXT DEFAULT (datetime('now')),
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS job_postings (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      department TEXT DEFAULT '',
+      job_type TEXT DEFAULT '',
+      location TEXT DEFAULT '',
+      description TEXT DEFAULT '',
+      requirements TEXT DEFAULT '',
+      is_active INTEGER DEFAULT 1,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now'))
+    );
   `);
 
   // Migrate: add columns if missing (for existing DBs)
@@ -69,6 +95,7 @@ function initTables() {
   if (!colNames.includes("detail")) db.exec("ALTER TABLE portfolio ADD COLUMN detail TEXT DEFAULT ''");
   if (!colNames.includes("year")) db.exec("ALTER TABLE portfolio ADD COLUMN year INTEGER DEFAULT 0");
   if (!colNames.includes("month")) db.exec("ALTER TABLE portfolio ADD COLUMN month INTEGER DEFAULT 0");
+  if (!colNames.includes("tech_stack")) db.exec("ALTER TABLE portfolio ADD COLUMN tech_stack TEXT DEFAULT ''");
 
   // Seed default categories if empty
   const count = db.prepare("SELECT COUNT(*) as cnt FROM categories").get() as { cnt: number };

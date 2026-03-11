@@ -29,22 +29,40 @@ export default function PortfolioPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/categories")
-      .then((r) => r.json())
-      .then((d) => setCategories(d.data || []));
+    // Load categories and all items together, then filter categories with posts
+    Promise.all([
+      fetch("/api/categories").then((r) => r.json()),
+      fetch("/api/portfolio").then((r) => r.json()),
+    ]).then(([catData, portData]) => {
+      const allItems = portData.data || [];
+      const catSlugsWithItems = new Set(allItems.map((i: PortfolioItem) => i.category_slug));
+      const activeCats = (catData.data || []).filter((c: Category) => catSlugsWithItems.has(c.slug));
+      setCategories(activeCats);
+      setItems(allItems);
+      setLoading(false);
+    });
   }, []);
 
   useEffect(() => {
+    if (activeCategory === "all") return; // already loaded
     setLoading(true);
-    const url =
-      activeCategory === "all" ? "/api/portfolio" : `/api/portfolio?category=${activeCategory}`;
-    fetch(url)
+    fetch(`/api/portfolio?category=${activeCategory}`)
       .then((r) => r.json())
       .then((d) => {
         setItems(d.data || []);
         setLoading(false);
       });
   }, [activeCategory]);
+
+  const handleCategoryClick = (slug: string) => {
+    if (slug === "all") {
+      setLoading(true);
+      fetch("/api/portfolio")
+        .then((r) => r.json())
+        .then((d) => { setItems(d.data || []); setLoading(false); });
+    }
+    setActiveCategory(slug);
+  };
 
   return (
     <div className="bg-[#0a0a0a] text-white min-h-screen">
@@ -94,7 +112,7 @@ export default function PortfolioPage() {
           {/* Category Filter */}
           <div className="flex flex-wrap gap-3 justify-center">
             <button
-              onClick={() => setActiveCategory("all")}
+              onClick={() => handleCategoryClick("all")}
               className={`px-5 py-2 rounded-full text-sm font-bold tracking-wide transition-all ${
                 activeCategory === "all"
                   ? "bg-gradient-to-r from-purple-500 to-cyan-500 text-white"
@@ -106,7 +124,7 @@ export default function PortfolioPage() {
             {categories.map((cat) => (
               <button
                 key={cat.slug}
-                onClick={() => setActiveCategory(cat.slug)}
+                onClick={() => handleCategoryClick(cat.slug)}
                 className={`px-5 py-2 rounded-full text-sm font-bold tracking-wide transition-all ${
                   activeCategory === cat.slug
                     ? "bg-gradient-to-r from-purple-500 to-cyan-500 text-white"
@@ -143,17 +161,12 @@ export default function PortfolioPage() {
                     className="group block rounded-2xl overflow-hidden bg-white/[0.03] border border-white/[0.06] hover:border-purple-500/30 transition-all duration-300"
                   >
                     <div className="relative h-52 overflow-hidden bg-white/[0.02]">
-                      {item.image ? (
-                        <img
-                          src={item.image}
-                          alt={item.title}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-white/10 text-6xl font-black">
-                          {String(i + 1).padStart(2, "0")}
-                        </div>
-                      )}
+                      <img
+                        src={item.image || "/images/default-portfolio.svg"}
+                        alt={item.title}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        onError={(e) => { (e.target as HTMLImageElement).src = "/images/default-portfolio.svg"; }}
+                      />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
                     </div>
                     <div className="p-6">

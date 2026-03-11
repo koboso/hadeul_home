@@ -70,9 +70,9 @@ function Hero() {
   const videoScale = useTransform(scrollYProgress, [0, 1], [1, 1.3]);
 
   const words = [
-    { text: "CREATE", from: { x: -200, y: 0, rotate: -8 } },
-    { text: "INNOVATE", from: { x: 200, y: 0, rotate: 5 } },
-    { text: "TRANSFORM", from: { x: 0, y: 150, rotate: -3 } },
+    { text: "IMAGINE", from: { x: -200, y: 0, rotate: -8 } },
+    { text: "BEYOND", from: { x: 200, y: 0, rotate: 5 } },
+    { text: "REALITY", from: { x: 0, y: 150, rotate: -3 } },
   ];
 
   return (
@@ -123,7 +123,7 @@ function Hero() {
             transition={{ duration: 1, delay: 1.3, ease: "easeOut" }}
             className="mt-8 text-white/30 text-lg md:text-xl tracking-[0.2em] uppercase"
           >
-            AI &middot; Game &middot; Software
+            Intelligent &middot; Solutions
           </motion.p>
         </motion.div>
 
@@ -148,11 +148,10 @@ function Hero() {
 /* ─── 2. Scroll-Pinned Text Reveal ─── */
 function ScrollTextReveal() {
   const words = [
-    "We", "don't", "just", "build", "software.", "We", "architect",
-    "experiences", "that", "push", "the", "boundaries", "of", "what's",
-    "possible.", "From", "AI", "intelligence", "to", "immersive",
-    "gaming", "worlds,", "we", "transform", "bold", "visions",
-    "into", "digital", "reality.",
+    "Transforming", "bold", "ideas", "into", "intelligent", "solutions.",
+    "Beyond", "simple", "development—we", "architect", "the", "future",
+    "of", "specialized", "e-commerce", "and", "gaming", "through",
+    "cutting-edge", "AI.",
   ];
 
   return (
@@ -180,7 +179,7 @@ function ScrollTextReveal() {
                     progress={scrollYProgress}
                     start={Math.max(0, ((i - 1) / words.length) * 0.6)}
                     end={((i + 1) / words.length) * 0.6}
-                    isHighlight={["AI", "gaming", "transform", "reality."].includes(word)}
+                    isHighlight={["intelligent", "solutions.", "AI."].includes(word)}
                   />
                 ))}
               </p>
@@ -401,10 +400,10 @@ function SplitReveal() {
 /* ─── 5. Large Typography Stats ─── */
 function LargeStats() {
   const stats = [
-    { target: 50, suffix: "+", label: "Projects Delivered", sublabel: "프로젝트 완료" },
-    { target: 99, suffix: "%", label: "Client Satisfaction", sublabel: "고객 만족도" },
-    { target: 20, suffix: "+", label: "Team Members", sublabel: "팀 구성원" },
-    { target: 10, suffix: "+", label: "Global Partners", sublabel: "글로벌 파트너" },
+    { target: 500, suffix: "+", label: "프로젝트 완료" },
+    { target: 50, suffix: "+", label: "파트너사" },
+    { target: 15, suffix: "yr", label: "업력" },
+    { target: 8, suffix: "+", label: "전문 분야" },
   ];
 
   return (
@@ -419,26 +418,109 @@ function LargeStats() {
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-8 md:px-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
           {stats.map((stat, i) => (
             <div
               key={stat.label}
-              className={`relative py-16 md:py-24 px-6 md:px-12 ${
-                i % 2 === 0 ? "md:border-r" : ""
-              } ${i < 2 ? "border-b" : ""} border-white/5`}
+              className={`relative py-14 md:py-20 px-4 md:px-8 text-center ${
+                i < stats.length - 1 ? "border-r" : ""
+              } border-white/5`}
             >
-              <div className="relative">
-                <span className="text-[20vw] md:text-[12vw] font-black leading-none tracking-tighter bg-gradient-to-br from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
+              <div className="relative h-[1em] flex items-baseline justify-center" style={{ fontSize: "clamp(3rem, 8vw, 7rem)" }}>
+                <span className="font-black leading-none tracking-tighter bg-gradient-to-br from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
                   <Counter target={stat.target} suffix={stat.suffix} />
                 </span>
               </div>
-              <div className="-mt-4 md:-mt-6 relative z-10">
-                <p className="text-white text-xl md:text-2xl font-black tracking-tight">{stat.label}</p>
-                <p className="text-white/20 text-sm mt-1">{stat.sublabel}</p>
+              <div className="mt-4 relative z-10">
+                <p className="text-white text-sm md:text-lg font-black tracking-tight">{stat.label}</p>
               </div>
             </div>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── 5.5. Partner Logo Marquee ─── */
+const PARTNERS = [
+  { name: "삼성중공업", logo: "/images/partners/samsung-heavy.svg" },
+  { name: "ETRI", logo: "/images/partners/etri.svg" },
+  { name: "KRISO", logo: "/images/partners/kriso.svg" },
+  { name: "충남대학교", logo: "/images/partners/cnu.svg" },
+  { name: "KAIST", logo: "/images/partners/kaist.svg" },
+  { name: "중소벤처기업부", logo: "/images/partners/msv.svg" },
+  { name: "대전광역시", logo: "/images/partners/daejeon.svg" },
+  { name: "LG화학", logo: "/images/partners/lg-chem.svg" },
+  { name: "항공우주연구원", logo: "/images/partners/kari.svg" },
+  { name: "대전정보문화산업진흥원", logo: "/images/partners/dicia.svg" },
+  { name: "KCCA", logo: "/images/partners/kcca.svg" },
+  { name: "코레일네트웍스", logo: "/images/partners/korail.svg" },
+  { name: "원스토어", logo: "/images/partners/onestore.svg" },
+  { name: "Unity", logo: "/images/partners/unity.svg" },
+  { name: "Cocos", logo: "/images/partners/cocos.svg" },
+  { name: "OpenAI", logo: "/images/partners/openai.svg" },
+  { name: "Google DeepMind", logo: "/images/partners/deepmind.svg" },
+  { name: "Anthropic", logo: "/images/partners/anthropic.svg" },
+  { name: "업스테이지", logo: "/images/partners/upstage.svg" },
+  { name: "국립축산연구원", logo: "/images/partners/nias.svg" },
+  { name: "코리아사이언스", logo: "/images/partners/korea-science.svg" },
+  { name: "효문화진흥원", logo: "/images/partners/hyomun.svg" },
+  { name: "TMD", logo: "/images/partners/tmd.svg" },
+  { name: "국방부", logo: "/images/partners/mod.svg" },
+  { name: "세무그룹명성", logo: "/images/partners/tax-ms.svg" },
+  { name: "지란지교", logo: "/images/partners/jiranjigy.svg" },
+  { name: "금단비가", logo: "/images/partners/gdb.svg" },
+  { name: "티디아", logo: "/images/partners/tdia.svg" },
+  { name: "표면분석학회", logo: "/images/partners/kssa.svg" },
+  { name: "엠텍", logo: "/images/partners/mtech.svg" },
+];
+
+function PartnerLogo({ name, logo }: { name: string; logo: string }) {
+  return (
+    <div className="flex-shrink-0 flex items-center justify-center w-[180px] h-[70px] mx-4 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/[0.12] transition-all duration-300">
+      <img src={logo} alt={name} className="w-[140px] h-[50px] object-contain" draggable={false} />
+    </div>
+  );
+}
+
+function PartnerMarquee() {
+  return (
+    <section className="relative py-16 bg-[#050505] overflow-hidden border-t border-white/[0.03]">
+      <div className="text-center mb-10">
+        <p className="text-white/15 text-xs tracking-[0.4em] uppercase font-bold">
+          Trusted Partners
+        </p>
+      </div>
+
+      {/* Row 1 — left scroll */}
+      <div className="relative mb-4">
+        <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#050505] to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#050505] to-transparent z-10 pointer-events-none" />
+        <motion.div
+          className="flex"
+          animate={{ x: ["0%", "-50%"] }}
+          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+        >
+          {[...PARTNERS.slice(0, 15), ...PARTNERS.slice(0, 15)].map((p, i) => (
+            <PartnerLogo key={`a-${i}`} name={p.name} logo={p.logo} />
+          ))}
+        </motion.div>
+      </div>
+
+      {/* Row 2 — right scroll */}
+      <div className="relative">
+        <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#050505] to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#050505] to-transparent z-10 pointer-events-none" />
+        <motion.div
+          className="flex"
+          animate={{ x: ["-50%", "0%"] }}
+          transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
+        >
+          {[...PARTNERS.slice(15), ...PARTNERS.slice(15)].map((p, i) => (
+            <PartnerLogo key={`b-${i}`} name={p.name} logo={p.logo} />
+          ))}
+        </motion.div>
       </div>
     </section>
   );
@@ -520,6 +602,7 @@ export default function Home() {
       <Portfolio />
       <SplitReveal />
       <LargeStats />
+      <PartnerMarquee />
       <CTASection />
       <PageFooter />
     </div>

@@ -1,9 +1,20 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
+
+interface JobPosting {
+  id: string;
+  title: string;
+  department: string;
+  job_type: string;
+  location: string;
+  description: string;
+  requirements: string;
+  is_active: number;
+}
 
 const perks = [
   { title: "유연 근무", desc: "원격 근무와 유연 출퇴근제를 지원합니다." },
@@ -12,37 +23,6 @@ const perks = [
   { title: "건강 관리", desc: "종합 건강검진과 건강 보험을 지원합니다." },
   { title: "스톡옵션", desc: "핵심 인재에게 스톡옵션을 제공합니다." },
   { title: "팀 문화", desc: "수평적 문화와 자율적인 의사결정을 존중합니다." },
-];
-
-const positions = [
-  {
-    team: "AI Lab",
-    title: "Senior AI/ML Engineer",
-    type: "정규직",
-    location: "판교 / 원격",
-    desc: "LLM, 생성형 AI 모델 개발 및 프로덕션 배포 경험이 있는 시니어 엔지니어를 찾습니다.",
-  },
-  {
-    team: "Game Studio",
-    title: "Game Client Developer (Unity)",
-    type: "정규직",
-    location: "판교",
-    desc: "Unity 기반 크로스플랫폼 게임 개발 경험이 있는 클라이언트 개발자를 찾습니다.",
-  },
-  {
-    team: "Platform",
-    title: "Backend Engineer",
-    type: "정규직",
-    location: "판교 / 원격",
-    desc: "대규모 트래픽 처리 경험이 있는 백엔드 엔지니어를 찾습니다.",
-  },
-  {
-    team: "Design",
-    title: "Product Designer",
-    type: "정규직",
-    location: "판교",
-    desc: "B2B SaaS 또는 게임 UI/UX 설계 경험이 있는 프로덕트 디자이너를 찾습니다.",
-  },
 ];
 
 function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
@@ -61,6 +41,21 @@ function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
 }
 
 export default function CareersPage() {
+  const [positions, setPositions] = useState<JobPosting[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/careers?active=1")
+      .then((r) => r.json())
+      .then((d) => {
+        setPositions(d.data || []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  }, []);
+
   return (
     <div className="bg-[#0a0a0a] text-white min-h-screen">
       <Nav />
@@ -133,30 +128,55 @@ export default function CareersPage() {
             <h2 className="text-4xl md:text-5xl font-black mb-16 tracking-tight">채용 중인 포지션</h2>
           </FadeIn>
 
-          <div className="divide-y divide-white/5">
-            {positions.map((pos, i) => (
-              <FadeIn key={pos.title} delay={i * 0.05}>
-                <div className="group py-8 cursor-pointer">
-                  <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8">
-                    <span className="text-purple-400/60 text-xs tracking-[0.3em] uppercase md:w-24 shrink-0">
-                      {pos.team}
-                    </span>
-                    <div className="flex-1">
-                      <h3 className="text-xl font-black tracking-tight group-hover:text-purple-400 transition-colors mb-1">
-                        {pos.title}
-                      </h3>
-                      <p className="text-white/30 text-sm">{pos.desc}</p>
+          {loading ? (
+            <div className="text-center py-20 text-white/20">로딩 중...</div>
+          ) : positions.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <svg
+                className="w-14 h-14 text-white/10 mb-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 13.255A23.193 23.193 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                />
+              </svg>
+              <p className="text-white/30 text-lg mb-2">현재 진행 중인 채용이 없습니다.</p>
+              <p className="text-white/20 text-sm">아래 이메일로 상시 지원 가능합니다.</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-white/5">
+              {positions.map((pos, i) => (
+                <FadeIn key={pos.id} delay={i * 0.05}>
+                  <a
+                    href={`mailto:careers@hadeul.com?subject=[지원] ${pos.title}`}
+                    className="group py-8 block"
+                  >
+                    <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8">
+                      <span className="text-purple-400/60 text-xs tracking-[0.3em] uppercase md:w-24 shrink-0">
+                        {pos.department}
+                      </span>
+                      <div className="flex-1">
+                        <h3 className="text-xl font-black tracking-tight group-hover:text-purple-400 transition-colors mb-1">
+                          {pos.title}
+                        </h3>
+                        <p className="text-white/30 text-sm">{pos.description}</p>
+                      </div>
+                      <div className="flex items-center gap-4 shrink-0">
+                        <span className="text-white/20 text-xs">{pos.job_type}</span>
+                        <span className="text-white/20 text-xs">{pos.location}</span>
+                        <span className="text-white/10 group-hover:text-purple-400 transition-colors">&rarr;</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-4 shrink-0">
-                      <span className="text-white/20 text-xs">{pos.type}</span>
-                      <span className="text-white/20 text-xs">{pos.location}</span>
-                      <span className="text-white/10 group-hover:text-purple-400 transition-colors">&rarr;</span>
-                    </div>
-                  </div>
-                </div>
-              </FadeIn>
-            ))}
-          </div>
+                  </a>
+                </FadeIn>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
