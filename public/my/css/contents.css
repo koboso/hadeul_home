@@ -1,0 +1,91 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: hsl(0, 0%, 100%);
+    overflow: hidden;
+}
+
+.content-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+
+    background-color:rgb(80 80 80);
+    background-image:url('../img/bg-pattern.png');
+    background-size:cover;
+    
+}
+
+.background-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    /* background-image: url('../img/body.png');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat; */
+}
+
+.background-content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: url('../img/body.png');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    pointer-events: none;    
+    z-index: 10;
+}
+
+.inner-div {
+    position: absolute;
+    width: 547px;
+    height: 410px;
+    transform-origin: left top;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    overflow: hidden; 
+    z-index: 9;
+}
+
+.swiper-container {
+    width: 100%;
+    height: 100%;
+}
+
+.swiper-slide {
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+}
+
+.swiper-wrapper {
+    height: 412px;
+}
+
+.noise-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../img/noise.gif');
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 20;
+    transition: opacity 0.3s ease-in-out;
+}
