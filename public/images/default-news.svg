@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+  <rect width="800" height="600" fill="#0f0f18"/>
+  <rect width="800" height="600" fill="url(#grid)" opacity="0.04"/>
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#8b5cf6" stroke-width="0.5"/>
+    </pattern>
+    <radialGradient id="glow" cx="50%" cy="50%" r="40%">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="400" cy="300" rx="300" ry="200" fill="url(#glow)"/>
+  <text x="400" y="290" text-anchor="middle" fill="#ffffff" opacity="0.9" font-family="system-ui, -apple-system, sans-serif" font-size="42" font-weight="900" letter-spacing="-1">HADEUL SOFT</text>
+  <line x1="300" y1="315" x2="500" y2="315" stroke="#06b6d4" stroke-width="1" opacity="0.3"/>
+  <text x="400" y="345" text-anchor="middle" fill="#06b6d4" opacity="0.3" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500" letter-spacing="4">NEWS</text>
+</svg>

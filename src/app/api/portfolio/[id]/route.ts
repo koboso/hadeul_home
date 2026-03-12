@@ -26,17 +26,17 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const { id } = await params;
   const db = getDb();
   const body = await req.json();
-  const { category_id, client, title, description, detail, image, tech_stack, architecture, target_device } = body;
+  const { category_id, client, title, description, detail, image, video, tech_stack, architecture, target_device } = body;
 
   const existing = db.prepare("SELECT id FROM portfolio WHERE id = ?").get(id);
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   db.prepare(`
     UPDATE portfolio
-    SET category_id = ?, client = ?, title = ?, description = ?, detail = ?, image = ?,
+    SET category_id = ?, client = ?, title = ?, description = ?, detail = ?, image = ?, video = ?,
         tech_stack = ?, architecture = ?, target_device = ?, updated_at = datetime('now')
     WHERE id = ?
-  `).run(category_id, client, title, description, detail || "", image || "", tech_stack || "", architecture || "", target_device || "pc", id);
+  `).run(category_id, client, title, description, detail || "", image || "", video || "", tech_stack || "", architecture || "", target_device || "pc", id);
 
   return NextResponse.json({ success: true });
 }

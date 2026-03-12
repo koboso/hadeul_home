@@ -19,14 +19,15 @@ export async function POST(req: NextRequest) {
   }
 
   // Validate file type
-  const allowed = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+  const allowed = ["image/jpeg", "image/png", "image/webp", "image/gif", "video/webm"];
   if (!allowed.includes(file.type)) {
-    return NextResponse.json({ error: "JPG, PNG, WebP, GIF 파일만 업로드 가능합니다." }, { status: 400 });
+    return NextResponse.json({ error: "JPG, PNG, WebP, GIF, WebM 파일만 업로드 가능합니다." }, { status: 400 });
   }
 
-  // Max 5MB
-  if (file.size > 5 * 1024 * 1024) {
-    return NextResponse.json({ error: "파일 크기는 최대 5MB입니다." }, { status: 400 });
+  // Max 20MB for video, 5MB for images
+  const maxSize = file.type.startsWith("video/") ? 60 * 1024 * 1024 : 5 * 1024 * 1024;
+  if (file.size > maxSize) {
+    return NextResponse.json({ error: `파일 크기는 최대 ${file.type.startsWith("video/") ? "60" : "5"}MB입니다.` }, { status: 400 });
   }
 
   await mkdir(UPLOAD_DIR, { recursive: true });

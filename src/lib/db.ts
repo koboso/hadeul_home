@@ -98,6 +98,13 @@ function initTables() {
   if (!colNames.includes("tech_stack")) db.exec("ALTER TABLE portfolio ADD COLUMN tech_stack TEXT DEFAULT ''");
   if (!colNames.includes("architecture")) db.exec("ALTER TABLE portfolio ADD COLUMN architecture TEXT DEFAULT ''");
   if (!colNames.includes("target_device")) db.exec("ALTER TABLE portfolio ADD COLUMN target_device TEXT DEFAULT 'pc'");
+  if (!colNames.includes("video")) db.exec("ALTER TABLE portfolio ADD COLUMN video TEXT DEFAULT ''");
+
+  // Migrate: add columns to news table if missing (for existing DBs)
+  const newsCols = db.prepare("PRAGMA table_info(news)").all() as { name: string }[];
+  const newsColNames = newsCols.map((c) => c.name);
+  if (!newsColNames.includes("source_url")) db.exec("ALTER TABLE news ADD COLUMN source_url TEXT DEFAULT ''");
+  if (!newsColNames.includes("source_name")) db.exec("ALTER TABLE news ADD COLUMN source_name TEXT DEFAULT ''");
 
   // Seed default categories if empty
   const count = db.prepare("SELECT COUNT(*) as cnt FROM categories").get() as { cnt: number };

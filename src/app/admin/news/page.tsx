@@ -12,6 +12,8 @@ interface NewsItem {
   content: string;
   category: string;
   image: string;
+  source_url: string;
+  source_name: string;
   is_published: number;
   published_at: string;
   created_at: string;
@@ -19,12 +21,9 @@ interface NewsItem {
 }
 
 const NEWS_CATEGORIES = [
-  { value: "Product", label: "Product" },
-  { value: "Partnership", label: "Partnership" },
-  { value: "Investment", label: "Investment" },
-  { value: "Award", label: "Award" },
-  { value: "Company", label: "Company" },
-  { value: "Notice", label: "Notice" },
+  { value: "보도자료", label: "보도자료" },
+  { value: "언론보도", label: "언론보도" },
+  { value: "회사소식", label: "회사소식" },
 ];
 
 const emptyForm = {
@@ -33,6 +32,8 @@ const emptyForm = {
   content: "",
   category: "",
   image: "",
+  source_url: "",
+  source_name: "",
   is_published: true,
   published_at: new Date().toISOString().slice(0, 10),
 };
@@ -99,25 +100,33 @@ export default function AdminNews() {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     setUploading(true);
+    setMsg("");
     const urls: string[] = [];
-    for (let i = 0; i < files.length; i++) {
-      const fd = new FormData();
-      fd.append("file", files[i]);
-      const res = await fetch("/api/portfolio/upload", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: fd,
-      });
-      const data = await res.json();
-      if (data.url) urls.push(data.url);
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const fd = new FormData();
+        fd.append("file", files[i]);
+        const res = await fetch("/api/portfolio/upload", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: fd,
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+          setMsg(`업로드 실패: ${err.error || res.statusText}`);
+          break;
+        }
+        const data = await res.json();
+        if (data.url) urls.push(data.url);
+      }
+    } catch (err) {
+      setMsg(`업로드 에러: ${err instanceof Error ? err.message : "알 수 없는 오류"}`);
     }
     setUploading(false);
     if (urls.length > 0) {
       const existing = form.image ? form.image.split(",").map((s) => s.trim()).filter(Boolean) : [];
-      setForm({ ...form, image: [...existing, ...urls].join(",") });
+      setForm((prev) => ({ ...prev, image: [...existing, ...urls].join(",") }));
       setMsg(`이미지 ${urls.length}개 업로드 완료`);
-    } else {
-      setMsg("업로드 실패");
     }
     e.target.value = "";
   };
@@ -163,6 +172,8 @@ export default function AdminNews() {
       content: item.content || "",
       category: item.category || "",
       image: item.image || "",
+      source_url: item.source_url || "",
+      source_name: item.source_name || "",
       is_published: item.is_published === 1,
       published_at: item.published_at ? item.published_at.slice(0, 10) : new Date().toISOString().slice(0, 10),
     });
@@ -365,6 +376,27 @@ export default function AdminNews() {
             </div>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-white/40 text-xs mb-1.5">원문 URL (외부 링크)</label>
+              <input
+                placeholder="https://www.etnews.com/..."
+                value={form.source_url}
+                onChange={(e) => setForm({ ...form, source_url: e.target.value })}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className="block text-white/40 text-xs mb-1.5">출처 (언론사명)</label>
+              <input
+                placeholder="전자신문, 인벤, 중도일보 등"
+                value={form.source_name}
+                onChange={(e) => setForm({ ...form, source_name: e.target.value })}
+                className={inputClass}
+              />
+            </div>
+          </div>
+
           <div className="mb-4">
             <label className="block text-white/40 text-xs mb-1.5">상세 내용</label>
             <Suspense fallback={<div className={`${inputClass} min-h-[200px] animate-pulse`} />}>
@@ -467,11 +499,12 @@ export default function AdminNews() {
               key={item.id}
               className="flex items-center gap-4 bg-[#1a1a1a] rounded-xl p-4 border border-white/5"
             >
-              {item.image ? (
-                <img src={item.image.split(",")[0].trim()} alt="" className="w-16 h-12 rounded-lg object-cover flex-shrink-0" />
-              ) : (
-                <div className="w-16 h-12 rounded-lg bg-white/5 flex-shrink-0" />
-              )}
+              <img
+                src={(item.image ? item.image.split(",")[0].trim() : "") || "/images/default-news.svg"}
+                alt=""
+                className="w-16 h-12 rounded-lg object-cover flex-shrink-0"
+                onError={(e) => { (e.target as HTMLImageElement).src = "/images/default-news.svg"; }}
+              />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
                   {item.category && (
@@ -491,7 +524,10 @@ export default function AdminNews() {
                 </div>
                 <p className="text-white font-bold text-sm truncate">{item.title}</p>
                 <p className="text-white/30 text-xs truncate">{item.summary}</p>
-                <p className="text-white/20 text-[10px] mt-0.5">{item.published_at?.slice(0, 10)}</p>
+                <p className="text-white/20 text-[10px] mt-0.5">
+                  {item.published_at?.slice(0, 10)}
+                  {item.source_name && <span className="ml-2 text-cyan-400/40">{item.source_name}</span>}
+                </p>
               </div>
               <div className="flex gap-2 flex-shrink-0">
                 <button

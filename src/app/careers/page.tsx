@@ -161,10 +161,10 @@ export default function CareersPage() {
                         {pos.department}
                       </span>
                       <div className="flex-1">
-                        <h3 className="text-xl font-black tracking-tight group-hover:text-purple-400 transition-colors mb-1">
+                        <h3 className="text-xl font-black tracking-tight group-hover:text-purple-400 transition-colors mb-1 line-clamp-1">
                           {pos.title}
                         </h3>
-                        <p className="text-white/30 text-sm">{pos.description}</p>
+                        <p className="text-white/30 text-sm line-clamp-1">{pos.description}</p>
                       </div>
                       <div className="flex items-center gap-4 shrink-0">
                         <span className="text-white/20 text-xs">{pos.job_type}</span>

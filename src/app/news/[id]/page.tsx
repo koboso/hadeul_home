@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import getDb from "@/lib/db";
 import NewsDetailClient from "./NewsDetailClient";
 
@@ -9,6 +10,8 @@ interface NewsRow {
   content: string;
   category: string;
   image: string;
+  source_url: string;
+  source_name: string;
   is_published: number;
   published_at: string;
   created_at: string;
@@ -91,6 +94,11 @@ export default async function NewsDetailPage({
 }) {
   const { id } = await params;
   const item = getNewsItem(id);
+
+  // source_url이 있으면 외부 기사로 리다이렉트
+  if (item?.source_url) {
+    redirect(item.source_url);
+  }
 
   // JSON-LD structured data for news article
   const jsonLd = item

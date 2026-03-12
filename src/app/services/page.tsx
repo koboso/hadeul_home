@@ -1,11 +1,63 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
 import { ServicesHeroBg } from "@/components/HeroBackgrounds";
+
+interface FeaturedProject {
+  name: string;
+  type: string;
+  video: string;
+  portfolioId: string;
+  stats: { num: string; label: string }[];
+  features: string[];
+}
+
+const FEATURED_AI: FeaturedProject = {
+  name: "AI Aigents",
+  type: "이화학 특수 도메인 E커머스 AI 에이전트",
+  video: "/videos/kolabshop-aigents.webm",
+  portfolioId: "81d01d6c-dba4-4921-bab9-576fd323d9b1",
+  stats: [
+    { num: "300K+", label: "상품 데이터" },
+    { num: "83.2%", label: "QA 정확도" },
+  ],
+  features: ["하이브리드 검색 엔진", "도메인 특화 역질문", "멀티턴 맥락 유지", "멀티 LLM 아키텍처"],
+};
+
+const FEATURED_SW: FeaturedProject = {
+  name: "Mission 코드이썬",
+  type: "게이미피케이션 코딩 교육 플랫폼",
+  video: "/videos/mission-codeison.webm",
+  portfolioId: "27a117dd-ad77-4d1b-8da5-979e5b118a1e",
+  stats: [
+    { num: "80+", label: "미션 콘텐츠" },
+    { num: "AI 초·중·고 교육", label: "교육 과정" },
+  ],
+  features: ["초·중·고 맞춤 커리큘럼", "학생 학습 분석", "게이미피케이션", "EduTech 교육 프로그램"],
+};
+
+const GAME_PROJECTS = [
+  {
+    name: "총검소녀 키우기",
+    genre: "방치형 RPG",
+    video: "/videos/gunblade.webm",
+    platforms: [
+      { name: "Android", icon: "android", url: "https://play.google.com/store/apps/details?id=com.hadeul.gunblader" },
+    ],
+  },
+  {
+    name: "머지머지 디펜스",
+    genre: "디펜스",
+    video: "/videos/roof.webm",
+    platforms: [
+      { name: "Android", icon: "android", url: "#" },
+    ],
+  },
+];
 
 const SERVICES = [
   {
@@ -14,30 +66,15 @@ const SERVICES = [
     subtitle: "인공지능 솔루션",
     desc: "LLM, 컴퓨터 비전, 생성형 AI 등 최첨단 인공지능 기술로\n기업 맞춤형 솔루션을 설계하고 구축합니다.",
     tags: ["LLM", "RAG", "Vision", "NLP", "Fine-tuning", "MLOps"],
-    href: "/services/ai",
+    href: "#",
     accent: "from-purple-500 to-indigo-500",
     accentText: "text-purple-400",
     bgGlow: "bg-purple-500/[0.06]",
-    projects: [
-      { name: "AI Kolabshop Aigents", type: "이화학 특수 도메인 E커머스 AI 에이전트" },
-      { name: "Mission 코드이썬", type: "AI 코드 리뷰 솔루션" },
-    ],
+    projects: [],
+    featuredProject: FEATURED_AI,
   },
   {
     num: "02",
-    title: "Game Development",
-    subtitle: "게임 개발",
-    desc: "몰입감 넘치는 게임 경험을 설계하고,\n크로스 플랫폼 개발부터 라이브 서비스 운영까지.",
-    tags: ["Unity", "Unreal", "Cocos", "Godot", "Multiplayer", "Live Ops"],
-    href: "/services/game",
-    accent: "from-pink-500 to-amber-500",
-    accentText: "text-pink-400",
-    bgGlow: "bg-pink-500/[0.06]",
-    projects: [],
-    comingSoon: true,
-  },
-  {
-    num: "03",
     title: "Software Solutions",
     subtitle: "소프트웨어 솔루션",
     desc: "엔터프라이즈급 웹·앱, 클라우드 인프라,\n데이터 파이프라인을 설계하고 구축합니다.",
@@ -47,9 +84,227 @@ const SERVICES = [
     accentText: "text-cyan-400",
     bgGlow: "bg-cyan-500/[0.06]",
     projects: [],
-    comingSoon: true,
+    featuredProject: FEATURED_SW,
+  },
+  {
+    num: "03",
+    title: "Contents",
+    subtitle: "자체 컨텐츠",
+    desc: "몰입감 넘치는 게임 경험을 설계하고,\n크로스 플랫폼 개발부터 라이브 서비스 운영까지.",
+    tags: ["Unity", "Unreal", "Cocos", "Godot", "Live Ops"],
+    href: "/services/game",
+    accent: "from-pink-500 to-amber-500",
+    accentText: "text-pink-400",
+    bgGlow: "bg-pink-500/[0.06]",
+    projects: [],
+    hasGameProjects: true,
+    hideCTA: true,
   },
 ];
+
+function FeaturedProjectCard({ project, accent, accentText }: { project: FeaturedProject; accent: string; accentText: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ delay: 0.3 }}
+    >
+      <div className="group relative rounded-2xl overflow-hidden bg-white/[0.03] border border-white/[0.06]">
+        {/* Video area */}
+        <div className="relative aspect-[2/1] bg-black/30">
+          <video
+            src={project.video}
+            className="absolute inset-0 w-full h-full object-cover"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        </div>
+
+        {/* Info */}
+        <div className="p-6">
+          <span className="text-[10px] tracking-[0.2em] uppercase text-white/20 font-bold">
+            Featured Project
+          </span>
+          <h3 className="text-xl font-black tracking-tight mt-1.5 mb-1">
+            {project.name}
+          </h3>
+          <p className="text-white/35 text-sm mb-3">{project.type}</p>
+
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {project.features.map((f: string) => (
+              <span key={f} className="px-2 py-0.5 text-[10px] text-white/30 border border-white/[0.06] rounded-full">{f}</span>
+            ))}
+          </div>
+
+          <div className="flex gap-6 mb-4">
+            {project.stats.map((s: { num: string; label: string }) => (
+              <div key={s.label}>
+                <p className={`text-lg font-black bg-gradient-to-r ${accent} bg-clip-text text-transparent`}>{s.num}</p>
+                <p className="text-white/25 text-[10px]">{s.label}</p>
+              </div>
+            ))}
+          </div>
+
+          <Link
+            href="/portfolio"
+            className={`inline-flex items-center gap-2 text-xs font-bold ${accentText} opacity-60 hover:opacity-100 transition-opacity`}
+          >
+            더보기 →
+          </Link>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function PlatformIcon({ type }: { type: string }) {
+  if (type === "android") {
+    return (
+      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M17.523 2.236l1.636-1.636a.5.5 0 00-.707-.707L16.7 1.645A7.453 7.453 0 0012 .5a7.453 7.453 0 00-4.7 1.145L5.548-.107a.5.5 0 00-.707.707L6.477 2.236A7.5 7.5 0 004.5 7.5V8h15v-.5a7.5 7.5 0 00-1.977-5.264zM9 5.5a1 1 0 11-2 0 1 1 0 012 0zm8 0a1 1 0 11-2 0 1 1 0 012 0zM3 9h1v8a1 1 0 001 1h1v3.5a1.5 1.5 0 003 0V18h6v3.5a1.5 1.5 0 003 0V18h1a1 1 0 001-1V9h1a1.5 1.5 0 010 3H20v-1h-1v6H5V9H4v1H3a1.5 1.5 0 010-3h.5H3zm-2 1.5a1.5 1.5 0 013 0v5a1.5 1.5 0 01-3 0v-5zm22 0a1.5 1.5 0 00-3 0v5a1.5 1.5 0 003 0v-5z" />
+      </svg>
+    );
+  }
+  if (type === "ios") {
+    return (
+      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+      </svg>
+    );
+  }
+  // onestore
+  return (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
+    </svg>
+  );
+}
+
+function GameProjectSlider() {
+  const [current, setCurrent] = useState(0);
+  const game = GAME_PROJECTS[current];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ delay: 0.3 }}
+    >
+      <div className="group relative rounded-2xl overflow-hidden bg-white/[0.03] border border-white/[0.06]">
+        {/* Video area */}
+        <div className="relative aspect-[16/9] bg-black/30">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={current}
+              className="absolute inset-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              {game.video ? (
+                <video
+                  src={game.video}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+                  <p className="text-white/20 text-sm font-bold tracking-wide">영상 준비 중</p>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+
+        </div>
+
+        {/* Info */}
+        <div className="p-6 h-[220px] flex flex-col">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={current}
+              className="flex-1"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] tracking-[0.2em] uppercase text-white/20 font-bold">
+                  Game {String(current + 1).padStart(2, "0")}
+                </span>
+                {/* Navigation arrows */}
+                {GAME_PROJECTS.length > 1 && (
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setCurrent((p) => (p - 1 + GAME_PROJECTS.length) % GAME_PROJECTS.length)}
+                      className="w-7 h-7 rounded-full border border-white/[0.08] flex items-center justify-center text-white/30 hover:text-white hover:border-pink-500/30 transition-all"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => setCurrent((p) => (p + 1) % GAME_PROJECTS.length)}
+                      className="w-7 h-7 rounded-full border border-white/[0.08] flex items-center justify-center text-white/30 hover:text-white hover:border-pink-500/30 transition-all"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+              </div>
+              <h3 className="text-xl font-black tracking-tight mb-1">
+                {game.name}
+              </h3>
+              <p className="text-white/35 text-sm mb-4">장르 : {game.genre}</p>
+
+              {/* Platform links */}
+              <div className="flex gap-3">
+                {game.platforms.map((p) => (
+                  <a
+                    key={p.name}
+                    href={p.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.08] hover:border-pink-500/30 transition-all group/btn ${p.url === "#" ? "pointer-events-none opacity-40" : ""}`}
+                  >
+                    <span className="text-white/50 group-hover/btn:text-pink-400 transition-colors">
+                      <PlatformIcon type={p.icon} />
+                    </span>
+                    <span className="text-xs text-white/40 group-hover/btn:text-white/60 transition-colors font-medium">{p.name}</span>
+                  </a>
+                ))}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Dots */}
+          {GAME_PROJECTS.length > 1 && (
+            <div className="flex gap-1.5 mt-auto pt-3">
+              {GAME_PROJECTS.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrent(i)}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${i === current ? "w-6 bg-pink-400" : "w-1.5 bg-white/20"}`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
 
 const PROCESS_STEPS = [
   { num: "01", title: "기획", desc: "요구 분석", icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" },
@@ -84,7 +339,7 @@ function ServiceSection({ service, index }: { service: typeof SERVICES[0]; index
         className="max-w-7xl mx-auto w-full relative z-10"
         style={{ y, opacity }}
       >
-        <div className={`grid md:grid-cols-2 gap-12 lg:gap-20 items-center ${index % 2 === 1 ? "" : ""}`}>
+        <div className={`grid gap-12 items-center ${("featuredProject" in service && service.featuredProject) || ("hasGameProjects" in service && service.hasGameProjects) ? "md:grid-cols-[1fr_1.3fr] lg:gap-14" : "md:grid-cols-2 lg:gap-20"} ${index % 2 === 1 ? "" : ""}`}>
           {/* Left: Info */}
           <div className={index % 2 === 1 ? "md:order-2" : ""}>
             <motion.span
@@ -145,37 +400,43 @@ function ServiceSection({ service, index }: { service: typeof SERVICES[0]; index
             </motion.div>
 
             {/* CTA */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.5 }}
-            >
-              {"comingSoon" in service && service.comingSoon ? (
-                <span className="inline-block px-8 py-3 rounded-full text-white/20 border border-white/[0.06] text-sm font-bold tracking-wide cursor-default">
-                  Coming Soon
-                </span>
-              ) : (
-                <Link
-                  href={service.href}
-                  className={`inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r ${service.accent} rounded-full text-white font-bold text-base btn-glow group`}
-                >
-                  대표 프로젝트 보기
-                  <motion.span
-                    className="inline-block"
-                    animate={{ x: [0, 4, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
+            {"hideCTA" in service && service.hideCTA ? null : (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.5 }}
+              >
+                {"comingSoon" in service && service.comingSoon ? (
+                  <span className="inline-block px-8 py-3 rounded-full text-white/20 border border-white/[0.06] text-sm font-bold tracking-wide cursor-default">
+                    Coming Soon
+                  </span>
+                ) : (
+                  <a
+                    href="/inquiry"
+                    className={`inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r ${service.accent} rounded-full text-white font-bold text-base btn-glow group`}
                   >
-                    →
-                  </motion.span>
-                </Link>
-              )}
-            </motion.div>
+                    프로젝트 문의
+                    <motion.span
+                      className="inline-block"
+                      animate={{ x: [0, 4, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      →
+                    </motion.span>
+                  </a>
+                )}
+              </motion.div>
+            )}
           </div>
 
           {/* Right: Project Preview Cards */}
           <div className={`${index % 2 === 1 ? "md:order-1" : ""}`}>
-            {service.projects.length > 0 ? (
+            {"featuredProject" in service && service.featuredProject ? (
+              <FeaturedProjectCard project={service.featuredProject} accent={service.accent} accentText={service.accentText} />
+            ) : "hasGameProjects" in service && service.hasGameProjects ? (
+              <GameProjectSlider />
+            ) : service.projects.length > 0 ? (
               <div className="space-y-4">
                 {service.projects.map((project, pi) => (
                   <motion.div
@@ -187,9 +448,7 @@ function ServiceSection({ service, index }: { service: typeof SERVICES[0]; index
                     transition={{ delay: 0.3 + pi * 0.15 }}
                     whileHover={{ y: -4 }}
                   >
-                    {/* Hover glow */}
                     <div className={`absolute -top-20 -right-20 w-40 h-40 rounded-full bg-gradient-to-br ${service.accent} opacity-0 group-hover:opacity-[0.08] blur-[60px] transition-opacity duration-500`} />
-
                     <div className="relative z-10">
                       <span className="text-[10px] tracking-[0.2em] uppercase text-white/20 font-bold">
                         Featured Project {String(pi + 1).padStart(2, "0")}
@@ -198,8 +457,6 @@ function ServiceSection({ service, index }: { service: typeof SERVICES[0]; index
                         {project.name}
                       </h3>
                       <p className="text-white/35 text-sm">{project.type}</p>
-
-                      {/* Decorative elements */}
                       <div className="mt-6 flex items-center gap-4">
                         <div className={`h-px flex-1 bg-gradient-to-r ${service.accent} opacity-20`} />
                         <span className={`text-xs font-bold ${service.accentText} opacity-60`}>VIEW</span>
@@ -208,6 +465,27 @@ function ServiceSection({ service, index }: { service: typeof SERVICES[0]; index
                   </motion.div>
                 ))}
               </div>
+            ) : "youtubeId" in service && service.youtubeId ? (
+              /* YouTube embed */
+              <motion.div
+                className="relative rounded-2xl overflow-hidden border border-white/[0.06] bg-black"
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 }}
+              >
+                <div className="relative aspect-[16/9]">
+                  <iframe
+                    src={`https://www.youtube.com/embed/${service.youtubeId}?autoplay=1&mute=1&loop=1&playlist=${service.youtubeId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&disablekb=1`}
+                    className="absolute inset-0 w-full h-full"
+                    allow="autoplay; encrypted-media"
+                    allowFullScreen={false}
+                    title="Game Preview"
+                  />
+                  {/* Click blocker overlay */}
+                  <div className="absolute inset-0 z-10" />
+                </div>
+              </motion.div>
             ) : (
               /* Placeholder for coming soon */
               <motion.div
@@ -313,8 +591,8 @@ export default function ServicesPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
           >
-            AI, 게임, 소프트웨어 — 세 가지 핵심 역량으로
-            디지털 혁신을 이끕니다.
+            기술을 넘어 가치 있는 경험으로
+            함께 성장하는 내일을 만듭니다.
           </motion.p>
 
           {/* Scroll indicator */}
@@ -334,8 +612,8 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* Service Sections */}
-      {SERVICES.map((service, i) => (
+      {/* Service Sections (AI, Software) */}
+      {SERVICES.filter((s) => !("hasGameProjects" in s && s.hasGameProjects)).map((service, i) => (
         <ServiceSection key={service.num} service={service} index={i} />
       ))}
 
@@ -366,6 +644,11 @@ export default function ServicesPage() {
           </div>
         </div>
       </section>
+
+      {/* Contents Section (Game) */}
+      {SERVICES.filter((s) => "hasGameProjects" in s && s.hasGameProjects).map((service, i) => (
+        <ServiceSection key={service.num} service={service} index={i} />
+      ))}
 
       {/* CTA */}
       <section className="py-32 px-6 snap-start">

@@ -14,6 +14,7 @@ interface PortfolioDetail {
   description: string;
   detail: string;
   image: string;
+  video: string;
   tech_stack: string;
   architecture: string;
   target_device: string;
@@ -61,16 +62,31 @@ function ImageSlideshow({ images }: { images: string[] }) {
   return (
     <div className="relative w-full h-full overflow-hidden bg-[#0a0a0c]">
       <AnimatePresence mode="wait">
-        <motion.img
+        <motion.div
           key={current}
-          src={images[current]}
-          alt={`Screen ${current + 1}`}
-          className="absolute inset-0 w-full h-full object-cover object-top"
+          className="absolute inset-0 w-full h-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.6 }}
-        />
+        >
+          {images[current].endsWith(".webm") ? (
+            <video
+              src={images[current]}
+              className="w-full h-full object-cover object-top"
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
+          ) : (
+            <img
+              src={images[current]}
+              alt={`Screen ${current + 1}`}
+              className="w-full h-full object-cover object-top"
+            />
+          )}
+        </motion.div>
       </AnimatePresence>
       {images.length > 1 && (
         <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
@@ -90,7 +106,7 @@ function ImageSlideshow({ images }: { images: string[] }) {
 }
 
 /* ─── PC Monitor Frame ─── */
-function PCMonitorFrame({ images }: { images: string[] }) {
+function PCMonitorFrame({ images, video }: { images: string[]; video?: string }) {
   return (
     <div className="relative w-full">
       <div className="bg-[#1a1a1f] rounded-t-2xl p-2.5 border border-white/[0.08] border-b-0">
@@ -108,7 +124,11 @@ function PCMonitorFrame({ images }: { images: string[] }) {
             </div>
           </div>
           <div className="relative aspect-[16/10]">
-            <ImageSlideshow images={images} />
+            {video ? (
+              <video src={video} className="w-full h-full object-cover object-top" autoPlay loop muted playsInline />
+            ) : (
+              <ImageSlideshow images={images} />
+            )}
           </div>
         </div>
       </div>
@@ -140,7 +160,7 @@ function useKSTClock() {
 }
 
 /* ─── Mobile Phone Frame ─── */
-function MobilePhoneFrame({ images }: { images: string[] }) {
+function MobilePhoneFrame({ images, video }: { images: string[]; video?: string }) {
   const kstTime = useKSTClock();
   return (
     <div className="relative w-[260px] md:w-[300px]">
@@ -159,7 +179,11 @@ function MobilePhoneFrame({ images }: { images: string[] }) {
             </div>
           </div>
           <div className="relative aspect-[9/19.5]">
-            <ImageSlideshow images={images} />
+            {video ? (
+              <video src={video} className="w-full h-full object-cover object-top" autoPlay loop muted playsInline />
+            ) : (
+              <ImageSlideshow images={images} />
+            )}
           </div>
           <div className="py-2 flex justify-center">
             <div className="w-28 h-1 bg-white/15 rounded-full" />
@@ -338,19 +362,22 @@ export default function PortfolioDetailClient({ item }: { item: PortfolioDetail 
             {item.description}
           </motion.p>
 
-          {/* ─── PC Layout: Monitor top-center → Detail below ─── */}
+          {/* ─── PC Layout: Monitor top → Detail below ─── */}
           {!isMobile && (
-            <>
-              {allImages.length > 0 && (
+            <div>
+              {/* Monitor — full width, top */}
+              {(allImages.length > 0 || item.video) && (
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.2 }}
-                  className="max-w-5xl mx-auto mb-16 md:mb-24"
+                  className="max-w-5xl mx-auto mb-12 md:mb-16"
                 >
-                  <PCMonitorFrame images={allImages} />
+                  <PCMonitorFrame images={allImages} video={item.video || undefined} />
                 </motion.div>
               )}
+
+              {/* Detail — below monitor */}
               {hasDetail && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -361,7 +388,7 @@ export default function PortfolioDetailClient({ item }: { item: PortfolioDetail 
                   <DetailContent architecture={item.architecture} textOnlyDetail={textOnlyDetail} />
                 </motion.div>
               )}
-            </>
+            </div>
           )}
 
           {/* ─── Mobile Layout: Left=Detail scroll + Right=Phone sticky ─── */}
@@ -382,7 +409,7 @@ export default function PortfolioDetailClient({ item }: { item: PortfolioDetail 
               )}
 
               {/* Right — Phone sticky */}
-              {allImages.length > 0 && (
+              {(allImages.length > 0 || item.video) && (
                 <div className="lg:flex-shrink-0">
                   <div className="lg:sticky lg:top-[7.5rem]">
                     <motion.div
@@ -391,7 +418,7 @@ export default function PortfolioDetailClient({ item }: { item: PortfolioDetail 
                       transition={{ duration: 0.8, delay: 0.3 }}
                       className="flex justify-center"
                     >
-                      <MobilePhoneFrame images={allImages} />
+                      <MobilePhoneFrame images={allImages} video={item.video || undefined} />
                     </motion.div>
                   </div>
                 </div>

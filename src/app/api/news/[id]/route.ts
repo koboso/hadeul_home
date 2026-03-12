@@ -21,7 +21,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const { id } = await params;
   const db = getDb();
   const body = await req.json();
-  const { title, summary, content, category, image, is_published, published_at } = body;
+  const { title, summary, content, category, image, is_published, published_at, source_url, source_name } = body;
 
   const existing = db.prepare("SELECT id FROM news WHERE id = ?").get(id);
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -29,9 +29,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   db.prepare(`
     UPDATE news
     SET title = ?, summary = ?, content = ?, category = ?, image = ?,
-        is_published = ?, published_at = ?, updated_at = datetime('now')
+        is_published = ?, published_at = ?, source_url = ?, source_name = ?, updated_at = datetime('now')
     WHERE id = ?
-  `).run(title, summary, content || "", category || "", image || "", is_published ? 1 : 0, published_at || new Date().toISOString().slice(0, 10), id);
+  `).run(title, summary, content || "", category || "", image || "", is_published ? 1 : 0, published_at || new Date().toISOString().slice(0, 10), source_url || "", source_name || "", id);
 
   return NextResponse.json({ success: true });
 }

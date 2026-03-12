@@ -23,15 +23,15 @@ export async function POST(req: NextRequest) {
 
   const db = getDb();
   const body = await req.json();
-  const { title, summary, content, category, image, is_published, published_at } = body;
+  const { title, summary, content, category, image, is_published, published_at, source_url, source_name } = body;
 
   if (!title || !summary) return NextResponse.json({ error: "제목과 요약을 입력해주세요." }, { status: 400 });
 
   const id = uuid();
   db.prepare(`
-    INSERT INTO news (id, title, summary, content, category, image, is_published, published_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(id, title, summary, content || "", category || "", image || "", is_published !== undefined ? (is_published ? 1 : 0) : 1, published_at || new Date().toISOString().slice(0, 10));
+    INSERT INTO news (id, title, summary, content, category, image, is_published, published_at, source_url, source_name)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(id, title, summary, content || "", category || "", image || "", is_published !== undefined ? (is_published ? 1 : 0) : 1, published_at || new Date().toISOString().slice(0, 10), source_url || "", source_name || "");
 
   return NextResponse.json({ success: true, id });
 }

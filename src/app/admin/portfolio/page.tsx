@@ -19,6 +19,7 @@ interface PortfolioItem {
   description: string;
   detail: string;
   image: string;
+  video: string;
   tech_stack: string;
   architecture: string;
   target_device: string;
@@ -33,6 +34,7 @@ const emptyForm = {
   description: "",
   detail: "",
   image: "",
+  video: "",
   tech_stack: "",
   architecture: "",
   target_device: "pc",
@@ -108,25 +110,33 @@ export default function AdminPortfolio() {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     setUploading(true);
+    setMsg("");
     const urls: string[] = [];
-    for (let i = 0; i < files.length; i++) {
-      const fd = new FormData();
-      fd.append("file", files[i]);
-      const res = await fetch("/api/portfolio/upload", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: fd,
-      });
-      const data = await res.json();
-      if (data.url) urls.push(data.url);
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const fd = new FormData();
+        fd.append("file", files[i]);
+        const res = await fetch("/api/portfolio/upload", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: fd,
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+          setMsg(`업로드 실패: ${err.error || res.statusText}`);
+          break;
+        }
+        const data = await res.json();
+        if (data.url) urls.push(data.url);
+      }
+    } catch (err) {
+      setMsg(`업로드 에러: ${err instanceof Error ? err.message : "알 수 없는 오류"}`);
     }
     setUploading(false);
     if (urls.length > 0) {
       const existing = form.image ? form.image.split(",").map((s) => s.trim()).filter(Boolean) : [];
-      setForm({ ...form, image: [...existing, ...urls].join(",") });
+      setForm((prev) => ({ ...prev, image: [...existing, ...urls].join(",") }));
       setMsg(`이미지 ${urls.length}개 업로드 완료`);
-    } else {
-      setMsg("업로드 실패");
     }
     e.target.value = "";
   };
@@ -171,6 +181,7 @@ export default function AdminPortfolio() {
       description: item.description,
       detail: item.detail || "",
       image: item.image,
+      video: item.video || "",
       tech_stack: item.tech_stack || "",
       architecture: item.architecture || "",
       target_device: item.target_device || "pc",
@@ -512,6 +523,63 @@ export default function AdminPortfolio() {
             )}
           </div>
 
+          {/* 영상 (별도 필드) */}
+          <div>
+            <label className="block text-white/40 text-xs mb-1.5">영상 (WebM, 모니터/폰 프레임에 표시)</label>
+            <div className="flex gap-2">
+              <input
+                placeholder="영상 URL"
+                value={form.video}
+                onChange={(e) => setForm({ ...form, video: e.target.value })}
+                className={`${inputClass} flex-1`}
+              />
+              <label className="px-4 py-3 bg-purple-500/10 border border-purple-500/20 rounded-xl text-purple-400/60 text-sm cursor-pointer hover:bg-purple-500/20 transition-colors whitespace-nowrap">
+                {uploading ? "..." : "영상 업로드"}
+                <input type="file" accept=".webm" onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  setUploading(true);
+                  setMsg("");
+                  try {
+                    const fd = new FormData();
+                    fd.append("file", file);
+                    const res = await fetch("/api/portfolio/upload", {
+                      method: "POST",
+                      headers: { Authorization: `Bearer ${token}` },
+                      body: fd,
+                    });
+                    if (!res.ok) {
+                      const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+                      setMsg(`영상 업로드 실패: ${err.error || res.statusText}`);
+                    } else {
+                      const data = await res.json();
+                      if (data.url) {
+                        setForm((prev) => ({ ...prev, video: data.url }));
+                        setMsg("영상 업로드 완료");
+                      }
+                    }
+                  } catch (err) {
+                    setMsg(`영상 업로드 에러: ${err instanceof Error ? err.message : "알 수 없는 오류"}`);
+                  }
+                  setUploading(false);
+                  e.target.value = "";
+                }} className="hidden" />
+              </label>
+            </div>
+            {form.video && (
+              <div className="mt-2 relative group inline-block">
+                <video src={form.video} className="h-24 rounded-lg" muted loop autoPlay playsInline />
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, video: "" })}
+                  className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  &times;
+                </button>
+              </div>
+            )}
+          </div>
+
           <div className="flex gap-3">
             <button
               type="submit"
@@ -554,11 +622,12 @@ export default function AdminPortfolio() {
               key={item.id}
               className="flex items-center gap-4 bg-[#1a1a1a] rounded-xl p-4 border border-white/5"
             >
-              {item.image ? (
-                <img src={item.image.split(",")[0].trim()} alt="" className="w-16 h-12 rounded-lg object-cover flex-shrink-0" />
-              ) : (
-                <div className="w-16 h-12 rounded-lg bg-white/5 flex-shrink-0" />
-              )}
+              <img
+                src={(item.image ? item.image.split(",")[0].trim() : "") || "/images/default-portfolio.svg"}
+                alt=""
+                className="w-16 h-12 rounded-lg object-cover flex-shrink-0"
+                onError={(e) => { (e.target as HTMLImageElement).src = "/images/default-portfolio.svg"; }}
+              />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
                   <span className="text-[10px] px-2 py-0.5 bg-purple-500/10 text-purple-400 rounded-full font-bold">

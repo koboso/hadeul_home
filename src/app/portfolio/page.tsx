@@ -23,47 +23,57 @@ interface PortfolioItem {
   category_slug: string;
 }
 
+const GAME_SLUG = "game";
+
 export default function PortfolioPage() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [allItems, setAllItems] = useState<PortfolioItem[]>([]);
   const [items, setItems] = useState<PortfolioItem[]>([]);
+  const [activeTab, setActiveTab] = useState<"project" | "contents">("project");
   const [activeCategory, setActiveCategory] = useState("all");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load categories and all items together, then filter categories with posts
     Promise.all([
       fetch("/api/categories").then((r) => r.json()),
       fetch("/api/portfolio").then((r) => r.json()),
     ]).then(([catData, portData]) => {
-      const allItems = portData.data || [];
-      const catSlugsWithItems = new Set(allItems.map((i: PortfolioItem) => i.category_slug));
+      const fetchedItems: PortfolioItem[] = portData.data || [];
+      const catSlugsWithItems = new Set(fetchedItems.map((i) => i.category_slug));
       const activeCats = (catData.data || []).filter((c: Category) => catSlugsWithItems.has(c.slug));
       setCategories(activeCats);
-      setItems(allItems);
+      setAllItems(fetchedItems);
+      // Default: show non-game items
+      setItems(fetchedItems.filter((i) => i.category_slug !== GAME_SLUG));
       setLoading(false);
     });
   }, []);
 
-  useEffect(() => {
-    if (activeCategory === "all") return; // already loaded
-    setLoading(true);
-    fetch(`/api/portfolio?category=${activeCategory}`)
-      .then((r) => r.json())
-      .then((d) => {
-        setItems(d.data || []);
-        setLoading(false);
-      });
-  }, [activeCategory]);
+  const handleTabChange = (tab: "project" | "contents") => {
+    setActiveTab(tab);
+    setActiveCategory("all");
+    if (tab === "project") {
+      setItems(allItems.filter((i) => i.category_slug !== GAME_SLUG));
+    } else {
+      setItems(allItems.filter((i) => i.category_slug === GAME_SLUG));
+    }
+  };
 
   const handleCategoryClick = (slug: string) => {
-    if (slug === "all") {
-      setLoading(true);
-      fetch("/api/portfolio")
-        .then((r) => r.json())
-        .then((d) => { setItems(d.data || []); setLoading(false); });
-    }
     setActiveCategory(slug);
+    const tabItems = activeTab === "project"
+      ? allItems.filter((i) => i.category_slug !== GAME_SLUG)
+      : allItems.filter((i) => i.category_slug === GAME_SLUG);
+    if (slug === "all") {
+      setItems(tabItems);
+    } else {
+      setItems(tabItems.filter((i) => i.category_slug === slug));
+    }
   };
+
+  const filteredCategories = categories.filter((c) =>
+    activeTab === "project" ? c.slug !== GAME_SLUG : c.slug === GAME_SLUG
+  );
 
   return (
     <div className="bg-[#0a0a0a] text-white min-h-screen">
@@ -103,38 +113,64 @@ export default function PortfolioPage() {
         </div>
       </section>
 
-      {/* Filters */}
-      <section className="py-8 px-6">
-        <div className="max-w-7xl mx-auto space-y-4">
-          {/* Category Filter */}
-          <div className="flex flex-wrap gap-3 justify-center">
-            <button
-              onClick={() => handleCategoryClick("all")}
-              className={`px-5 py-2 rounded-full text-sm font-bold tracking-wide transition-all ${
-                activeCategory === "all"
-                  ? "bg-gradient-to-r from-purple-500 to-cyan-500 text-white btn-glow"
-                  : "border border-white/10 text-white/40 hover:text-white btn-glow-outline"
-              }`}
-            >
-              All
-            </button>
-            {categories.map((cat) => (
+      {/* Tab Switcher */}
+      <section className="pt-8 pb-4 px-6">
+        <div className="max-w-7xl mx-auto flex justify-center gap-2">
+          <button
+            onClick={() => handleTabChange("project")}
+            className={`px-6 py-2.5 rounded-full text-sm font-bold tracking-wide transition-all ${
+              activeTab === "project"
+                ? "bg-gradient-to-r from-purple-500 to-indigo-500 text-white btn-glow"
+                : "border border-white/10 text-white/40 hover:text-white"
+            }`}
+          >
+            프로젝트
+          </button>
+          <button
+            onClick={() => handleTabChange("contents")}
+            className={`px-6 py-2.5 rounded-full text-sm font-bold tracking-wide transition-all ${
+              activeTab === "contents"
+                ? "bg-gradient-to-r from-pink-500 to-amber-500 text-white btn-glow"
+                : "border border-white/10 text-white/40 hover:text-white"
+            }`}
+          >
+            컨텐츠
+          </button>
+        </div>
+      </section>
+
+      {/* Category Filter */}
+      {filteredCategories.length > 1 && (
+        <section className="pb-4 px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-wrap gap-3 justify-center">
               <button
-                key={cat.slug}
-                onClick={() => handleCategoryClick(cat.slug)}
+                onClick={() => handleCategoryClick("all")}
                 className={`px-5 py-2 rounded-full text-sm font-bold tracking-wide transition-all ${
-                  activeCategory === cat.slug
+                  activeCategory === "all"
                     ? "bg-gradient-to-r from-purple-500 to-cyan-500 text-white btn-glow"
                     : "border border-white/10 text-white/40 hover:text-white btn-glow-outline"
                 }`}
               >
-                {cat.name}
+                All
               </button>
-            ))}
+              {filteredCategories.map((cat) => (
+                <button
+                  key={cat.slug}
+                  onClick={() => handleCategoryClick(cat.slug)}
+                  className={`px-5 py-2 rounded-full text-sm font-bold tracking-wide transition-all ${
+                    activeCategory === cat.slug
+                      ? "bg-gradient-to-r from-purple-500 to-cyan-500 text-white btn-glow"
+                      : "border border-white/10 text-white/40 hover:text-white btn-glow-outline"
+                  }`}
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </div>
           </div>
-
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Portfolio Grid */}
       <section className="py-16 px-6">
@@ -158,12 +194,14 @@ export default function PortfolioPage() {
                     className="group block rounded-2xl overflow-hidden bg-white/[0.03] border border-white/[0.06] hover:border-purple-500/30 transition-all duration-300"
                   >
                     <div className="relative h-52 overflow-hidden bg-white/[0.02]">
-                      <img
-                        src={(item.image ? item.image.split(",")[0].trim() : "") || "/images/default-portfolio.svg"}
-                        alt={item.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        onError={(e) => { (e.target as HTMLImageElement).src = "/images/default-portfolio.svg"; }}
-                      />
+                      {(() => {
+                        const thumb = (item.image ? item.image.split(",")[0].trim() : "") || "/images/default-portfolio.svg";
+                        return thumb.endsWith(".webm") ? (
+                          <video src={thumb} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" autoPlay loop muted playsInline />
+                        ) : (
+                          <img src={thumb} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" onError={(e) => { (e.target as HTMLImageElement).src = "/images/default-portfolio.svg"; }} />
+                        );
+                      })()}
                       <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
                     </div>
                     <div className="p-6 h-[160px] flex flex-col">
