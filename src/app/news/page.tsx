@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState, useCallback } from "react";
+
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
 
@@ -234,11 +235,16 @@ function ListCard({ item }: { item: NewsItem }) {
   );
 }
 
+const NEWS_PAGE_SIZE = 10;
+
 /* ─── 메인 페이지 ─── */
 export default function NewsPage() {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("전체");
+  const [visibleCount, setVisibleCount] = useState(0);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const initialLoadDone = useRef(false);
 
   useEffect(() => {
     fetch("/api/news?published=1")
@@ -259,6 +265,59 @@ export default function NewsPage() {
     activeCategory === "전체"
       ? news
       : news.filter((n) => n.category === activeCategory);
+
+  const visibleNews = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
+
+  // 최초 로드 시 순차 렌더링
+  useEffect(() => {
+    if (loading || news.length === 0) return;
+    if (initialLoadDone.current) return;
+    initialLoadDone.current = true;
+    setVisibleCount(3);
+    let count = 3;
+    const timer = setInterval(() => {
+      count += 3;
+      if (count >= NEWS_PAGE_SIZE) {
+        setVisibleCount(NEWS_PAGE_SIZE);
+        clearInterval(timer);
+      } else {
+        setVisibleCount(count);
+      }
+    }, 100);
+    return () => clearInterval(timer);
+  }, [loading, news.length]);
+
+  const staggerLoad = useCallback(() => {
+    setVisibleCount(3);
+    let count = 3;
+    const timer = setInterval(() => {
+      count += 3;
+      if (count >= NEWS_PAGE_SIZE) {
+        setVisibleCount(NEWS_PAGE_SIZE);
+        clearInterval(timer);
+      } else {
+        setVisibleCount(count);
+      }
+    }, 100);
+    return timer;
+  }, []);
+
+  const loadMore = useCallback(() => {
+    setVisibleCount((c) => Math.min(c + NEWS_PAGE_SIZE, filtered.length));
+  }, [filtered.length]);
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) loadMore(); },
+      { rootMargin: "200px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [loadMore]);
 
   // 주요 소식: 최신 4개 (히어로 슬라이드용 + 사이드 3개)
   const heroItems = news.slice(0, 4);
@@ -326,7 +385,7 @@ export default function NewsPage() {
             {categories.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setActiveCategory(cat)}
+                onClick={() => { setActiveCategory(cat); staggerLoad(); }}
                 className={`px-4 py-2 text-sm font-bold rounded-full border whitespace-nowrap transition-all duration-200 ${
                   activeCategory === cat
                     ? "bg-white text-[#0a0a0a] border-white"
@@ -341,7 +400,7 @@ export default function NewsPage() {
           {/* 뉴스 리스트 */}
           {loading ? (
             <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
+              {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="h-28 rounded-2xl bg-white/[0.03] animate-pulse" />
               ))}
             </div>
@@ -353,19 +412,25 @@ export default function NewsPage() {
               <p className="text-white/20">해당 카테고리에 뉴스가 없습니다.</p>
             </div>
           ) : (
-            <div className="space-y-3">
-              {filtered.map((item, i) => (
-                <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.2 }}
-                  transition={{ duration: 0.4, delay: i * 0.05 }}
-                >
-                  <ListCard item={item} />
-                </motion.div>
-              ))}
-            </div>
+            <>
+              <div className="space-y-3">
+                {visibleNews.map((item, i) => (
+                  <div key={item.id} className="animate-[fadeInUp_0.4s_ease-out_both]" style={{ animationDelay: `${(i % NEWS_PAGE_SIZE) * 50}ms` }}>
+                    <ListCard item={item} />
+                  </div>
+                ))}
+              </div>
+
+              {/* Sentinel for infinite scroll */}
+              {hasMore && (
+                <div ref={sentinelRef} className="flex justify-center py-10">
+                  <svg className="w-5 h-5 animate-spin text-white/15" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>
