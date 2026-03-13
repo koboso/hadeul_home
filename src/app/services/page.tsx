@@ -110,16 +110,23 @@ function FeaturedProjectCard({ project, accent, accentText }: { project: Feature
       viewport={{ once: true }}
       transition={{ delay: 0.3 }}
     >
-      <div className="group relative rounded-2xl overflow-hidden bg-white/[0.03] border border-white/[0.06]">
+      <motion.div
+        className="group relative rounded-2xl overflow-hidden bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.12] transition-colors duration-500"
+        whileHover={{ y: -4, rotateX: 1, rotateY: -1 }}
+        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        style={{ transformPerspective: 1200 }}
+      >
         {/* Video area */}
-        <div className="relative aspect-[16/9] bg-black/40 p-3">
-          <video
+        <div className="relative aspect-[16/9] bg-black/40 p-3 overflow-hidden">
+          <motion.video
             src={project.video}
             className="w-full h-full object-contain rounded-lg"
             autoPlay
             loop
             muted
             playsInline
+            whileHover={{ scale: 1.03 }}
+            transition={{ duration: 0.5 }}
           />
         </div>
 
@@ -155,7 +162,7 @@ function FeaturedProjectCard({ project, accent, accentText }: { project: Feature
             더보기 →
           </Link>
         </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
@@ -410,13 +417,14 @@ function ServiceSection({ service, index }: { service: typeof SERVICES[0]; index
     target: ref,
     offset: ["start end", "end start"],
   });
-  const y = useTransform(scrollYProgress, [0, 1], [80, -80]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+  const y = useTransform(scrollYProgress, [0, 1], [60, -60]);
+  const opacity = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [0, 1, 1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [0.95, 1, 1, 0.97]);
 
   return (
     <section
       ref={ref}
-      className="relative min-h-screen flex items-center py-20 px-6 snap-start overflow-hidden"
+      className="relative flex items-center py-16 md:py-24 px-6 snap-start overflow-hidden"
     >
       {/* Background glow */}
       <motion.div
@@ -426,26 +434,27 @@ function ServiceSection({ service, index }: { service: typeof SERVICES[0]; index
 
       <motion.div
         className="max-w-7xl mx-auto w-full relative z-10"
-        style={{ y, opacity }}
+        style={{ y, opacity, scale }}
       >
         <div className={`grid gap-12 items-center ${("featuredProject" in service && service.featuredProject) || ("hasGameProjects" in service && service.hasGameProjects) ? "md:grid-cols-[1fr_1.3fr] lg:gap-14" : "md:grid-cols-2 lg:gap-20"} ${index % 2 === 1 ? "" : ""}`}>
           {/* Left: Info */}
           <div className={index % 2 === 1 ? "md:order-2" : ""}>
             <motion.span
               className={`inline-block text-sm font-mono tracking-wider mb-4 bg-gradient-to-r ${service.accent} bg-clip-text text-transparent`}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, x: -20, filter: "blur(8px)" }}
+              whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
               viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
             >
               {service.num}
             </motion.span>
 
             <motion.h2
               className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] mb-3"
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 40, skewY: 3 }}
+              whileInView={{ opacity: 1, y: 0, skewY: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
+              transition={{ delay: 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             >
               {service.title}
             </motion.h2>
@@ -471,22 +480,20 @@ function ServiceSection({ service, index }: { service: typeof SERVICES[0]; index
             </motion.p>
 
             {/* Tags */}
-            <motion.div
-              className="flex flex-wrap gap-2 mb-10"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4 }}
-            >
-              {service.tags.map((tag) => (
-                <span
+            <div className="flex flex-wrap gap-2 mb-10">
+              {service.tags.map((tag, ti) => (
+                <motion.span
                   key={tag}
-                  className="px-3 py-1.5 text-xs font-medium text-white/40 border border-white/[0.08] rounded-full"
+                  className="px-3 py-1.5 text-xs font-medium text-white/40 border border-white/[0.08] rounded-full hover:border-white/20 hover:text-white/60 transition-colors"
+                  initial={{ opacity: 0, scale: 0.7, y: 10 }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.4 + ti * 0.06, type: "spring", stiffness: 300, damping: 20 }}
                 >
                   {tag}
-                </span>
+                </motion.span>
               ))}
-            </motion.div>
+            </div>
 
             {/* CTA */}
             {"hideCTA" in service && service.hideCTA ? null : (
@@ -936,11 +943,25 @@ export default function ServicesPage() {
 
       {/* Service Sections (AI, Software) */}
       {SERVICES.filter((s) => !("hasGameProjects" in s && s.hasGameProjects)).map((service, i) => (
-        <ServiceSection key={service.num} service={service} index={i} />
+        <div key={service.num}>
+          {/* Dynamic divider between sections */}
+          {i > 0 && (
+            <div className="flex justify-center py-4">
+              <motion.div
+                className="w-px h-20 bg-gradient-to-b from-transparent via-white/10 to-transparent"
+                initial={{ scaleY: 0 }}
+                whileInView={{ scaleY: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+              />
+            </div>
+          )}
+          <ServiceSection service={service} index={i} />
+        </div>
       ))}
 
       {/* Development Process */}
-      <section className="py-32 px-6 bg-[#050505] overflow-hidden snap-start">
+      <section className="py-20 md:py-24 px-6 bg-[#050505] overflow-hidden snap-start">
         <InteractiveProcess />
       </section>
 
@@ -950,7 +971,7 @@ export default function ServicesPage() {
       ))}
 
       {/* CTA */}
-      <section className="py-32 px-6 snap-start">
+      <section className="py-20 md:py-24 px-6 snap-start">
         <motion.div
           className="max-w-3xl mx-auto text-center"
           initial={{ opacity: 0, y: 30 }}

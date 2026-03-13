@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useScroll, useTransform, useInView } from "framer-motion";
-import { useRef } from "react";
+import { motion, useScroll, useTransform, useInView, AnimatePresence } from "framer-motion";
+import { useRef, useState } from "react";
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
 import { CompanyHeroBg, VideoHeroBg } from "@/components/HeroBackgrounds";
@@ -10,24 +10,6 @@ import { CompanyHeroBg, VideoHeroBg } from "@/components/HeroBackgrounds";
 const COMPANY_HERO_VIDEO = "/videos/company-hero.mp4";
 
 
-const ceoMessage = [
-  "안녕하십니까.",
-  "주식회사 하들소프트 대표이사 OOO입니다.",
-  "",
-  "하들소프트는 지난 시간 동안 다양한 현장 경험과 기술적 도전을 통해 축적된 노하우를 기반으로 성장해 왔습니다. 작은 시작이었지만, 우리는 변화하는 IT 환경 속에서 기술의 본질과 고객의 가치를 함께 고민하며 지속적인 혁신을 이어왔습니다.",
-  "",
-  "오늘날 우리는 인공지능(AI), 데이터, 자동화 기술이 산업 전반의 구조를 바꾸는 거대한 전환의 시대에 서 있습니다. 이러한 변화 속에서 하들소프트는 단순한 기술 제공 기업을 넘어, 문제 해결 중심의 기술 파트너로서 고객의 비즈니스 혁신을 지원하고자 합니다.",
-  "",
-  "하들소프트는 기술 중심(Technology Driven)과 사람 중심(Human Centered)이라는 두 가지 가치를 기반으로 움직입니다. 다양한 전문 분야의 인재들이 협력하며 복잡한 문제를 체계적으로 해결하고, 고객이 실질적으로 체감할 수 있는 가치 있는 솔루션을 만들어 가고 있습니다.",
-  "",
-  "우리는 기술이 단순한 도구가 아닌 새로운 가능성을 여는 플랫폼이라고 믿습니다. 하들소프트는 축적된 기술력과 경험을 바탕으로 고객의 성장과 산업의 발전에 기여하는 지속 가능한 기술 기업으로 발전해 나가겠습니다.",
-  "",
-  "앞으로도 하들소프트는 변화하는 기술 환경 속에서 끊임없이 도전하고 혁신하며, 고객과 함께 성장하는 신뢰받는 기업이 되겠습니다.",
-  "",
-  "하들소프트의 여정을 따뜻한 관심과 격려로 지켜봐 주시기를 부탁드립니다.",
-  "",
-  "감사합니다.",
-];
 
 /* ─── Scroll-pinned section wrapper ─── */
 function StickyScene({
@@ -62,14 +44,14 @@ function ParallaxReveal({
   direction?: "up" | "left" | "right";
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0.3 });
+  const isInView = useInView(ref, { once: true, amount: 0.15 });
 
   const initial =
     direction === "left"
       ? { opacity: 0, x: -60 }
       : direction === "right"
       ? { opacity: 0, x: 60 }
-      : { opacity: 0, y: 50 };
+      : { opacity: 0, y: 40 };
   const animate = isInView ? { opacity: 1, x: 0, y: 0 } : {};
 
   return (
@@ -77,30 +59,16 @@ function ParallaxReveal({
       ref={ref}
       initial={initial}
       animate={animate}
-      transition={{ duration: 1, delay, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] }}
     >
       {children}
     </motion.div>
   );
 }
 
-/* ─── Animated line by line text ─── */
-function RevealLine({ children, delay }: { children: React.ReactNode; delay: number }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0.5 });
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 20 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}
-    >
-      {children}
-    </motion.div>
-  );
-}
 
 export default function CompanyPage() {
+  const [selectedCompetence, setSelectedCompetence] = useState<typeof COMPETENCES[0] | null>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: heroScroll } = useScroll({
     target: heroRef,
@@ -165,7 +133,8 @@ export default function CompanyPage() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8, duration: 1 }}
             >
-              (주)하들소프트는 AI, 게임, 소프트웨어 솔루션 분야에서
+              (주)하들소프트는 AI, 콘텐츠, 소프트웨어 솔루션 분야에서
+              <br />
               혁신적인 기술로 디지털 세상을 변화시키고 있습니다.
             </motion.p>
 
@@ -225,9 +194,10 @@ export default function CompanyPage() {
                       <br />
                       창출합니다
                     </h2>
-                    <p className="text-white/35 leading-relaxed text-lg">
-                      (주)하들소프트는 단순한 협업을 넘어, 새로운 기술과 지식을 끊임없이 공유하며 
-                      조직 전체가 함께 진화합니다.
+                    <p className="text-white/35 leading-relaxed text-lg word-keep-all">
+                      (주)하들소프트는 단순한 협업을 넘어,
+                      <br />
+                      새로운 기술과 지식을 끊임없이 공유하며 조직 전체가 함께 진화합니다.
                     </p>
                   </motion.div>
 
@@ -254,78 +224,7 @@ export default function CompanyPage() {
         }}
       </StickyScene>
 
-      {/* ═══ CEO Message — Cinematic reveal ═══ */}
-      <section className="relative py-32 md:py-40 px-6">
-        {/* Background accent */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500/20 to-transparent" />
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/3 right-0 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[200px]" />
-        </div>
-
-        <div className="max-w-5xl mx-auto relative z-10">
-          <div className="grid md:grid-cols-[1fr_2fr] gap-16 md:gap-20">
-            {/* Left — Title */}
-            <div className="md:sticky md:top-32 md:self-start">
-              <ParallaxReveal direction="left">
-                <p className="text-purple-400 text-sm tracking-[0.4em] uppercase mb-4">CEO Message</p>
-                <h2 className="text-4xl md:text-5xl font-black tracking-tighter leading-[0.9] mb-6">
-                  대표이사
-                  <br />
-                  인사말
-                </h2>
-                <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full" />
-              </ParallaxReveal>
-
-              <ParallaxReveal direction="left" delay={0.3}>
-                <div className="mt-12">
-                  <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-purple-500/20 to-cyan-500/20 border border-white/[0.06] flex items-center justify-center">
-                    <span className="text-4xl font-black text-white/20">CEO</span>
-                  </div>
-                  <p className="text-white font-bold mt-4 text-lg">김재식</p>
-                  <p className="text-white/30 text-sm">대표이사</p>
-                </div>
-              </ParallaxReveal>
-            </div>
-
-            {/* Right — Message body */}
-            <div className="space-y-0">
-              {ceoMessage.map((line, i) => {
-                if (line === "") {
-                  return <div key={`space-${i}`} className="h-6" />;
-                }
-
-                const isBold = line.includes("기술 중심(Technology Driven)");
-                const isGreeting = line === "감사합니다.";
-
-                return (
-                  <RevealLine key={i} delay={Math.min(i * 0.04, 0.6)}>
-                    {isGreeting ? (
-                      <p className="text-white/60 text-xl font-bold mt-4">{line}</p>
-                    ) : isBold ? (
-                      <p className="text-white/50 text-lg leading-[1.9]">
-                        하들소프트는{" "}
-                        <span className="text-purple-400 font-bold">기술 중심(Technology Driven)</span>과{" "}
-                        <span className="text-cyan-400 font-bold">사람 중심(Human Centered)</span>
-                        이라는 두 가지 가치를 기반으로 움직입니다. 다양한 전문 분야의 인재들이 협력하며 복잡한 문제를 체계적으로 해결하고, 고객이 실질적으로 체감할 수 있는 가치 있는 솔루션을 만들어 가고 있습니다.
-                      </p>
-                    ) : (
-                      <p className="text-white/40 text-lg leading-[1.9]">{line}</p>
-                    )}
-                  </RevealLine>
-                );
-              })}
-
-              {/* Signature */}
-              <ParallaxReveal delay={0.5}>
-                <div className="pt-12 mt-8 border-t border-white/5">
-                  <p className="text-white/50 font-bold text-lg">주식회사 하들소프트</p>
-                  <p className="text-white/50 font-bold text-lg">대표이사 김재식</p>
-                </div>
-              </ParallaxReveal>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ═══ CEO Message — Hidden ═══ */}
 
       {/* ═══ Core Competence — Interactive cards ═══ */}
       <section className="relative py-32 px-6 bg-[#050505] overflow-hidden">
@@ -350,55 +249,31 @@ export default function CompanyPage() {
                 것들
               </span>
             </h2>
-            <p className="text-white/30 text-center max-w-2xl mx-auto mb-20">
+            <p className="text-white/30 text-center max-w-2xl mx-auto mb-20 word-keep-all">
               다양한 산업 분야에서 축적한 기술력으로 최적의 솔루션을 제공합니다.
             </p>
           </ParallaxReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {COMPETENCES.map((c, i) => (
-              <CompetenceCard key={c.title} item={c} index={i} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ Tech Stack & Process — Animated flow ═══ */}
-      <section className="relative py-32 px-6 overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <motion.div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-500/5 rounded-full blur-[200px]"
-            animate={{ scale: [1, 1.15, 1] }}
-            transition={{ duration: 12, repeat: Infinity }}
-          />
-        </div>
-
-        <div className="max-w-6xl mx-auto relative z-10">
-          {/* Tech Stack */}
-          <ParallaxReveal>
-            <p className="text-cyan-400 text-sm tracking-[0.4em] uppercase mb-4 text-center">Technology</p>
-            <h2 className="text-4xl md:text-6xl font-black text-center mb-20 tracking-tighter">
-              기술{" "}
-              <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                스택
-              </span>
-            </h2>
-          </ParallaxReveal>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {TECH_STACKS.map((stack, i) => (
-              <TechStackColumn key={stack.category} stack={stack} index={i} />
+              <CompetenceCard key={c.title} item={c} index={i} onClick={() => setSelectedCompetence(c)} />
             ))}
           </div>
 
-          {/* More tech hint */}
           <ParallaxReveal>
             <p className="text-center text-white/15 text-sm mt-10 tracking-wide">
-              +40개 이상의 기술 스택을 프로젝트 요구사항에 맞춰 유연하게 적용합니다
+              카드를 클릭하면 상세 기술 스택을 확인할 수 있습니다
             </p>
           </ParallaxReveal>
         </div>
       </section>
+
+      {/* Competence Detail Modal */}
+      <AnimatePresence>
+        {selectedCompetence && (
+          <CompetenceModal item={selectedCompetence} onClose={() => setSelectedCompetence(null)} />
+        )}
+      </AnimatePresence>
 
       {/* ═══ Confident CTA — Staff expertise ═══ */}
       <section className="relative py-32 px-6 bg-[#050505] overflow-hidden">
@@ -439,14 +314,15 @@ export default function CompanyPage() {
           </ParallaxReveal>
 
           <ParallaxReveal delay={0.2}>
-            <p className="text-white/40 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-6">
-              다양한 산업 현장에서 검증된 임직원들이
-              고객의 비즈니스를 깊이 이해하고, 진짜 문제를 찾아 해결합니다.
+            <p className="text-white/40 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-6 word-keep-all">
+              고객의 비즈니스를 깊이 이해하고,
+              <br className="hidden md:inline" />
+              문제의 본질을 통찰하여 실질적인 해결책을 만들어냅니다.
             </p>
           </ParallaxReveal>
 
           <ParallaxReveal delay={0.3}>
-            <p className="text-white/25 text-base leading-relaxed max-w-xl mx-auto mb-12">
+            <p className="text-white/25 text-base leading-relaxed max-w-xl mx-auto mb-12 word-keep-all">
               복잡하고 난해한 기술적 과제도 걱정하지 마세요.
               <br />
               하들소프트가 고객 만족을 위해 끝까지 책임지겠습니다.
@@ -458,7 +334,7 @@ export default function CompanyPage() {
               {[
                 { num: "7+", label: "년 평균 경력" },
                 { num: "200+", label: "프로젝트 수행" },
-                { num: "98%", label: "고객 만족도" },
+                { num: "100%", label: "고객 만족도" },
               ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
@@ -478,12 +354,20 @@ export default function CompanyPage() {
           </ParallaxReveal>
 
           <ParallaxReveal delay={0.5}>
-            <a
+            <motion.a
               href="/inquiry"
-              className="inline-block px-10 py-4 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 rounded-full text-white font-bold text-lg btn-glow"
+              className="inline-block px-10 py-4 rounded-full text-white font-bold text-lg btn-glow"
+              style={{
+                backgroundImage: "linear-gradient(90deg, #a855f7, #ec4899, #06b6d4, #a855f7)",
+                backgroundSize: "300% 100%",
+              }}
+              animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.97 }}
             >
               프로젝트 문의하기
-            </a>
+            </motion.a>
           </ParallaxReveal>
         </div>
       </section>
@@ -496,66 +380,128 @@ export default function CompanyPage() {
 /* ═══ Core Competence Data & Component ═══ */
 const COMPETENCES = [
   {
-    title: "AI / ML",
-    subtitle: "인공지능",
-    desc: "LLM, 컴퓨터 비전, 자연어 처리 등 최신 AI 기술을 활용한 맞춤형 솔루션",
-    tags: ["LLM", "RAG", "Vision", "NLP", "Fine-tuning", "Embedding", "Prompt Engineering", "MLOps"],
+    title: "AI & Deep Tech",
+    subtitle: "인공지능·딥러닝",
+    desc: "LLM, Computer Vision, NLP 등\nAI 기술 기반의 기업 맞춤형 솔루션",
+    tags: ["LLM", "RAG", "Vision", "NLP", "Fine-tuning", "Embedding"],
     accent: "from-purple-500 to-indigo-500",
     iconPath: "M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5",
+    details: {
+      video: "/videos/company/ai-solution.webm",
+      description: "최신 AI 기술을 활용하여 기업의 비즈니스 문제를 해결하는 맞춤형 인공지능 솔루션을 설계·구축합니다. 대규모 언어 모델(LLM)부터 컴퓨터 비전, 자연어 처리까지 폭넓은 AI 역량을 보유하고 있습니다.",
+      techStacks: [
+        { category: "모델 & 프레임워크", items: ["PyTorch", "TensorFlow", "LangChain", "HuggingFace", "OpenAI API"] },
+        { category: "데이터 & 파이프라인", items: ["Pandas", "Spark", "Airflow", "Elasticsearch", "Vector DB"] },
+        { category: "배포 & 운영", items: ["MLOps", "Docker", "FastAPI", "Triton", "ONNX Runtime"] },
+      ],
+      highlights: ["RAG 기반 기업 전용 AI 어시스턴트", "실시간 이미지·영상 분석 시스템", "자연어 기반 데이터 검색·분석 플랫폼"],
+    },
   },
   {
-    title: "Game Dev",
-    subtitle: "게임 개발",
-    desc: "모바일·PC 크로스플랫폼 게임 개발, 라이브 서비스 운영",
-    tags: ["Unity", "Unreal", "Cocos", "Godot", "C#", "C++"],
-    accent: "from-pink-500 to-amber-500",
-    iconPath: "M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
-  },
-  {
-    title: "Web / App",
-    subtitle: "웹·앱 플랫폼",
-    desc: "기업형 웹 애플리케이션, 모바일 앱, SaaS 플랫폼 설계·구축",
-    tags: ["React", "Next.js", "Vue", "Flutter", "React Native", "TypeScript", "GraphQL", "Micro Frontend"],
+    title: "Digital Product",
+    subtitle: "웹·앱·SaaS",
+    desc: "기업형 웹 애플리케이션, 모바일 앱\nSaaS 플랫폼 설계·구축",
+    tags: ["React", "Next.js", "Vue", "Flutter", "React Native", "TypeScript"],
     accent: "from-cyan-500 to-emerald-500",
     iconPath: "M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
+    details: {
+      video: "/videos/company/web-app.webm",
+      description: "최신 프론트엔드·백엔드 기술을 활용하여 기업형 웹 애플리케이션, 모바일 앱, SaaS 플랫폼을 설계하고 구축합니다. 마이크로 프론트엔드 아키텍처부터 서버리스까지 최적의 구조를 제안합니다.",
+      techStacks: [
+        { category: "프론트엔드", items: ["React", "Next.js", "Vue.js", "Angular", "Svelte", "Tailwind CSS"] },
+        { category: "백엔드", items: ["Node.js", "NestJS", "Spring Boot", "Go", "Python", "GraphQL"] },
+        { category: "모바일", items: ["Flutter", "React Native", "Swift", "Kotlin"] },
+      ],
+      highlights: ["대규모 트래픽 대응 SaaS 플랫폼", "마이크로 프론트엔드 아키텍처 설계", "PWA 기반 크로스플랫폼 서비스"],
+    },
   },
   {
-    title: "IoT / Smart",
-    subtitle: "IoT·스마트팩토리",
-    desc: "센서 데이터 수집, 실시간 모니터링, 스마트 팩토리 자동화 시스템",
-    tags: ["MQTT", "Edge AI", "Dashboard", "PLC", "OPC-UA", "Digital Twin", "Sensor Fusion", "SCADA"],
+    title: "IoT & Edge",
+    subtitle: "스마트 인더스트리",
+    desc: "센서 데이터 수집, 실시간 모니터링\n스마트 팩토리 자동화 시스템",
+    tags: ["MQTT", "Edge AI", "PLC", "Digital Twin", "SCADA", "OPC-UA"],
     accent: "from-emerald-500 to-teal-500",
     iconPath: "M13 10V3L4 14h7v7l9-11h-7z",
+    details: {
+      video: "/videos/company/iot.webm",
+      description: "산업 현장의 센서 데이터를 실시간으로 수집·분석하여 스마트 팩토리 자동화 시스템을 구축합니다. Edge AI와 Digital Twin 기술을 결합한 차세대 산업 솔루션을 제공합니다.",
+      techStacks: [
+        { category: "프로토콜 & 통신", items: ["MQTT", "OPC-UA", "Modbus", "WebSocket", "gRPC"] },
+        { category: "데이터 & 시각화", items: ["InfluxDB", "Grafana", "Kibana", "TimescaleDB"] },
+        { category: "엣지 & 자동화", items: ["Edge AI", "PLC", "SCADA", "Digital Twin", "Sensor Fusion"] },
+      ],
+      highlights: ["실시간 설비 모니터링 대시보드", "예지보전 AI 시스템", "디지털 트윈 기반 공정 시뮬레이션"],
+    },
   },
   {
-    title: "Defense / Marine",
-    subtitle: "국방·해양",
-    desc: "국방 시뮬레이션, 해양 관제 시스템, 보안 솔루션 개발",
-    tags: ["Simulation", "GIS", "보안", "관제", "C4I", "ECDIS", "전술체계", "데이터 링크"],
+    title: "Defense & Maritime",
+    subtitle: "국방·해양 특수체계",
+    desc: "국방 시뮬레이션, 해양 관제 시스템\n보안 솔루션 개발",
+    tags: ["C4I", "ECDIS", "GIS", "HLA/DIS", "전술체계", "관제시스템"],
     accent: "from-blue-500 to-indigo-500",
     iconPath: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z",
+    details: {
+      image: "/videos/company/marine.png",
+      description: "국방 시뮬레이션, 해양 관제 시스템, 보안 솔루션 등 높은 신뢰성과 보안이 요구되는 특수 분야의 소프트웨어를 개발합니다. 군 표준 및 해양 국제 규격을 준수하는 시스템을 구축합니다.",
+      techStacks: [
+        { category: "시뮬레이션 & GIS", items: ["HLA/DIS", "CesiumJS", "OpenLayers", "GDAL", "3D 시뮬레이션"] },
+        { category: "전술 체계", items: ["C4I", "데이터 링크", "ECDIS", "AIS", "레이더 연동"] },
+        { category: "보안 & 인프라", items: ["CC인증", "암호화 모듈", "망분리", "RHEL", "보안 OS"] },
+      ],
+      highlights: ["전술 시뮬레이션 훈련 체계", "해양 관제 통합 플랫폼", "보안 등급별 데이터 처리 시스템"],
+    },
   },
   {
-    title: "DevOps",
-    subtitle: "인프라·자동화",
-    desc: "CI/CD 파이프라인, 클라우드 아키텍처, 모니터링 체계 구축",
-    tags: ["AWS", "Docker", "K8s", "Terraform", "GitHub Actions", "ArgoCD", "Prometheus", "Grafana"],
+    title: "Interactive Contents",
+    subtitle: "인터랙티브 콘텐츠",
+    desc: "모바일·PC 크로스플랫폼 콘텐츠 개발\n라이브 서비스 운영",
+    tags: ["Unity", "Unreal", "Cocos", "C#", "C++"],
+    accent: "from-pink-500 to-amber-500",
+    iconPath: "M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
+    details: {
+      video: "/videos/company/game.webm",
+      description: "모바일·PC 크로스플랫폼 게임을 기획부터 출시, 라이브 서비스 운영까지 전 과정을 지원합니다. 다양한 게임 엔진 경험 기술을 바탕으로 높은 품질의 콘텐츠를 개발합니다.",
+      techStacks: [
+        { category: "게임 엔진", items: ["Unity", "Unreal Engine", "Cocos Creator", "Godot"] },
+        { category: "개발 언어", items: ["C#", "C++", "TypeScript", "JavaScript", "Lua"] },
+        { category: "서버 & 인프라", items: ["Photon", "Mirror", "PlayFab", "Firebase", "Redis"] },
+      ],
+      highlights: ["앱인토스 기반 미니앱 개발", "라이브 서비스 운영 및 업데이트 관리"],
+    },
+  },
+  {
+    title: "Cloud & Infra",
+    subtitle: "클라우드·DevOps",
+    desc: "CI/CD 파이프라인, 클라우드 아키텍처\n모니터링 체계 구축",
+    tags: ["AWS", "Docker", "K8s", "Terraform", "GitHub Actions", "ArgoCD"],
     accent: "from-orange-500 to-red-500",
     iconPath: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15",
+    details: {
+      video: "/videos/company/devops.webm",
+      description: "클라우드 네이티브 아키텍처 설계부터 CI/CD 파이프라인 구축, 모니터링·알럿 체계까지 개발 생산성과 서비스 안정성을 높이는 DevOps 인프라를 구축합니다.",
+      techStacks: [
+        { category: "클라우드", items: ["AWS", "GCP", "Azure", "NCP", "Cloudflare"] },
+        { category: "컨테이너 & 오케스트레이션", items: ["Docker", "Kubernetes", "Helm", "ArgoCD", "Istio"] },
+        { category: "CI/CD & 모니터링", items: ["GitHub Actions", "Terraform", "Prometheus", "Grafana", "ELK Stack"] },
+      ],
+      highlights: ["무중단 배포 파이프라인 설계", "멀티 클라우드 인프라 구축", "실시간 장애 감지·자동 복구 체계"],
+    },
   },
 ];
 
-function CompetenceCard({ item, index }: { item: typeof COMPETENCES[0]; index: number }) {
+function CompetenceCard({ item, index, onClick }: { item: typeof COMPETENCES[0]; index: number; onClick: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
 
   return (
     <motion.div
       ref={ref}
+      onClick={onClick}
       initial={{ opacity: 0, y: 50, scale: 0.95 }}
       animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
+      whileHover={{ y: -4 }}
       transition={{ duration: 0.7, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
-      className="group relative rounded-2xl p-8 bg-white/[0.02] border border-white/[0.06] hover:border-purple-500/30 transition-all duration-500 overflow-hidden"
+      className="group relative rounded-2xl p-8 bg-white/[0.02] border border-white/[0.06] hover:border-purple-500/30 transition-all duration-500 overflow-hidden cursor-pointer"
     >
       {/* Hover glow */}
       <motion.div
@@ -582,7 +528,7 @@ function CompetenceCard({ item, index }: { item: typeof COMPETENCES[0]; index: n
         {item.title}
       </h3>
       <p className="text-white/30 text-xs font-bold tracking-wide mb-3">{item.subtitle}</p>
-      <p className="text-white/40 text-sm leading-relaxed mb-5">{item.desc}</p>
+      <p className="text-white/40 text-sm leading-relaxed mb-5 word-keep-all whitespace-pre-line">{item.desc}</p>
 
       {/* Tags */}
       <div className="flex flex-wrap gap-2">
@@ -605,74 +551,145 @@ function CompetenceCard({ item, index }: { item: typeof COMPETENCES[0]; index: n
   );
 }
 
-/* ═══ Tech Stack Data & Component ═══ */
-const TECH_STACKS = [
-  {
-    category: "Frontend",
-    color: "cyan",
-    items: ["React", "Next.js", "Vue.js", "Angular", "TypeScript", "Flutter", "React Native", "Tailwind CSS", "Svelte"],
-  },
-  {
-    category: "Backend",
-    color: "purple",
-    items: ["Node.js", "Python", "Go", "Java", "Spring Boot", "NestJS", "PostgreSQL", "MongoDB", "Redis"],
-  },
-  {
-    category: "AI / Data",
-    color: "pink",
-    items: ["PyTorch", "TensorFlow", "LangChain", "OpenAI", "HuggingFace", "Pandas", "Spark", "Airflow", "Elasticsearch"],
-  },
-  {
-    category: "Infra / DevOps",
-    color: "emerald",
-    items: ["AWS", "GCP", "Azure", "Docker", "Kubernetes", "Terraform", "GitHub Actions", "ArgoCD", "Nginx"],
-  },
-];
-
-const STACK_COLORS: Record<string, string> = {
-  cyan: "from-cyan-500 to-cyan-400",
-  purple: "from-purple-500 to-purple-400",
-  pink: "from-pink-500 to-pink-400",
-  emerald: "from-emerald-500 to-emerald-400",
-};
-
-function TechStackColumn({ stack, index }: { stack: typeof TECH_STACKS[0]; index: number }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0.2 });
-
+/* ═══ Competence Detail Modal ═══ */
+function CompetenceModal({
+  item,
+  onClose,
+}: {
+  item: typeof COMPETENCES[0];
+  onClose: () => void;
+}) {
   return (
     <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 40 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.7, delay: index * 0.12, ease: [0.16, 1, 0.3, 1] }}
-      className="relative group"
+      className="fixed inset-0 z-[100] flex items-center justify-center px-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25 }}
     >
-      {/* Category header */}
-      <div className="mb-5">
-        <motion.div
-          className={`inline-block h-1 rounded-full bg-gradient-to-r ${STACK_COLORS[stack.color]}`}
-          initial={{ width: 0 }}
-          animate={isInView ? { width: 40 } : {}}
-          transition={{ duration: 0.8, delay: index * 0.12 + 0.3 }}
-        />
-        <h3 className="text-lg font-black tracking-tight mt-3">{stack.category}</h3>
-      </div>
+      {/* Backdrop */}
+      <motion.div
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+        onClick={onClose}
+      />
 
-      {/* Tech items as flowing tags */}
-      <div className="flex flex-wrap gap-2">
-        {stack.items.map((item, i) => (
-          <motion.span
-            key={item}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : {}}
-            transition={{ duration: 0.4, delay: index * 0.12 + i * 0.05 + 0.4 }}
-            className="px-3 py-1.5 text-xs font-medium text-white/50 bg-white/[0.04] border border-white/[0.06] rounded-lg hover:text-white/80 hover:border-purple-500/30 hover:bg-white/[0.06] transition-all duration-300 cursor-default"
-          >
-            {item}
-          </motion.span>
-        ))}
-      </div>
+      {/* Modal — wide 2-column on PC */}
+      <motion.div
+        className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#111] border border-white/[0.08]"
+        initial={{ scale: 0.9, y: 30 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.9, y: 30 }}
+        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+      >
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-5 right-5 z-10 w-8 h-8 rounded-full bg-black/40 hover:bg-white/[0.12] flex items-center justify-center transition-colors"
+        >
+          <svg className="w-4 h-4 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        <div className="grid md:grid-cols-[1fr_1.2fr]">
+          {/* Left — Media + Header */}
+          <div className="relative bg-[#0a0a0a] md:rounded-l-3xl overflow-hidden">
+            <div className="aspect-[4/3] md:aspect-auto md:h-full relative flex items-start justify-center">
+              {/* Video or Image */}
+              {"video" in item.details && item.details.video ? (
+                <video
+                  src={item.details.video}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-[60%] object-contain p-3"
+                />
+              ) : (
+                <img
+                  src={"image" in item.details ? (item.details as { image: string }).image : ""}
+                  alt={item.title}
+                  className="w-full h-[60%] object-contain p-3"
+                />
+              )}
+              {/* Dark overlay for readability — bottom gradient only */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none" />
+            </div>
+
+            {/* Header overlay */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+              <div className="flex items-center gap-3 mb-4">
+                <div className={`w-11 h-11 rounded-lg bg-gradient-to-br ${item.accent} p-[1px] shrink-0`}>
+                  <div className="w-full h-full rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d={item.iconPath} />
+                    </svg>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-black tracking-tight text-white drop-shadow-lg">{item.title}</h3>
+                  <p className="text-white/70 text-xs font-bold tracking-wide">{item.subtitle}</p>
+                </div>
+              </div>
+              <p className="text-white/80 text-sm leading-relaxed word-keep-all drop-shadow-md">
+                {item.details.description}
+              </p>
+            </div>
+          </div>
+
+          {/* Right — Tech Stacks + Highlights */}
+          <div className="p-6 md:p-8 space-y-6">
+            {/* Tech Stacks */}
+            <div>
+              <p className="text-white/40 text-[10px] font-bold tracking-[0.3em] uppercase mb-4">Technology Stack</p>
+              <div className="space-y-5">
+                {item.details.techStacks.map((stack, i) => (
+                  <motion.div
+                    key={stack.category}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.15 + i * 0.08 }}
+                  >
+                    <p className="text-white/60 text-xs font-bold mb-2">{stack.category}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {stack.items.map((tech) => (
+                        <span
+                          key={tech}
+                          className="px-2.5 py-1 text-[11px] font-medium text-white/50 bg-white/[0.04] border border-white/[0.06] rounded-md"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="h-px bg-white/[0.06]" />
+
+            {/* Highlights */}
+            <div>
+              <p className="text-white/40 text-[10px] font-bold tracking-[0.3em] uppercase mb-3">Featured Projects</p>
+              <div className="space-y-2.5">
+                {item.details.highlights.map((h, i) => (
+                  <motion.div
+                    key={h}
+                    className="flex items-start gap-3"
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.35 + i * 0.06 }}
+                  >
+                    <span className={`mt-1.5 w-1.5 h-1.5 rounded-full bg-gradient-to-r ${item.accent} shrink-0`} />
+                    <span className="text-white/45 text-sm word-keep-all">{h}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
     </motion.div>
   );
 }

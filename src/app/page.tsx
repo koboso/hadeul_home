@@ -409,6 +409,7 @@ function SplitReveal() {
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
           >
             기술과 예술의 교차점에서 새로운 가능성을 창조합니다.
+               <br />
             우리는 단순한 개발을 넘어 경험을 설계합니다.
           </motion.p>
         </div>

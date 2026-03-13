@@ -53,6 +53,12 @@ body {
   background-clip: text;
 }
 
+/* Korean word-break: keep whole words together */
+.word-keep-all {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
 /* Glassmorphism card */
 .glass-card {
   background: rgba(255, 255, 255, 0.03);
