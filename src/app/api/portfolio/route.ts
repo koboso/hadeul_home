@@ -3,6 +3,25 @@ import { v4 as uuid } from "uuid";
 import getDb from "@/lib/db";
 import { checkAuth } from "@/lib/auth";
 
+/* DELETE /api/portfolio — bulk delete */
+export async function DELETE(req: NextRequest) {
+  if (!checkAuth(req)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const db = getDb();
+  const body = await req.json();
+  const { ids } = body;
+
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return NextResponse.json({ error: "삭제할 항목을 선택해주세요." }, { status: 400 });
+  }
+
+  const placeholders = ids.map(() => "?").join(",");
+  db.prepare(`DELETE FROM portfolio WHERE id IN (${placeholders})`).run(...ids);
+  return NextResponse.json({ success: true, deleted: ids.length });
+}
+
 /* GET /api/portfolio?category=slug */
 export async function GET(req: NextRequest) {
   const db = getDb();
@@ -34,7 +53,7 @@ export async function POST(req: NextRequest) {
 
   const db = getDb();
   const body = await req.json();
-  const { category_id, client, title, description, detail, image, video, tech_stack, architecture, target_device } = body;
+  const { category_id, client, title, description, detail, image, video, tech_stack, architecture, target_device, frame_enabled, no_image } = body;
 
   if (!category_id || !client || !title || !description) {
     return NextResponse.json({ error: "필수 항목을 입력해주세요." }, { status: 400 });
@@ -42,9 +61,9 @@ export async function POST(req: NextRequest) {
 
   const id = uuid();
   db.prepare(`
-    INSERT INTO portfolio (id, category_id, client, title, description, detail, image, video, tech_stack, architecture, target_device)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(id, category_id, client, title, description, detail || "", image || "", video || "", tech_stack || "", architecture || "", target_device || "pc");
+    INSERT INTO portfolio (id, category_id, client, title, description, detail, image, video, tech_stack, architecture, target_device, frame_enabled, no_image)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(id, category_id, client, title, description, detail || "", image || "", video || "", tech_stack || "", architecture || "", target_device || "pc", frame_enabled ?? 1, no_image ?? 0);
 
   return NextResponse.json({ success: true, id });
 }

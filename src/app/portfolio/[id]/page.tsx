@@ -13,6 +13,8 @@ interface PortfolioRow {
   tech_stack: string;
   architecture: string;
   target_device: string;
+  frame_enabled: number;
+  no_image: number;
   category_name: string;
   category_slug: string;
 }

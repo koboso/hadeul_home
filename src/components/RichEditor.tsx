@@ -85,6 +85,8 @@ export default function RichEditor({ content, onChange, token, placeholder }: Ri
 
   const handleImageUpload = useCallback(
     async (files: FileList) => {
+      if (!editor) return;
+      const urls: string[] = [];
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const fd = new FormData();
@@ -95,9 +97,15 @@ export default function RichEditor({ content, onChange, token, placeholder }: Ri
           body: fd,
         });
         const data = await res.json();
-        if (data.url && editor) {
-          editor.chain().focus().setImage({ src: data.url }).run();
+        if (data.url) urls.push(data.url);
+      }
+      // Insert all images sequentially — each followed by a paragraph to move cursor past
+      if (urls.length > 0) {
+        let chain = editor.chain().focus();
+        for (const url of urls) {
+          chain = chain.setImage({ src: url }).createParagraphNear();
         }
+        chain.run();
       }
     },
     [editor, token]

@@ -23,6 +23,8 @@ interface PortfolioItem {
   tech_stack: string;
   architecture: string;
   target_device: string;
+  frame_enabled: number;
+  no_image: number;
   category_name: string;
   created_at: string;
 }
@@ -38,6 +40,8 @@ const emptyForm = {
   tech_stack: "",
   architecture: "",
   target_device: "pc",
+  frame_enabled: 1,
+  no_image: 0,
 };
 
 export default function AdminPortfolio() {
@@ -55,6 +59,9 @@ export default function AdminPortfolio() {
   const [msg, setMsg] = useState("");
   const [techInput, setTechInput] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkDeleting, setBulkDeleting] = useState(false);
 
   const login = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -185,6 +192,8 @@ export default function AdminPortfolio() {
       tech_stack: item.tech_stack || "",
       architecture: item.architecture || "",
       target_device: item.target_device || "pc",
+      frame_enabled: item.frame_enabled ?? 1,
+      no_image: item.no_image ?? 0,
     });
     setTechInput("");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -211,6 +220,43 @@ export default function AdminPortfolio() {
     setForm(emptyForm);
     setTechInput("");
     setMsg("");
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.size === 0) return;
+    if (!confirm(`선택한 ${selectedIds.size}개 프로젝트를 삭제하시겠습니까?`)) return;
+    setBulkDeleting(true);
+    const res = await fetch("/api/portfolio", {
+      method: "DELETE",
+      headers: headers(),
+      body: JSON.stringify({ ids: Array.from(selectedIds) }),
+    });
+    const data = await res.json();
+    setBulkDeleting(false);
+    if (data.error) {
+      setMsg(data.error);
+      if (res.status === 401) { setAuthed(false); localStorage.removeItem("admin_token"); }
+      return;
+    }
+    setMsg(`${data.deleted}개 삭제 완료`);
+    setSelectedIds(new Set());
+    loadItems();
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === filteredItems.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredItems.map((i) => i.id)));
+    }
   };
 
   const logout = () => {
@@ -241,10 +287,19 @@ export default function AdminPortfolio() {
   };
 
   /* ─── Filtered items ─── */
-  const filteredItems =
-    filterCategory === "all"
-      ? items
-      : items.filter((item) => item.category_id === filterCategory);
+  const filteredItems = items.filter((item) => {
+    if (filterCategory !== "all" && item.category_id !== filterCategory) return false;
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      return (
+        item.title.toLowerCase().includes(q) ||
+        item.client.toLowerCase().includes(q) ||
+        item.description.toLowerCase().includes(q) ||
+        (item.tech_stack && item.tech_stack.toLowerCase().includes(q))
+      );
+    }
+    return true;
+  });
 
   /* ─── Login ─── */
   if (!authed) {
@@ -389,6 +444,42 @@ export default function AdminPortfolio() {
                   {device === "pc" ? "🖥 PC" : "📱 Mobile"}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* Frame & No Image Options */}
+          <div className="mb-4 flex items-center gap-6">
+            <div className="flex items-center gap-3">
+              <label className="text-white/40 text-xs">프레임 처리</label>
+              <div className="flex gap-2">
+                {([1, 0] as const).map((val) => (
+                  <button
+                    key={val}
+                    type="button"
+                    onClick={() => setForm({ ...form, frame_enabled: val })}
+                    className={`px-4 py-2 rounded-xl text-sm font-bold border transition-all ${
+                      form.frame_enabled === val
+                        ? val === 1
+                          ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300"
+                          : "bg-red-500/20 border-red-500/40 text-red-300"
+                        : "bg-white/5 border-white/10 text-white/30 hover:text-white/60"
+                    }`}
+                  >
+                    {val === 1 ? "ON" : "OFF"}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={form.no_image === 1}
+                  onChange={(e) => setForm({ ...form, no_image: e.target.checked ? 1 : 0 })}
+                  className="w-4 h-4 rounded bg-white/5 border-white/20 accent-purple-500"
+                />
+                <span className="text-white/40 text-xs">이미지 없음</span>
+              </label>
             </div>
           </div>
 
@@ -600,28 +691,65 @@ export default function AdminPortfolio() {
           </div>
         </form>
 
-        {/* Category Filter for List */}
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold">등록된 프로젝트 ({filteredItems.length})</h2>
-          <select
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white/60 focus:outline-none focus:border-purple-500/50"
-          >
-            <option value="all" className="bg-[#1a1a1a]">전체 카테고리</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id} className="bg-[#1a1a1a]">
-                {c.name}
-              </option>
-            ))}
-          </select>
+        {/* List Header: Search + Filter + Bulk Delete */}
+        <div className="flex flex-col gap-3 mb-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold">등록된 프로젝트 ({filteredItems.length})</h2>
+            <div className="flex items-center gap-3">
+              {selectedIds.size > 0 && (
+                <button
+                  onClick={handleBulkDelete}
+                  disabled={bulkDeleting}
+                  className="px-4 py-1.5 text-xs font-bold bg-red-500/20 border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/30 transition-colors disabled:opacity-50"
+                >
+                  {bulkDeleting ? "삭제 중..." : `선택 삭제 (${selectedIds.size})`}
+                </button>
+              )}
+              <select
+                value={filterCategory}
+                onChange={(e) => { setFilterCategory(e.target.value); setSelectedIds(new Set()); }}
+                className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white/60 focus:outline-none focus:border-purple-500/50"
+              >
+                <option value="all" className="bg-[#1a1a1a]">전체 카테고리</option>
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id} className="bg-[#1a1a1a]">
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <input
+              placeholder="검색 (제목, 업체명, 설명, 기술스택)"
+              value={searchQuery}
+              onChange={(e) => { setSearchQuery(e.target.value); setSelectedIds(new Set()); }}
+              className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-purple-500/50"
+            />
+            {filteredItems.length > 0 && (
+              <button
+                onClick={toggleSelectAll}
+                className="px-4 py-2.5 text-xs font-bold border border-white/10 rounded-xl text-white/40 hover:text-white hover:border-white/20 transition-colors whitespace-nowrap"
+              >
+                {selectedIds.size === filteredItems.length ? "전체 해제" : "전체 선택"}
+              </button>
+            )}
+          </div>
         </div>
         <div className="space-y-3">
           {filteredItems.map((item) => (
             <div
               key={item.id}
-              className="flex items-center gap-4 bg-[#1a1a1a] rounded-xl p-4 border border-white/5"
+              className={`flex items-center gap-4 bg-[#1a1a1a] rounded-xl p-4 border transition-colors ${
+                selectedIds.has(item.id) ? "border-purple-500/30 bg-purple-500/5" : "border-white/5"
+              }`}
             >
+              <input
+                type="checkbox"
+                checked={selectedIds.has(item.id)}
+                onChange={() => toggleSelect(item.id)}
+                className="w-4 h-4 rounded bg-white/5 border-white/20 accent-purple-500 flex-shrink-0"
+              />
               <img
                 src={(item.image ? item.image.split(",")[0].trim() : "") || "/images/default-portfolio.svg"}
                 alt=""
@@ -633,6 +761,12 @@ export default function AdminPortfolio() {
                   <span className="text-[10px] px-2 py-0.5 bg-purple-500/10 text-purple-400 rounded-full font-bold">
                     {item.category_name}
                   </span>
+                  {item.frame_enabled === 0 && (
+                    <span className="text-[10px] px-2 py-0.5 bg-yellow-500/10 text-yellow-400 rounded-full font-bold">프레임 OFF</span>
+                  )}
+                  {item.no_image === 1 && (
+                    <span className="text-[10px] px-2 py-0.5 bg-red-500/10 text-red-400 rounded-full font-bold">이미지 없음</span>
+                  )}
                 </div>
                 <p className="text-white font-bold text-sm truncate">
                   {item.client} — {item.title}

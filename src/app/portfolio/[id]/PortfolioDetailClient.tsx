@@ -18,6 +18,8 @@ interface PortfolioDetail {
   tech_stack: string;
   architecture: string;
   target_device: string;
+  frame_enabled: number;
+  no_image: number;
   category_name: string;
   category_slug: string;
 }
@@ -73,7 +75,7 @@ function ImageSlideshow({ images }: { images: string[] }) {
           {images[current].endsWith(".webm") ? (
             <video
               src={images[current]}
-              className="w-full h-full object-cover object-top"
+              className="w-full h-full object-contain p-1"
               autoPlay
               loop
               muted
@@ -83,7 +85,7 @@ function ImageSlideshow({ images }: { images: string[] }) {
             <img
               src={images[current]}
               alt={`Screen ${current + 1}`}
-              className="w-full h-full object-cover object-top"
+              className="w-full h-full object-contain p-1"
             />
           )}
         </motion.div>
@@ -123,9 +125,9 @@ function PCMonitorFrame({ images, video }: { images: string[]; video?: string })
               </div>
             </div>
           </div>
-          <div className="relative aspect-[16/10]">
+          <div className="relative aspect-[16/10] bg-[#0a0a0c]">
             {video ? (
-              <video src={video} className="w-full h-full object-cover object-top" autoPlay loop muted playsInline />
+              <video src={video} className="w-full h-full object-contain p-1" autoPlay loop muted playsInline />
             ) : (
               <ImageSlideshow images={images} />
             )}
@@ -178,9 +180,9 @@ function MobilePhoneFrame({ images, video }: { images: string[]; video?: string 
               </div>
             </div>
           </div>
-          <div className="relative aspect-[9/19.5]">
+          <div className="relative aspect-[9/19.5] bg-[#0a0a0c]">
             {video ? (
-              <video src={video} className="w-full h-full object-cover object-top" autoPlay loop muted playsInline />
+              <video src={video} className="w-full h-full object-contain p-1" autoPlay loop muted playsInline />
             ) : (
               <ImageSlideshow images={images} />
             )}
@@ -190,6 +192,28 @@ function MobilePhoneFrame({ images, video }: { images: string[]; video?: string 
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ─── Plain Image Gallery (no frame) ─── */
+function PlainImageGallery({ images, video }: { images: string[]; video?: string }) {
+  return (
+    <div className="space-y-6">
+      {video && (
+        <div className="rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0a0a0c]">
+          <video src={video} className="w-full object-contain" autoPlay loop muted playsInline />
+        </div>
+      )}
+      {images.map((src, i) => (
+        <div key={i} className="rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0a0a0c]">
+          {src.endsWith(".webm") ? (
+            <video src={src} className="w-full object-contain" autoPlay loop muted playsInline />
+          ) : (
+            <img src={src} alt={`Image ${i + 1}`} className="w-full object-contain" />
+          )}
+        </div>
+      ))}
     </div>
   );
 }
@@ -257,6 +281,9 @@ export default function PortfolioDetailClient({ item }: { item: PortfolioDetail 
   }, [heroImages, detailImages]);
 
   const hasDetail = (textOnlyDetail && textOnlyDetail.trim()) || item.architecture;
+  const frameEnabled = (item.frame_enabled ?? 1) === 1;
+  const noImage = (item.no_image ?? 0) === 1;
+  const showMedia = !noImage && (heroImages.length > 0 || !!item.video);
 
   return (
     <div className="bg-[#0a0a0a] text-white min-h-screen">
@@ -272,8 +299,8 @@ export default function PortfolioDetailClient({ item }: { item: PortfolioDetail 
           className="bg-[#0a0a0a]/85 backdrop-blur-xl border-b border-white/[0.04]"
         >
           <div className="max-w-7xl mx-auto px-6 py-3">
-            <div className="flex items-center gap-4">
-              {/* Back */}
+            {/* Row 1: Back + Title + Client */}
+            <div className="flex items-center gap-3">
               <button
                 onClick={() => router.back()}
                 className="text-white/30 hover:text-purple-400 transition-colors flex-shrink-0"
@@ -282,34 +309,26 @@ export default function PortfolioDetailClient({ item }: { item: PortfolioDetail 
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
+              <h1 className="text-lg md:text-2xl font-black tracking-tight break-keep">
+                {item.title}
+              </h1>
+              <span className="ml-auto text-white/30 text-xs font-bold whitespace-nowrap flex-shrink-0">
+                Client : <span className="text-purple-400/70">{item.client}</span>
+              </span>
+            </div>
 
-              {/* Badges */}
-              <div className="flex items-center gap-1.5 flex-shrink-0">
-                <span className="px-2 py-0.5 text-[9px] tracking-[0.12em] uppercase text-purple-400/70 border border-purple-500/20 rounded-full font-bold whitespace-nowrap">
-                  {item.category_name}
-                </span>
-                <span className="px-2 py-0.5 text-[9px] tracking-[0.12em] uppercase text-white/20 border border-white/[0.06] rounded-full font-bold">
-                  {isMobile ? "Mobile" : "Web"}
-                </span>
-              </div>
-
-              {/* Divider */}
-              <div className="w-[1px] h-4 bg-white/[0.06] flex-shrink-0" />
-
-              {/* Client + Title — single line */}
-              <div className="min-w-0 flex items-center gap-2 overflow-hidden">
-                <span className="text-purple-400/50 text-[11px] font-bold whitespace-nowrap flex-shrink-0">
-                  {item.client}
-                </span>
-                <h1 className="text-sm md:text-base font-black tracking-tight truncate">
-                  {item.title}
-                </h1>
-              </div>
-
-              {/* Tech tags — desktop, single line, no wrap */}
+            {/* Row 2: Badges + Tech tags */}
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
+              <span className="px-2 py-0.5 text-[9px] tracking-[0.12em] uppercase text-purple-400/70 border border-purple-500/20 rounded-full font-bold whitespace-nowrap">
+                {item.category_name}
+              </span>
+              <span className="px-2 py-0.5 text-[9px] tracking-[0.12em] uppercase text-white/20 border border-white/[0.06] rounded-full font-bold">
+                {isMobile ? "Mobile" : "Web"}
+              </span>
               {techTags.length > 0 && (
-                <div className="hidden lg:flex items-center gap-1 flex-shrink-0 ml-auto overflow-hidden max-w-[40%]">
-                  {techTags.slice(0, 5).map((tag) => (
+                <>
+                  <div className="w-[1px] h-3 bg-white/[0.06]" />
+                  {techTags.slice(0, 6).map((tag) => (
                     <span
                       key={tag}
                       className="px-2 py-0.5 bg-white/[0.03] text-white/25 border border-white/[0.04] rounded-full text-[9px] font-medium whitespace-nowrap"
@@ -317,10 +336,10 @@ export default function PortfolioDetailClient({ item }: { item: PortfolioDetail 
                       {tag.trim()}
                     </span>
                   ))}
-                  {techTags.length > 5 && (
-                    <span className="text-white/15 text-[9px] whitespace-nowrap">+{techTags.length - 5}</span>
+                  {techTags.length > 6 && (
+                    <span className="text-white/15 text-[9px] whitespace-nowrap">+{techTags.length - 6}</span>
                   )}
-                </div>
+                </>
               )}
             </div>
           </div>
@@ -339,20 +358,6 @@ export default function PortfolioDetailClient({ item }: { item: PortfolioDetail 
         </div>
 
         <div className="max-w-7xl mx-auto relative z-10 py-8 md:py-12">
-          {/* Mobile: tech tags */}
-          {techTags.length > 0 && (
-            <div className="flex lg:hidden flex-wrap gap-1.5 mb-6">
-              {techTags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-2.5 py-1 bg-white/[0.03] text-white/30 border border-white/[0.05] rounded-full text-[10px] font-medium"
-                >
-                  {tag.trim()}
-                </span>
-              ))}
-            </div>
-          )}
-
           {/* Description */}
           <motion.p
             initial={{ opacity: 0, y: 10 }}
@@ -365,15 +370,19 @@ export default function PortfolioDetailClient({ item }: { item: PortfolioDetail 
           {/* ─── PC Layout: Monitor top → Detail below ─── */}
           {!isMobile && (
             <div>
-              {/* Monitor — full width, top */}
-              {(allImages.length > 0 || item.video) && (
+              {/* Media — full width, top */}
+              {showMedia && (
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.2 }}
                   className="max-w-5xl mx-auto mb-12 md:mb-16"
                 >
-                  <PCMonitorFrame images={allImages} video={item.video || undefined} />
+                  {frameEnabled ? (
+                    <PCMonitorFrame images={allImages} video={item.video || undefined} />
+                  ) : (
+                    <PlainImageGallery images={allImages} video={item.video || undefined} />
+                  )}
                 </motion.div>
               )}
 
@@ -409,7 +418,7 @@ export default function PortfolioDetailClient({ item }: { item: PortfolioDetail 
               )}
 
               {/* Right — Phone sticky */}
-              {(allImages.length > 0 || item.video) && (
+              {showMedia && (
                 <div className="lg:flex-shrink-0">
                   <div className="lg:sticky lg:top-[7.5rem]">
                     <motion.div
@@ -418,7 +427,11 @@ export default function PortfolioDetailClient({ item }: { item: PortfolioDetail 
                       transition={{ duration: 0.8, delay: 0.3 }}
                       className="flex justify-center"
                     >
-                      <MobilePhoneFrame images={allImages} video={item.video || undefined} />
+                      {frameEnabled ? (
+                        <MobilePhoneFrame images={allImages} video={item.video || undefined} />
+                      ) : (
+                        <PlainImageGallery images={allImages} video={item.video || undefined} />
+                      )}
                     </motion.div>
                   </div>
                 </div>

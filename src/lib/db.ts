@@ -99,6 +99,8 @@ function initTables() {
   if (!colNames.includes("architecture")) db.exec("ALTER TABLE portfolio ADD COLUMN architecture TEXT DEFAULT ''");
   if (!colNames.includes("target_device")) db.exec("ALTER TABLE portfolio ADD COLUMN target_device TEXT DEFAULT 'pc'");
   if (!colNames.includes("video")) db.exec("ALTER TABLE portfolio ADD COLUMN video TEXT DEFAULT ''");
+  if (!colNames.includes("frame_enabled")) db.exec("ALTER TABLE portfolio ADD COLUMN frame_enabled INTEGER DEFAULT 1");
+  if (!colNames.includes("no_image")) db.exec("ALTER TABLE portfolio ADD COLUMN no_image INTEGER DEFAULT 0");
 
   // Migrate: add columns to news table if missing (for existing DBs)
   const newsCols = db.prepare("PRAGMA table_info(news)").all() as { name: string }[];

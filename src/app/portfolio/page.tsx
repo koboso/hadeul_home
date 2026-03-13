@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import Nav from "@/components/Nav";
@@ -37,7 +37,17 @@ export default function PortfolioPage() {
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(0);
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const catScrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
   const initialLoadDone = useRef(false);
+
+  const updateScrollArrows = useCallback(() => {
+    const el = catScrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 2);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 2);
+  }, []);
 
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: heroScroll } = useScroll({
@@ -64,17 +74,17 @@ export default function PortfolioPage() {
   }, []);
 
   const staggerLoad = useCallback(() => {
-    setVisibleCount(3);
-    let count = 3;
+    setVisibleCount(2);
+    let count = 2;
     const timer = setInterval(() => {
-      count += 3;
+      count += 2;
       if (count >= PAGE_SIZE) {
         setVisibleCount(PAGE_SIZE);
         clearInterval(timer);
       } else {
         setVisibleCount(count);
       }
-    }, 120);
+    }, 100);
     return timer;
   }, []);
 
@@ -105,22 +115,22 @@ export default function PortfolioPage() {
   const visibleItems = items.slice(0, visibleCount);
   const hasMore = visibleCount < items.length;
 
-  // 최초 로드 시 3개(한 줄)씩 순차 렌더링
+  // 최초 로드 시 2개(한 줄)씩 순차 렌더링
   useEffect(() => {
     if (loading || items.length === 0) return;
     if (initialLoadDone.current) return;
     initialLoadDone.current = true;
-    setVisibleCount(3);
-    let count = 3;
+    setVisibleCount(2);
+    let count = 2;
     const timer = setInterval(() => {
-      count += 3;
+      count += 2;
       if (count >= PAGE_SIZE) {
         setVisibleCount(PAGE_SIZE);
         clearInterval(timer);
       } else {
         setVisibleCount(count);
       }
-    }, 120);
+    }, 100);
     return () => clearInterval(timer);
   }, [loading, items.length]);
 
@@ -143,6 +153,13 @@ export default function PortfolioPage() {
   const filteredCategories = categories.filter((c) =>
     activeTab === "project" ? c.slug !== GAME_SLUG : c.slug === GAME_SLUG
   );
+
+  // Initialize scroll arrows when categories change
+  useEffect(() => {
+    // Small delay to let DOM render the category buttons
+    const t = setTimeout(updateScrollArrows, 50);
+    return () => clearTimeout(t);
+  }, [filteredCategories.length, updateScrollArrows]);
 
   return (
     <div className="bg-[#0a0a0a] text-white min-h-screen">
@@ -240,76 +257,98 @@ export default function PortfolioPage() {
         </motion.div>
       </section>
 
-      {/* Tab Switcher */}
-      <section className="pt-8 pb-4 px-6">
-        <div className="max-w-7xl mx-auto flex justify-center gap-2">
-          <button
-            onClick={() => handleTabChange("project")}
-            className={`px-6 py-2.5 rounded-full text-sm font-bold tracking-wide transition-all ${
-              activeTab === "project"
-                ? "bg-gradient-to-r from-purple-500 to-indigo-500 text-white btn-glow"
-                : "border border-white/10 text-white/40 hover:text-white"
-            }`}
-          >
-            프로젝트
-          </button>
-          <button
-            onClick={() => handleTabChange("contents")}
-            className={`px-6 py-2.5 rounded-full text-sm font-bold tracking-wide transition-all ${
-              activeTab === "contents"
-                ? "bg-gradient-to-r from-pink-500 to-amber-500 text-white btn-glow"
-                : "border border-white/10 text-white/40 hover:text-white"
-            }`}
-          >
-            컨텐츠
-          </button>
+      {/* Filter Bar — Tab + Category 통합 */}
+      <section className="sticky top-16 z-30 bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/[0.04]">
+        <div className="max-w-6xl mx-auto px-6 py-5">
+          {/* Tabs */}
+          <div className="flex items-center gap-8 mb-4">
+            {(["project", "contents"] as const).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => handleTabChange(tab)}
+                className={`relative text-base font-bold tracking-wide pb-2 transition-colors ${
+                  activeTab === tab ? "text-white" : "text-white/30 hover:text-white/50"
+                }`}
+              >
+                {tab === "project" ? "프로젝트" : "컨텐츠"}
+                {activeTab === tab && (
+                  <motion.div
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full"
+                    layoutId="tabUnderline"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Categories — horizontal scroll with smart arrows */}
+          {filteredCategories.length > 1 && (
+            <div className="relative flex items-center">
+              {/* Left arrow — fades in/out */}
+              <button
+                type="button"
+                onClick={() => { catScrollRef.current?.scrollBy({ left: -200, behavior: "smooth" }); setTimeout(updateScrollArrows, 350); }}
+                className={`absolute -left-2 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-[#0a0a0a] border border-white/[0.1] text-white/50 hover:text-white hover:border-white/30 hover:bg-white/[0.06] transition-all duration-200 ${
+                  canScrollLeft ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"
+                }`}
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+              </button>
+
+              {/* Left fade gradient */}
+              {canScrollLeft && <div className="absolute left-7 z-[5] w-8 h-full bg-gradient-to-r from-[#0a0a0a]/80 to-transparent pointer-events-none" />}
+
+              <div
+                ref={catScrollRef}
+                onScroll={updateScrollArrows}
+                className="flex items-center gap-2 overflow-x-auto scrollbar-hide mx-10 px-1 touch-pan-x"
+                style={{ WebkitOverflowScrolling: "touch" }}
+              >
+                {[{ slug: "all", name: "All" }, ...filteredCategories].map((cat) => (
+                  <button
+                    key={cat.slug}
+                    onClick={() => handleCategoryClick(cat.slug)}
+                    className={`relative shrink-0 px-4 py-2 rounded-lg text-sm font-bold tracking-wide transition-all whitespace-nowrap ${
+                      activeCategory === cat.slug
+                        ? "bg-white/[0.1] text-white"
+                        : "text-white/30 hover:text-white/50 hover:bg-white/[0.04]"
+                    }`}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
+
+              {/* Right fade gradient */}
+              {canScrollRight && <div className="absolute right-7 z-[5] w-8 h-full bg-gradient-to-l from-[#0a0a0a]/80 to-transparent pointer-events-none" />}
+
+              {/* Right arrow — fades in/out */}
+              <button
+                type="button"
+                onClick={() => { catScrollRef.current?.scrollBy({ left: 200, behavior: "smooth" }); setTimeout(updateScrollArrows, 350); }}
+                className={`absolute -right-2 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-[#0a0a0a] border border-white/[0.1] text-white/50 hover:text-white hover:border-white/30 hover:bg-white/[0.06] transition-all duration-200 ${
+                  canScrollRight ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"
+                }`}
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Category Filter */}
-      {filteredCategories.length > 1 && (
-        <section className="pb-4 px-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-wrap gap-3 justify-center">
-              <button
-                onClick={() => handleCategoryClick("all")}
-                className={`px-5 py-2 rounded-full text-sm font-bold tracking-wide transition-all ${
-                  activeCategory === "all"
-                    ? "bg-gradient-to-r from-purple-500 to-cyan-500 text-white btn-glow"
-                    : "border border-white/10 text-white/40 hover:text-white btn-glow-outline"
-                }`}
-              >
-                All
-              </button>
-              {filteredCategories.map((cat) => (
-                <button
-                  key={cat.slug}
-                  onClick={() => handleCategoryClick(cat.slug)}
-                  className={`px-5 py-2 rounded-full text-sm font-bold tracking-wide transition-all ${
-                    activeCategory === cat.slug
-                      ? "bg-gradient-to-r from-purple-500 to-cyan-500 text-white btn-glow"
-                      : "border border-white/10 text-white/40 hover:text-white btn-glow-outline"
-                  }`}
-                >
-                  {cat.name}
-                </button>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Portfolio Grid */}
-      <section className="py-16 px-6">
-        <div className="max-w-7xl mx-auto">
+      {/* Portfolio Grid — 2 columns, bigger cards */}
+      <section className="py-12 px-6">
+        <div className="max-w-6xl mx-auto">
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="rounded-2xl overflow-hidden bg-white/[0.03] border border-white/[0.06] animate-pulse">
-                  <div className="h-56 bg-white/[0.04]" />
-                  <div className="p-6 space-y-3">
-                    <div className="h-3 w-20 bg-white/[0.06] rounded" />
-                    <div className="h-5 w-3/4 bg-white/[0.06] rounded" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="rounded-3xl overflow-hidden bg-white/[0.03] border border-white/[0.06] animate-pulse">
+                  <div className="aspect-[16/10] bg-white/[0.04]" />
+                  <div className="p-7 space-y-3">
+                    <div className="h-3 w-24 bg-white/[0.06] rounded" />
+                    <div className="h-6 w-3/4 bg-white/[0.06] rounded" />
                     <div className="h-3 w-full bg-white/[0.04] rounded" />
                   </div>
                 </div>
@@ -319,54 +358,72 @@ export default function PortfolioPage() {
             <div className="text-center py-20 text-white/20">등록된 프로젝트가 없습니다.</div>
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {visibleItems.map((item, i) => (
-                  <div key={item.id} className="animate-[fadeInUp_0.4s_ease-out_both]" style={{ animationDelay: `${(i % PAGE_SIZE) * 60}ms` }}>
-                    <Link
-                      href={`/portfolio/${item.id}`}
-                      className="group block relative rounded-2xl overflow-hidden bg-white/[0.03] border border-white/[0.06] hover:border-purple-500/30 transition-all duration-500 hover:shadow-[0_0_40px_rgba(139,92,246,0.08)]"
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeTab + activeCategory}
+                  className="grid grid-cols-1 md:grid-cols-2 gap-8"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {visibleItems.map((item, i) => (
+                    <motion.div
+                      key={item.id}
+                      className="animate-[fadeInUp_0.4s_ease-out_both]"
+                      style={{ animationDelay: `${(i % PAGE_SIZE) * 60}ms` }}
+                      whileHover={{ y: -8 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 25 }}
                     >
-                      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/0 via-transparent to-pink-500/0 group-hover:from-purple-500/[0.04] group-hover:to-pink-500/[0.04] transition-all duration-500 z-0" />
+                      <Link
+                        href={`/portfolio/${item.id}`}
+                        className="group block relative rounded-3xl overflow-hidden bg-white/[0.02] border border-white/[0.06] hover:border-purple-500/20 transition-all duration-500 hover:shadow-[0_8px_60px_rgba(139,92,246,0.1)]"
+                      >
+                        {/* Image area — larger */}
+                        <div className="relative aspect-[16/10] overflow-hidden bg-white/[0.02]">
+                          {(() => {
+                            const thumb = (item.image ? item.image.split(",")[0].trim() : "") || "/images/default-portfolio.svg";
+                            return thumb.endsWith(".webm") ? (
+                              <video src={thumb} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" autoPlay loop muted playsInline />
+                            ) : (
+                              <img src={thumb} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" onError={(e) => { (e.target as HTMLImageElement).src = "/images/default-portfolio.svg"; }} />
+                            );
+                          })()}
+                          {/* Gradient overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-80" />
 
-                      <div className="relative h-56 overflow-hidden bg-white/[0.02]">
-                        {(() => {
-                          const thumb = (item.image ? item.image.split(",")[0].trim() : "") || "/images/default-portfolio.svg";
-                          return thumb.endsWith(".webm") ? (
-                            <video src={thumb} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" autoPlay loop muted playsInline />
-                          ) : (
-                            <img src={thumb} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" onError={(e) => { (e.target as HTMLImageElement).src = "/images/default-portfolio.svg"; }} />
-                          );
-                        })()}
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
+                          {/* Category badge */}
+                          <div className="absolute top-5 left-5">
+                            <span className="px-3.5 py-1.5 text-[10px] tracking-[0.15em] uppercase text-white/80 bg-white/[0.08] backdrop-blur-xl rounded-lg font-bold border border-white/[0.08]">
+                              {item.category_name}
+                            </span>
+                          </div>
 
-                        <div className="absolute top-4 left-4">
-                          <span className="px-3 py-1 text-[10px] tracking-[0.15em] uppercase text-white/80 bg-black/50 backdrop-blur-md rounded-full font-bold border border-white/10">
-                            {item.category_name}
-                          </span>
+                          {/* Hover arrow */}
+                          <div className="absolute bottom-5 right-5 w-10 h-10 rounded-xl bg-white/[0.06] backdrop-blur-xl border border-white/[0.1] flex items-center justify-center opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-300">
+                            <svg className="w-4 h-4 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                            </svg>
+                          </div>
                         </div>
 
-                        <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                          <svg className="w-3.5 h-3.5 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
-                          </svg>
+                        {/* Info */}
+                        <div className="relative p-7">
+                          <p className="text-white/30 text-sm font-bold tracking-wider uppercase mb-2">
+                            {item.client}
+                          </p>
+                          <h3 className="text-2xl font-black text-white tracking-tight mb-3 group-hover:text-purple-300 transition-colors line-clamp-1">
+                            {item.title}
+                          </h3>
+                          <p className="text-white/25 text-base leading-relaxed line-clamp-1">
+                            {item.description}
+                          </p>
                         </div>
-                      </div>
-
-                      <div className="relative p-6 h-[140px] flex flex-col">
-                        <p className="text-white/40 text-xs font-bold tracking-wide mb-1.5 truncate">
-                          {item.client}
-                        </p>
-                        <h3 className="text-lg font-black text-white tracking-tight mb-2 group-hover:text-purple-300 transition-colors line-clamp-1">
-                          {item.title}
-                        </h3>
-                        <p className="text-white/25 text-sm leading-relaxed line-clamp-2 mt-auto">
-                          {item.description}
-                        </p>
-                      </div>
-                    </Link>
-                  </div>
-                ))}
-              </div>
+                      </Link>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </AnimatePresence>
 
               {/* Sentinel for infinite scroll */}
               {hasMore && (

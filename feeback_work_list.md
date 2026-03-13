@@ -95,7 +95,68 @@
 
 ---
 
-### 4. Cloudflare Tunnel 설정
+### 4. 회사소개 페이지 — Core Competence 개선
+
+**피드백 사항:**
+- 핵심 역량 카드 순서 변경 및 제목 리네이밍 (더 임팩트 있게)
+- 기술 태그·스택 면밀 점검 (게임 엔진이 다른 카테고리에 들어가면 안 됨)
+- 모달 팝업 영상 위치 상단으로 조정
+
+**작업 내용:**
+
+#### 4-1. 카드 순서 변경 & 제목 리네이밍
+- 순서: AI & Deep Tech → Digital Product → IoT & Edge → Defense & Maritime → Interactive Contents → Cloud & Infra
+- 서브타이틀 정리: 인공지능·딥러닝, 웹·앱·SaaS, 스마트 인더스트리, 국방·해양 특수체계, 인터랙티브 콘텐츠, 클라우드·DevOps
+
+#### 4-2. 기술 태그·스택 점검
+- Defense & Maritime: Unity/Unreal 제거 → HLA/DIS, 3D 시뮬레이션 (국방 표준 프로토콜)
+- Defense 보안 & 인프라: 컨테이너 보안 → 보안 OS
+- IoT 카드 태그: Dashboard → OPC-UA (산업 프로토콜)
+- Game 카드 태그: TypeScript → 멀티플레이어 (→ 이후 C# C++ 으로 최종 변경)
+
+#### 4-3. 모달 영상 위치 조정
+- 영상/이미지 컨테이너: `items-center` → `items-start` (상단 정렬)
+- 높이: `h-full` → `h-[60%]` (영상 영역 축소, 텍스트 영역 확보)
+- 패딩 축소: `p-4` → `p-3`
+
+**수정 파일:**
+- `src/app/company/page.tsx` — COMPETENCES 데이터 순서·제목·태그·스택 변경, 모달 영상 위치 조정
+
+---
+
+### 5. 서비스 페이지 — 간격 축소 & 다이나믹 효과 추가
+
+**피드백 사항:**
+- 각 섹션별 간격이 너무 넓음
+- 전체적으로 다이나믹한 느낌이 부족
+
+**작업 내용:**
+
+#### 5-1. 섹션 간격 축소
+- 서비스 섹션: `min-h-screen py-20` → `py-16 md:py-24` (min-h-screen 제거)
+- 프로세스 섹션: `py-32` → `py-20 md:py-24`
+- CTA 섹션: `py-32` → `py-20 md:py-24`
+
+#### 5-2. 스크롤 다이나믹 효과
+- 스크롤 기반 scale 트랜지션 (0.95→1→0.97)
+- 서비스 번호 blur-in 등장 효과
+- 제목 skewY 슬라이드 애니메이션
+- 태그 순차 spring 팝업 등장 (stagger 60ms)
+
+#### 5-3. 카드 인터랙션
+- Featured Project 카드 3D tilt 호버 (rotateX/Y + perspective)
+- 영상 호버 시 1.03x 확대 효과
+- 카드 보더 호버 시 밝아짐
+
+#### 5-4. 섹션 구분 요소
+- 섹션 간 그라데이션 라인 구분선 (scaleY 애니메이션)
+
+**수정 파일:**
+- `src/app/services/page.tsx` — 간격 축소, 다이나믹 모션 효과 추가
+
+---
+
+### 6. Cloudflare Tunnel 설정
 
 **작업 내용:**
 - ngrok 무료 플랜 대역폭 초과로 대안 필요
