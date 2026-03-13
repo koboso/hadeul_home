@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
+import { useLocale } from "@/i18n/LocaleContext";
 
 const DEFAULT_IMG = "/images/default-news.svg";
 
@@ -47,6 +48,17 @@ function categoryStyle(cat: string) {
   }
 }
 
+/* ─── 카테고리 라벨 번역 ─── */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getCategoryLabel(cat: string, t: any) {
+  const map: Record<string, string> = {
+    "보도자료": t.news.pressRelease,
+    "언론보도": t.news.mediaCoverage,
+    "회사소식": t.news.companyNews,
+  };
+  return map[cat] || cat;
+}
+
 /* ─── 뉴스 카드 클릭 핸들러 ─── */
 function openNews(item: NewsItem) {
   if (item.source_url) {
@@ -55,7 +67,7 @@ function openNews(item: NewsItem) {
 }
 
 /* ─── 히어로 슬라이드 (좌측 대형) ─── */
-function HeroSlide({ items }: { items: NewsItem[] }) {
+function HeroSlide({ items, t }: { items: NewsItem[]; t: any }) {
   const [current, setCurrent] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -107,7 +119,7 @@ function HeroSlide({ items }: { items: NewsItem[] }) {
         <div className="flex items-center gap-2 mb-3">
           {item.category && (
             <span className={`px-2.5 py-1 text-[10px] tracking-wider font-bold rounded-full border ${categoryStyle(item.category)}`}>
-              {item.category}
+              {getCategoryLabel(item.category, t)}
             </span>
           )}
         </div>
@@ -151,7 +163,7 @@ function HeroSlide({ items }: { items: NewsItem[] }) {
 }
 
 /* ─── 사이드 카드 (우측 소형) ─── */
-function SideCard({ item }: { item: NewsItem }) {
+function SideCard({ item, t }: { item: NewsItem; t: any }) {
   const thumb = item.image ? item.image.split(",")[0].trim() : "";
 
   return (
@@ -162,7 +174,7 @@ function SideCard({ item }: { item: NewsItem }) {
       <div>
         {item.category && (
           <span className={`inline-block px-2 py-0.5 text-[10px] tracking-wider font-bold rounded-full border mb-2.5 ${categoryStyle(item.category)}`}>
-            {item.category}
+            {getCategoryLabel(item.category, t)}
           </span>
         )}
         <h3 className="text-sm font-bold text-white tracking-tight line-clamp-1 group-hover:text-purple-300 transition-colors leading-snug">
@@ -183,7 +195,7 @@ function SideCard({ item }: { item: NewsItem }) {
 }
 
 /* ─── 리스트 카드 ─── */
-function ListCard({ item }: { item: NewsItem }) {
+function ListCard({ item, t }: { item: NewsItem; t: any }) {
   const thumb = getThumb(item.image);
 
   return (
@@ -195,7 +207,7 @@ function ListCard({ item }: { item: NewsItem }) {
         <div className="flex items-center gap-2 mb-2">
           {item.category && (
             <span className={`px-2 py-0.5 text-[10px] tracking-wider font-bold rounded-full border ${categoryStyle(item.category)}`}>
-              {item.category}
+              {getCategoryLabel(item.category, t)}
             </span>
           )}
         </div>
@@ -215,7 +227,7 @@ function ListCard({ item }: { item: NewsItem }) {
           )}
           {item.source_url && (
             <span className="ml-auto text-purple-400/50 group-hover:text-purple-400 transition-colors flex items-center gap-1">
-              원문 보기
+              {t.news.viewOriginal}
               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
@@ -236,12 +248,14 @@ function ListCard({ item }: { item: NewsItem }) {
 }
 
 const NEWS_PAGE_SIZE = 10;
+const ALL_CATEGORY_KEY = "__all__";
 
 /* ─── 메인 페이지 ─── */
 export default function NewsPage() {
+  const { locale, t } = useLocale();
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState("전체");
+  const [activeCategory, setActiveCategory] = useState(ALL_CATEGORY_KEY);
   const [visibleCount, setVisibleCount] = useState(0);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const initialLoadDone = useRef(false);
@@ -257,12 +271,12 @@ export default function NewsPage() {
   }, []);
 
   const categories = [
-    "전체",
+    ALL_CATEGORY_KEY,
     ...Array.from(new Set(news.map((n) => n.category).filter(Boolean))),
   ];
 
   const filtered =
-    activeCategory === "전체"
+    activeCategory === ALL_CATEGORY_KEY
       ? news
       : news.filter((n) => n.category === activeCategory);
 
@@ -324,6 +338,12 @@ export default function NewsPage() {
   const heroSlideItems = heroItems.slice(0, 4);
   const sideItems = heroItems.slice(1, 4);
 
+  /* ─── 카테고리 탭 라벨 ─── */
+  function getCategoryTabLabel(cat: string) {
+    if (cat === ALL_CATEGORY_KEY) return t.news.all;
+    return getCategoryLabel(cat, t);
+  }
+
   return (
     <div className="bg-[#0a0a0a] text-white min-h-screen">
       <Nav />
@@ -336,14 +356,14 @@ export default function NewsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            주요 소식
+            {t.news.featured}
           </motion.h2>
 
           {loading ? (
             <div className="h-[420px] rounded-2xl bg-white/[0.03] animate-pulse" />
           ) : heroItems.length === 0 ? (
             <div className="flex items-center justify-center h-[300px] rounded-2xl bg-white/[0.03] border border-white/[0.06]">
-              <p className="text-white/20">등록된 소식이 없습니다.</p>
+              <p className="text-white/20">{t.news.empty}</p>
             </div>
           ) : (
             <motion.div
@@ -353,13 +373,13 @@ export default function NewsPage() {
               transition={{ delay: 0.1, duration: 0.6 }}
             >
               {/* 좌측: 대형 슬라이드 */}
-              <HeroSlide items={heroSlideItems} />
+              <HeroSlide items={heroSlideItems} t={t} />
 
               {/* 우측: 사이드 카드 3개 */}
               {sideItems.length > 0 && (
                 <div className="flex flex-col gap-4">
                   {sideItems.map((item) => (
-                    <SideCard key={item.id} item={item} />
+                    <SideCard key={item.id} item={item} t={t} />
                   ))}
                 </div>
               )}
@@ -377,7 +397,7 @@ export default function NewsPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            최근 뉴스
+            {t.news.latest}
           </motion.h2>
 
           {/* 카테고리 탭 */}
@@ -392,7 +412,7 @@ export default function NewsPage() {
                     : "bg-transparent text-white/40 border-white/10 hover:text-white/70 hover:border-white/20"
                 }`}
               >
-                {cat}
+                {getCategoryTabLabel(cat)}
               </button>
             ))}
           </div>
@@ -409,14 +429,14 @@ export default function NewsPage() {
               <svg className="w-12 h-12 text-white/10 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
               </svg>
-              <p className="text-white/20">해당 카테고리에 뉴스가 없습니다.</p>
+              <p className="text-white/20">{t.news.emptyCategory}</p>
             </div>
           ) : (
             <>
               <div className="space-y-3">
                 {visibleNews.map((item, i) => (
                   <div key={item.id} className="animate-[fadeInUp_0.4s_ease-out_both]" style={{ animationDelay: `${(i % NEWS_PAGE_SIZE) * 50}ms` }}>
-                    <ListCard item={item} />
+                    <ListCard item={item} t={t} />
                   </div>
                 ))}
               </div>

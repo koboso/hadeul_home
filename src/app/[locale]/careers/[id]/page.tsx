@@ -23,7 +23,7 @@ function getJob(id: string): JobRow | null {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ locale: string; id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
   const job = getJob(id);
@@ -47,7 +47,7 @@ export async function generateMetadata({
 export default async function CareerDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ locale: string; id: string }>;
 }) {
   const { id } = await params;
   const job = getJob(id);

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
+import { useLocale } from "@/i18n/LocaleContext";
 
 interface JobData {
   id: string;
@@ -18,18 +19,20 @@ interface JobData {
 }
 
 export default function CareerDetailClient({ job }: { job: JobData | null }) {
+  const { locale, t } = useLocale();
+
   if (!job) {
     return (
       <div className="bg-black text-white min-h-screen">
         <Nav />
         <div className="flex flex-col items-center justify-center min-h-[60vh] px-6">
-          <h1 className="text-4xl font-black mb-4">채용 공고를 찾을 수 없습니다</h1>
-          <p className="text-white/40 mb-8">삭제되었거나 존재하지 않는 공고입니다.</p>
+          <h1 className="text-4xl font-black mb-4">{t.careerDetail.notFound}</h1>
+          <p className="text-white/40 mb-8">{t.careerDetail.notFoundDesc}</p>
           <Link
-            href="/careers"
+            href={`/${locale}/careers`}
             className="px-8 py-3 border border-white/10 rounded-full text-white/60 hover:text-white hover:border-white/20 transition-all"
           >
-            채용 목록으로
+            {t.careerDetail.backToList}
           </Link>
         </div>
         <PageFooter />
@@ -51,13 +54,13 @@ export default function CareerDetailClient({ job }: { job: JobData | null }) {
             transition={{ duration: 0.5 }}
           >
             <Link
-              href="/careers#positions"
+              href={`/${locale}/careers#positions`}
               className="inline-flex items-center gap-2 text-white/30 text-sm hover:text-white/60 transition-colors mb-10"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
               </svg>
-              채용 목록
+              {t.careerDetail.backToPositions}
             </Link>
           </motion.div>
 
@@ -117,7 +120,7 @@ export default function CareerDetailClient({ job }: { job: JobData | null }) {
           >
             {job.description && (
               <div className="mb-12">
-                <h2 className="text-xl font-black tracking-tight mb-5 text-white/90">직무 소개</h2>
+                <h2 className="text-xl font-black tracking-tight mb-5 text-white/90">{t.careerDetail.jobDescription}</h2>
                 <div
                   className="prose prose-invert prose-sm max-w-none text-white/50 leading-relaxed [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1 [&_p]:mb-3 [&_h3]:text-white/80 [&_h3]:font-bold [&_h3]:mt-6 [&_h3]:mb-3 [&_h4]:text-white/70 [&_h4]:font-bold [&_h4]:mt-4 [&_h4]:mb-2 [&_strong]:text-white/70 [&_a]:text-purple-400 [&_a]:underline"
                   dangerouslySetInnerHTML={{ __html: job.description }}
@@ -127,7 +130,7 @@ export default function CareerDetailClient({ job }: { job: JobData | null }) {
 
             {job.requirements && (
               <div className="mb-12">
-                <h2 className="text-xl font-black tracking-tight mb-5 text-white/90">자격 요건</h2>
+                <h2 className="text-xl font-black tracking-tight mb-5 text-white/90">{t.careerDetail.requirements}</h2>
                 <div
                   className="prose prose-invert prose-sm max-w-none text-white/50 leading-relaxed [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1 [&_p]:mb-3 [&_h3]:text-white/80 [&_h3]:font-bold [&_h3]:mt-6 [&_h3]:mb-3 [&_h4]:text-white/70 [&_h4]:font-bold [&_h4]:mt-4 [&_h4]:mb-2 [&_strong]:text-white/70 [&_a]:text-purple-400 [&_a]:underline"
                   dangerouslySetInnerHTML={{ __html: job.requirements }}
@@ -145,23 +148,23 @@ export default function CareerDetailClient({ job }: { job: JobData | null }) {
             <div className="sticky top-28 space-y-6">
               {/* Info card */}
               <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
-                <h3 className="text-sm font-bold text-white/50 mb-4">공고 정보</h3>
+                <h3 className="text-sm font-bold text-white/50 mb-4">{t.careerDetail.jobInfo}</h3>
                 <dl className="space-y-4 text-sm">
                   {job.department && (
                     <div>
-                      <dt className="text-white/30 mb-1">부서</dt>
+                      <dt className="text-white/30 mb-1">{t.careerDetail.department}</dt>
                       <dd className="text-white/80 font-bold">{job.department}</dd>
                     </div>
                   )}
                   {job.job_type && (
                     <div>
-                      <dt className="text-white/30 mb-1">고용 형태</dt>
+                      <dt className="text-white/30 mb-1">{t.careerDetail.jobType}</dt>
                       <dd className="text-white/80 font-bold">{job.job_type}</dd>
                     </div>
                   )}
                   {job.location && (
                     <div>
-                      <dt className="text-white/30 mb-1">근무지</dt>
+                      <dt className="text-white/30 mb-1">{t.careerDetail.location}</dt>
                       <dd className="text-white/80 font-bold">{job.location}</dd>
                     </div>
                   )}
@@ -174,7 +177,7 @@ export default function CareerDetailClient({ job }: { job: JobData | null }) {
                 disabled
                 className="relative block w-full text-center px-8 py-4 rounded-full text-white/50 font-bold text-base overflow-hidden bg-white/[0.06] border border-white/[0.08] cursor-not-allowed"
               >
-                <span>준비 중입니다</span>
+                <span>{t.careerDetail.preparing}</span>
               </button>
               {/* <a
                 href={`mailto:hadeulsoft@gmail.com?subject=[지원] ${job.title}`}

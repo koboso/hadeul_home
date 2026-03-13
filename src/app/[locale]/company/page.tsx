@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
 import { CompanyHeroBg, VideoHeroBg } from "@/components/HeroBackgrounds";
+import { useLocale } from "@/i18n/LocaleContext";
 
 /* 📹 Envato 영상 다운로드 후 경로 설정 (빈 문자열이면 CSS 애니메이션 fallback) */
 const COMPANY_HERO_VIDEO = "/videos/company-hero.mp4";
@@ -68,6 +69,7 @@ function ParallaxReveal({
 
 
 export default function CompanyPage() {
+  const { locale, t } = useLocale();
   const [selectedCompetence, setSelectedCompetence] = useState<typeof COMPETENCES[0] | null>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: heroScroll } = useScroll({
@@ -77,6 +79,49 @@ export default function CompanyPage() {
   const heroOpacity = useTransform(heroScroll, [0, 0.5], [1, 0]);
   const heroScale = useTransform(heroScroll, [0, 0.5], [1, 0.9]);
   const heroY = useTransform(heroScroll, [0, 0.5], [0, -100]);
+
+  /* Build translated competences by merging static layout data with i18n strings */
+  const COMPETENCE_KEYS = ["ai", "digital", "iot", "defense", "game", "cloud"] as const;
+  const TECH_CAT_MAP: Record<string, keyof typeof t.company.techCategories> = {
+    "모델 & 프레임워크": "modelsFrameworks",
+    "데이터 & 파이프라인": "dataPipeline",
+    "배포 & 운영": "deployOps",
+    "프론트엔드": "frontend",
+    "백엔드": "backend",
+    "모바일": "mobile",
+    "프로토콜 & 통신": "protocolComm",
+    "데이터 & 시각화": "dataViz",
+    "엣지 & 자동화": "edgeAuto",
+    "시뮬레이션 & GIS": "simGis",
+    "전술 체계": "tactical",
+    "보안 & 인프라": "securityInfra",
+    "게임 엔진": "gameEngine",
+    "개발 언어": "devLang",
+    "서버 & 인프라": "serverInfra",
+    "클라우드": "cloudPlatform",
+    "컨테이너 & 오케스트레이션": "containerOrch",
+    "CI/CD & 모니터링": "cicdMonitor",
+  };
+
+  const translatedCompetences = COMPETENCES.map((c, i) => {
+    const key = COMPETENCE_KEYS[i];
+    const tc = t.company[key] as { title: string; subtitle: string; desc: string; detail: string; highlights: string[] };
+    return {
+      ...c,
+      title: tc.title,
+      subtitle: tc.subtitle,
+      desc: tc.desc,
+      details: {
+        ...c.details,
+        description: tc.detail,
+        highlights: tc.highlights,
+        techStacks: c.details.techStacks.map((stack) => ({
+          ...stack,
+          category: t.company.techCategories[TECH_CAT_MAP[stack.category] ?? "modelsFrameworks"] ?? stack.category,
+        })),
+      },
+    } as typeof c;
+  });
 
   return (
     <div className="bg-[#0a0a0a] text-white min-h-screen overflow-x-clip">
@@ -104,26 +149,26 @@ export default function CompanyPage() {
               About HADEUL
             </motion.p>
 
-            <div className="overflow-hidden">
+            <div className="overflow-hidden py-1">
               <motion.h1
-                className="text-6xl md:text-8xl lg:text-9xl font-black leading-[0.85] tracking-tighter"
+                className="text-6xl md:text-8xl lg:text-9xl font-black leading-[0.9] tracking-tighter"
                 initial={{ y: 120, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
               >
                 <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
-                  기술의 미래를
+                  {t.company.heroLine1}
                 </span>
               </motion.h1>
             </div>
-            <div className="overflow-hidden">
+            <div className="overflow-hidden py-1">
               <motion.h1
-                className="text-6xl md:text-8xl lg:text-9xl font-black leading-[0.85] tracking-tighter"
+                className="text-6xl md:text-8xl lg:text-9xl font-black leading-[0.9] tracking-tighter"
                 initial={{ y: 120, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 1.2, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
               >
-                만들어가는 사람들
+                {t.company.heroLine2}
               </motion.h1>
             </div>
 
@@ -133,9 +178,7 @@ export default function CompanyPage() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8, duration: 1 }}
             >
-              (주)하들소프트는 AI, 콘텐츠, 소프트웨어 솔루션 분야에서
-              <br />
-              혁신적인 기술로 디지털 세상을 변화시키고 있습니다.
+              {t.company.heroDesc}
             </motion.p>
 
             <motion.div
@@ -174,6 +217,12 @@ export default function CompanyPage() {
             ]
           );
 
+          /* Split missionHeading for styled rendering */
+          const missionHeadingFull = t.company.missionHeading;
+          /* Expected: "기술과 창의력으로 새로운 가치를 창출합니다" */
+          const missionParts = missionHeadingFull.split(" ");
+          /* Render as: line1="기술과 창의력으로", line2(outlined)="새로운 가치를", line3="창출합니다" */
+
           return (
             <div className="relative w-full h-full flex items-center overflow-hidden">
               <motion.div className="absolute inset-0" style={{ background: bgGlow }} />
@@ -186,18 +235,16 @@ export default function CompanyPage() {
                   <motion.div style={{ x: leftX }}>
                     <p className="text-purple-400 text-sm tracking-[0.4em] uppercase mb-4">Our Mission</p>
                     <h2 className="text-4xl md:text-5xl lg:text-6xl font-black leading-[0.9] tracking-tighter mb-8">
-                      기술과 창의력으로
+                      {missionParts.slice(0, 2).join(" ")}
                       <br />
                       <span className="text-transparent" style={{ WebkitTextStroke: "1.5px rgba(139,92,246,0.6)" }}>
-                        새로운 가치를
+                        {missionParts.slice(2, 4).join(" ")}
                       </span>
                       <br />
-                      창출합니다
+                      {missionParts.slice(4).join(" ")}
                     </h2>
                     <p className="text-white/35 leading-relaxed text-lg word-keep-all">
-                      (주)하들소프트는 단순한 협업을 넘어,
-                      <br />
-                      새로운 기술과 지식을 끊임없이 공유하며 조직 전체가 함께 진화합니다.
+                      {t.company.missionDesc}
                     </p>
                   </motion.div>
 
@@ -208,12 +255,25 @@ export default function CompanyPage() {
                     >
                       <p className="text-purple-400/60 text-xs tracking-[0.3em] uppercase mb-4">Vision 2030</p>
                       <h3 className="text-2xl md:text-3xl font-black tracking-tighter leading-tight">
-                        변화에 앞서가는 AI 에이전트 기반
-                        <br />
-                        <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
-                           글로벌 서비스 리더
-                        </span>
-                        
+                        {(() => {
+                          const vision = t.company.vision2030;
+                          /* Split at "글로벌 서비스 리더" to apply gradient */
+                          const gradientText = vision.match(/글로벌 서비스 리더|Global Service Leader/i)?.[0];
+                          if (gradientText) {
+                            const idx = vision.indexOf(gradientText);
+                            const before = vision.slice(0, idx).trim();
+                            return (
+                              <>
+                                {before}
+                                <br />
+                                <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                                  {" "}{gradientText}
+                                </span>
+                              </>
+                            );
+                          }
+                          return vision;
+                        })()}
                       </h3>
                     </motion.div>
                   </motion.div>
@@ -244,25 +304,37 @@ export default function CompanyPage() {
           <ParallaxReveal>
             <p className="text-purple-400 text-sm tracking-[0.4em] uppercase mb-4 text-center">Core Competence</p>
             <h2 className="text-4xl md:text-6xl font-black text-center mb-6 tracking-tighter">
-              우리가 잘하는{" "}
-              <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
-                것들
-              </span>
+              {(() => {
+                const core = t.company.coreTitle;
+                /* Expected: "우리가 잘하는 것들" — apply gradient to last word */
+                const lastSpaceIdx = core.lastIndexOf(" ");
+                if (lastSpaceIdx > 0) {
+                  return (
+                    <>
+                      {core.slice(0, lastSpaceIdx + 1)}
+                      <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                        {core.slice(lastSpaceIdx + 1)}
+                      </span>
+                    </>
+                  );
+                }
+                return core;
+              })()}
             </h2>
             <p className="text-white/30 text-center max-w-2xl mx-auto mb-20 word-keep-all">
-              다양한 산업 분야에서 축적한 기술력으로 최적의 솔루션을 제공합니다.
+              {t.company.coreSubtitle}
             </p>
           </ParallaxReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {COMPETENCES.map((c, i) => (
+            {translatedCompetences.map((c, i) => (
               <CompetenceCard key={c.title} item={c} index={i} onClick={() => setSelectedCompetence(c)} />
             ))}
           </div>
 
           <ParallaxReveal>
             <p className="text-center text-white/15 text-sm mt-10 tracking-wide">
-              카드를 클릭하면 상세 기술 스택을 확인할 수 있습니다
+              {t.company.coreClickHint}
             </p>
           </ParallaxReveal>
         </div>
@@ -271,7 +343,12 @@ export default function CompanyPage() {
       {/* Competence Detail Modal */}
       <AnimatePresence>
         {selectedCompetence && (
-          <CompetenceModal item={selectedCompetence} onClose={() => setSelectedCompetence(null)} />
+          <CompetenceModal
+            item={selectedCompetence}
+            onClose={() => setSelectedCompetence(null)}
+            techStackLabel={t.company.techStack}
+            featuredProjectsLabel={t.company.featuredProjects}
+          />
         )}
       </AnimatePresence>
 
@@ -304,37 +381,48 @@ export default function CompanyPage() {
 
           <ParallaxReveal delay={0.1}>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-[0.95] mb-8">
-              최고의 경험을 가진
-              <br />
-              <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
-                전문가
-              </span>
-              가 함께합니다
+              {(() => {
+                const cta = t.company.ctaTitle;
+                /* Expected: "최고의 경험을 가진 전문가가 함께합니다" — apply gradient to "전문가" */
+                const match = cta.match(/(전문가|experts?)/i);
+                if (match && match.index !== undefined) {
+                  const before = cta.slice(0, match.index).trim();
+                  const keyword = match[0];
+                  const after = cta.slice(match.index + keyword.length);
+                  return (
+                    <>
+                      {before}
+                      <br />
+                      <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
+                        {keyword}
+                      </span>
+                      {after}
+                    </>
+                  );
+                }
+                return cta;
+              })()}
             </h2>
           </ParallaxReveal>
 
           <ParallaxReveal delay={0.2}>
             <p className="text-white/40 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-6 word-keep-all">
-              고객의 비즈니스를 깊이 이해하고,
-              <br className="hidden md:inline" />
-              문제의 본질을 통찰하여 실질적인 해결책을 만들어냅니다.
+              {t.company.ctaDesc}
             </p>
           </ParallaxReveal>
 
           <ParallaxReveal delay={0.3}>
             <p className="text-white/25 text-base leading-relaxed max-w-xl mx-auto mb-12 word-keep-all">
-              복잡하고 난해한 기술적 과제도 걱정하지 마세요.
-              <br />
-              하들소프트가 고객 만족을 위해 끝까지 책임지겠습니다.
+              {t.company.ctaSubDesc}
             </p>
           </ParallaxReveal>
 
           <ParallaxReveal delay={0.4}>
             <div className="flex flex-wrap justify-center gap-8 mb-14">
               {[
-                { num: "7+", label: "년 평균 경력" },
-                { num: "200+", label: "프로젝트 수행" },
-                { num: "100%", label: "고객 만족도" },
+                { num: "7+", label: t.company.statExp },
+                { num: "200+", label: t.company.statProjects },
+                { num: "100%", label: t.company.statSatisfaction },
               ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
@@ -355,7 +443,7 @@ export default function CompanyPage() {
 
           <ParallaxReveal delay={0.5}>
             <motion.a
-              href="/inquiry"
+              href={`/${locale}/inquiry`}
               className="inline-block px-10 py-4 rounded-full text-white font-bold text-lg btn-glow"
               style={{
                 backgroundImage: "linear-gradient(90deg, #a855f7, #ec4899, #06b6d4, #a855f7)",
@@ -366,7 +454,7 @@ export default function CompanyPage() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
             >
-              프로젝트 문의하기
+              {t.company.ctaButton}
             </motion.a>
           </ParallaxReveal>
         </div>
@@ -555,9 +643,13 @@ function CompetenceCard({ item, index, onClick }: { item: typeof COMPETENCES[0];
 function CompetenceModal({
   item,
   onClose,
+  techStackLabel,
+  featuredProjectsLabel,
 }: {
   item: typeof COMPETENCES[0];
   onClose: () => void;
+  techStackLabel: string;
+  featuredProjectsLabel: string;
 }) {
   return (
     <motion.div
@@ -641,7 +733,7 @@ function CompetenceModal({
           <div className="p-6 md:p-8 space-y-6">
             {/* Tech Stacks */}
             <div>
-              <p className="text-white/40 text-[10px] font-bold tracking-[0.3em] uppercase mb-4">Technology Stack</p>
+              <p className="text-white/40 text-[10px] font-bold tracking-[0.3em] uppercase mb-4">{techStackLabel}</p>
               <div className="space-y-5">
                 {item.details.techStacks.map((stack, i) => (
                   <motion.div
@@ -671,7 +763,7 @@ function CompetenceModal({
 
             {/* Highlights */}
             <div>
-              <p className="text-white/40 text-[10px] font-bold tracking-[0.3em] uppercase mb-3">Featured Projects</p>
+              <p className="text-white/40 text-[10px] font-bold tracking-[0.3em] uppercase mb-3">{featuredProjectsLabel}</p>
               <div className="space-y-2.5">
                 {item.details.highlights.map((h, i) => (
                   <motion.div
@@ -693,4 +785,3 @@ function CompetenceModal({
     </motion.div>
   );
 }
-

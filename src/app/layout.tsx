@@ -35,6 +35,10 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://www.hadeul.com",
+    languages: {
+      "ko": "https://www.hadeul.com/ko",
+      "en": "https://www.hadeul.com/en",
+    },
   },
 };
 

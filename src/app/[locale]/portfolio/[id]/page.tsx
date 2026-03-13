@@ -34,9 +34,9 @@ function getPortfolioItem(id: string): PortfolioRow | null {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ locale: string; id: string }>;
 }): Promise<Metadata> {
-  const { id } = await params;
+  const { locale, id } = await params;
   const item = getPortfolioItem(id);
 
   if (!item) {
@@ -100,9 +100,9 @@ export async function generateMetadata({
 export default async function PortfolioDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ locale: string; id: string }>;
 }) {
-  const { id } = await params;
+  const { locale, id } = await params;
   const item = getPortfolioItem(id);
 
   // JSON-LD structured data for SEO/AEO

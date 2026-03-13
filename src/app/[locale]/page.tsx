@@ -5,6 +5,7 @@ import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
+import { useLocale } from "@/i18n/LocaleContext";
 
 /* ─── HADEUL Corporate Site ─── */
 
@@ -237,6 +238,7 @@ interface PortfolioProject {
 }
 
 function Portfolio() {
+  const { locale, t } = useLocale();
   const [projects, setProjects] = useState<PortfolioProject[]>([]);
 
   useEffect(() => {
@@ -263,14 +265,14 @@ function Portfolio() {
           <div>
             <p className="text-purple-400 text-sm tracking-[0.4em] uppercase mb-4">Portfolio</p>
             <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-[0.95]">
-              대표 프로젝트
+              {t.home.featuredProjects}
             </h2>
           </div>
           <Link
-            href="/portfolio"
+            href={`/${locale}/portfolio`}
             className="hidden md:flex items-center gap-2 group"
           >
-            <span className="text-white/30 text-sm group-hover:text-purple-400 transition-colors">전체 보기</span>
+            <span className="text-white/30 text-sm group-hover:text-purple-400 transition-colors">{t.home.viewAll}</span>
             <motion.span
               className="text-white/30 group-hover:text-purple-400 transition-colors"
               animate={{ x: [0, 4, 0] }}
@@ -291,7 +293,7 @@ function Portfolio() {
               transition={{ duration: 0.6, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
             >
               <Link
-                href={`/portfolio/${project.id}`}
+                href={`/${locale}/portfolio/${project.id}`}
                 className="group block rounded-2xl overflow-hidden bg-white/[0.03] border border-white/[0.06] hover:border-purple-500/30 transition-all duration-300"
               >
                 <div className="relative h-52 overflow-hidden bg-white/[0.02]">
@@ -334,10 +336,10 @@ function Portfolio() {
 
         <div className="mt-10 text-center md:hidden">
           <Link
-            href="/portfolio"
+            href={`/${locale}/portfolio`}
             className="inline-flex items-center gap-2 text-white/30 text-sm hover:text-purple-400 transition-colors"
           >
-            전체 보기 <span>&rarr;</span>
+            {t.home.viewAll} <span>&rarr;</span>
           </Link>
         </div>
       </div>
@@ -347,6 +349,7 @@ function Portfolio() {
 
 /* ─── 4. Split-Reveal Section ─── */
 function SplitReveal() {
+  const { locale, t } = useLocale();
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: false, amount: 0.3 });
 
@@ -408,9 +411,12 @@ function SplitReveal() {
             animate={{ y: [0, -4, 0] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
           >
-            기술과 예술의 교차점에서 새로운 가능성을 창조합니다.
-               <br />
-            우리는 단순한 개발을 넘어 경험을 설계합니다.
+            {t.home.philosophy.split('\n').map((line: string, i: number) => (
+              <span key={i}>
+                {i > 0 && <br />}
+                {line}
+              </span>
+            ))}
           </motion.p>
         </div>
       </motion.div>
@@ -420,11 +426,12 @@ function SplitReveal() {
 
 /* ─── 5. Large Typography Stats ─── */
 function LargeStats() {
+  const { locale, t } = useLocale();
   const stats = [
-    { target: 200, suffix: "+", label: "프로젝트 완료" },
-    { target: 50, suffix: "+", label: "파트너사" },
-    { target: 15, suffix: "yr", label: "업력" },
-    { target: 8, suffix: "+", label: "전문 분야" },
+    { target: 200, suffix: "+", label: t.home.statsProjects },
+    { target: 50, suffix: "+", label: t.home.statsPartners },
+    { target: 15, suffix: "yr", label: t.home.statsYears },
+    { target: 8, suffix: "+", label: t.home.statsDomains },
   ];
 
   return (
@@ -466,31 +473,31 @@ function LargeStats() {
 }
 
 /* ─── 5.5. Partner Logo Marquee ─── */
-const PARTNERS = [
-  { name: "삼성중공업", logo: "/images/partners/samsung-heavy.svg" },
-  { name: "ETRI", logo: "/images/partners/etri.svg" },
-  { name: "KRISO", logo: "/images/partners/kriso.svg" },
-  { name: "충남대학교", logo: "/images/partners/cnu.svg" },
-  { name: "KAIST", logo: "/images/partners/kaist.svg" },
-  { name: "이앤애드", logo: "/images/partners/enad.svg" },
-  { name: "중소기업벤처기업부", logo: "/images/partners/msv.svg" },
-  { name: "대전광역시", logo: "/images/partners/daejeon.svg" },
-  { name: "항공우주연구원", logo: "/images/partners/kari.svg" },
-  { name: "대전정보문화산업진흥원", logo: "/images/partners/dicia.svg" },
-  { name: "KCCA", logo: "/images/partners/kcca.svg" },
-  { name: "코레일네트웍스", logo: "/images/partners/korail.svg" },
-  { name: "국립축산연구원", logo: "/images/partners/nias.svg" },
-  { name: "코리아사이언스", logo: "/images/partners/korea-science.svg" },
-  { name: "효문화진흥원", logo: "/images/partners/hyomun.svg" },
-  { name: "(주)티엠디 교육그룹", logo: "/images/partners/tmd.svg" },
-  { name: "세무그룹명성", logo: "/images/partners/tax-ms.svg" },
-  { name: "지란지교", logo: "/images/partners/jiranjigy.svg" },
-  { name: "금단비가", logo: "/images/partners/gdb.svg" },
-  { name: "TDEA", logo: "/images/partners/tdea.svg" },
-  { name: "표면분석학회", logo: "/images/partners/kssa.svg" },
-  { name: "엠텍", logo: "/images/partners/mtech.svg" },
-  { name: "FIBER PRO", logo: "/images/partners/fiberpro.svg" },
-  { name: "주식회사근옥", logo: "/images/partners/geunok.svg" },
+const PARTNERS: { nameKey: string | null; fallback: string; logo: string }[] = [
+  { nameKey: "samsung", fallback: "삼성중공업", logo: "/images/partners/samsung-heavy.svg" },
+  { nameKey: null, fallback: "ETRI", logo: "/images/partners/etri.svg" },
+  { nameKey: null, fallback: "KRISO", logo: "/images/partners/kriso.svg" },
+  { nameKey: "chungnam", fallback: "충남대학교", logo: "/images/partners/cnu.svg" },
+  { nameKey: null, fallback: "KAIST", logo: "/images/partners/kaist.svg" },
+  { nameKey: null, fallback: "이앤애드", logo: "/images/partners/enad.svg" },
+  { nameKey: "sme", fallback: "중소기업벤처기업부", logo: "/images/partners/msv.svg" },
+  { nameKey: "daejeon", fallback: "대전광역시", logo: "/images/partners/daejeon.svg" },
+  { nameKey: "kari", fallback: "항공우주연구원", logo: "/images/partners/kari.svg" },
+  { nameKey: "dicia", fallback: "대전정보문화산업진흥원", logo: "/images/partners/dicia.svg" },
+  { nameKey: null, fallback: "KCCA", logo: "/images/partners/kcca.svg" },
+  { nameKey: "korail", fallback: "코레일네트웍스", logo: "/images/partners/korail.svg" },
+  { nameKey: "nias", fallback: "국립축산연구원", logo: "/images/partners/nias.svg" },
+  { nameKey: "kscience", fallback: "코리아사이언스", logo: "/images/partners/korea-science.svg" },
+  { nameKey: "hyo", fallback: "효문화진흥원", logo: "/images/partners/hyomun.svg" },
+  { nameKey: "tmd", fallback: "(주)티엠디 교육그룹", logo: "/images/partners/tmd.svg" },
+  { nameKey: "tax", fallback: "세무그룹명성", logo: "/images/partners/tax-ms.svg" },
+  { nameKey: "jiran", fallback: "지란지교", logo: "/images/partners/jiranjigy.svg" },
+  { nameKey: "geum", fallback: "금단비가", logo: "/images/partners/gdb.svg" },
+  { nameKey: null, fallback: "TDEA", logo: "/images/partners/tdea.svg" },
+  { nameKey: "surface", fallback: "표면분석학회", logo: "/images/partners/kssa.svg" },
+  { nameKey: "mtech", fallback: "엠텍", logo: "/images/partners/mtech.svg" },
+  { nameKey: null, fallback: "FIBER PRO", logo: "/images/partners/fiberpro.svg" },
+  { nameKey: "geunok", fallback: "주식회사근옥", logo: "/images/partners/geunok.svg" },
 ];
 
 function PartnerLogo({ name, logo }: { name: string; logo: string }) {
@@ -502,6 +509,9 @@ function PartnerLogo({ name, logo }: { name: string; logo: string }) {
 }
 
 function PartnerMarquee() {
+  const { locale, t } = useLocale();
+  const getPartnerName = (p: typeof PARTNERS[number]) =>
+    p.nameKey ? (t.home.partners as Record<string, string>)[p.nameKey] ?? p.fallback : p.fallback;
   return (
     <section className="relative py-16 bg-[#050505] overflow-hidden border-t border-white/[0.03]">
       <div className="text-center mb-10">
@@ -520,7 +530,7 @@ function PartnerMarquee() {
           transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
         >
           {[...PARTNERS.slice(0, 12), ...PARTNERS.slice(0, 12)].map((p, i) => (
-            <PartnerLogo key={`a-${i}`} name={p.name} logo={p.logo} />
+            <PartnerLogo key={`a-${i}`} name={getPartnerName(p)} logo={p.logo} />
           ))}
         </motion.div>
       </div>
@@ -535,7 +545,7 @@ function PartnerMarquee() {
           transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
         >
           {[...PARTNERS.slice(12), ...PARTNERS.slice(12)].map((p, i) => (
-            <PartnerLogo key={`b-${i}`} name={p.name} logo={p.logo} />
+            <PartnerLogo key={`b-${i}`} name={getPartnerName(p)} logo={p.logo} />
           ))}
         </motion.div>
       </div>
@@ -545,6 +555,7 @@ function PartnerMarquee() {
 
 /* ─── 6. CTA ─── */
 function CTASection() {
+  const { locale, t } = useLocale();
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -588,7 +599,7 @@ function CTASection() {
           </h2>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
-              href="/inquiry"
+              href={`/${locale}/inquiry`}
               className="group relative px-12 py-5 overflow-hidden rounded-full btn-glow"
             >
               <motion.div
@@ -598,11 +609,11 @@ function CTASection() {
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               />
               <span className="relative text-white font-bold text-lg tracking-wider uppercase">
-                프로젝트 문의
+                {t.home.projectInquiry}
               </span>
             </Link>
             <Link
-              href="/company"
+              href={`/${locale}/company`}
               className="group relative px-12 py-5 overflow-hidden rounded-full border border-white/10 btn-glow-outline"
             >
               <motion.div

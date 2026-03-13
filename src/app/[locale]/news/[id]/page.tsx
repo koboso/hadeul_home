@@ -28,9 +28,9 @@ function getNewsItem(id: string): NewsRow | null {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ locale: string; id: string }>;
 }): Promise<Metadata> {
-  const { id } = await params;
+  const { locale, id } = await params;
   const item = getNewsItem(id);
 
   if (!item) {
@@ -64,7 +64,7 @@ export async function generateMetadata({
       images: item.image
         ? [{ url: item.image.split(",")[0].trim(), width: 1200, height: 630, alt: item.title }]
         : [],
-      url: `/news/${item.id}`,
+      url: `/${locale}/news/${item.id}`,
       publishedTime: item.published_at,
     },
     twitter: {
@@ -74,7 +74,7 @@ export async function generateMetadata({
       images: item.image ? [item.image.split(",")[0].trim()] : [],
     },
     alternates: {
-      canonical: `/news/${item.id}`,
+      canonical: `/${locale}/news/${item.id}`,
     },
     robots: {
       index: true,
@@ -90,9 +90,9 @@ export async function generateMetadata({
 export default async function NewsDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ locale: string; id: string }>;
 }) {
-  const { id } = await params;
+  const { locale, id } = await params;
   const item = getNewsItem(id);
 
   // source_url이 있으면 외부 기사로 리다이렉트
@@ -121,7 +121,7 @@ export default async function NewsDetailPage({
           name: "주식회사 하들소프트",
           url: "https://www.hadeul.com",
         },
-        url: `https://www.hadeul.com/news/${item.id}`,
+        url: `https://www.hadeul.com/${locale}/news/${item.id}`,
       }
     : null;
 

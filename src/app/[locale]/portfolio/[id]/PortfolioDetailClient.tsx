@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
+import { useLocale } from "@/i18n/LocaleContext";
 
 interface PortfolioDetail {
   id: string;
@@ -220,6 +221,7 @@ function PlainImageGallery({ images, video }: { images: string[]; video?: string
 
 /* ─── Detail Content Block (reusable) ─── */
 function DetailContent({ architecture, textOnlyDetail }: { architecture?: string; textOnlyDetail?: string }) {
+  const { t } = useLocale();
   return (
     <>
       {architecture && (
@@ -227,7 +229,7 @@ function DetailContent({ architecture, textOnlyDetail }: { architecture?: string
           <div className="flex items-center gap-3 mb-6">
             <div className="w-6 h-[1px] bg-purple-500/40" />
             <h2 className="text-[11px] tracking-[0.2em] uppercase text-purple-400/60 font-bold">
-              System Architecture
+              {t.portfolioDetail.architecture}
             </h2>
           </div>
           <div className="tiptap max-w-none" dangerouslySetInnerHTML={{ __html: architecture }} />
@@ -238,7 +240,7 @@ function DetailContent({ architecture, textOnlyDetail }: { architecture?: string
           <div className="flex items-center gap-3 mb-6">
             <div className="w-6 h-[1px] bg-white/10" />
             <h2 className="text-[11px] tracking-[0.2em] uppercase text-white/30 font-bold">
-              Project Detail
+              {t.portfolioDetail.detail}
             </h2>
           </div>
           <div className="tiptap max-w-none" dangerouslySetInnerHTML={{ __html: textOnlyDetail }} />
@@ -250,15 +252,16 @@ function DetailContent({ architecture, textOnlyDetail }: { architecture?: string
 
 export default function PortfolioDetailClient({ item }: { item: PortfolioDetail | null }) {
   const router = useRouter();
+  const { locale, t } = useLocale();
 
   if (!item) {
     return (
       <div className="bg-[#0a0a0a] text-white min-h-screen">
         <Nav />
         <div className="flex flex-col items-center justify-center min-h-screen">
-          <p className="text-white/30 text-lg mb-4">프로젝트를 찾을 수 없습니다.</p>
-          <Link href="/portfolio" className="text-purple-400 hover:text-purple-300 transition-colors">
-            &larr; 목록으로
+          <p className="text-white/30 text-lg mb-4">{t.portfolioDetail.notFound}</p>
+          <Link href={`/${locale}/portfolio`} className="text-purple-400 hover:text-purple-300 transition-colors">
+            &larr; {t.portfolioDetail.backToList}
           </Link>
         </div>
       </div>
@@ -313,7 +316,7 @@ export default function PortfolioDetailClient({ item }: { item: PortfolioDetail 
                 {item.title}
               </h1>
               <span className="ml-auto text-white/30 text-xs font-bold whitespace-nowrap flex-shrink-0">
-                Client : <span className="text-purple-400/70">{item.client}</span>
+                {t.portfolioDetail.client} : <span className="text-purple-400/70">{item.client}</span>
               </span>
             </div>
 

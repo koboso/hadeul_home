@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
+import { useLocale } from "@/i18n/LocaleContext";
 
 interface NewsDetail {
   id: string;
@@ -21,6 +22,7 @@ interface NewsDetail {
 
 export default function NewsDetailClient({ item }: { item: NewsDetail | null }) {
   const router = useRouter();
+  const { locale, t } = useLocale();
 
   if (!item) {
     return (
@@ -40,9 +42,9 @@ export default function NewsDetailClient({ item }: { item: NewsDetail | null }) 
               d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
             />
           </svg>
-          <p className="text-white/30 text-lg mb-4">소식을 찾을 수 없습니다.</p>
-          <Link href="/news" className="text-purple-400 hover:text-purple-300 transition-colors">
-            &larr; 목록으로
+          <p className="text-white/30 text-lg mb-4">{t.news.notFound}</p>
+          <Link href={`/${locale}/news`} className="text-purple-400 hover:text-purple-300 transition-colors">
+            &larr; {t.news.backToList}
           </Link>
         </div>
       </div>
@@ -85,7 +87,7 @@ export default function NewsDetailClient({ item }: { item: NewsDetail | null }) 
               onClick={() => router.back()}
               className="text-white/30 text-sm hover:text-purple-400 transition-colors mb-8 inline-block"
             >
-              &larr; 목록으로
+              &larr; {t.news.backToList}
             </button>
 
             {/* Meta */}

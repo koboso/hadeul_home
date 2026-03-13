@@ -6,6 +6,7 @@ import Link from "next/link";
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
 import { ServicesHeroBg, VideoHeroBg } from "@/components/HeroBackgrounds";
+import { useLocale } from "@/i18n/LocaleContext";
 
 /* 📹 Envato 영상 다운로드 후 경로 설정 (빈 문자열이면 CSS 애니메이션만) */
 const SERVICES_HERO_VIDEO = "/videos/services-hero.mp4";
@@ -19,90 +20,7 @@ interface FeaturedProject {
   features: string[];
 }
 
-const FEATURED_AI: FeaturedProject = {
-  name: "AI Aigents",
-  type: "이화학 특수 도메인 E커머스 AI 에이전트",
-  video: "/videos/kolabshop-aigents.webm",
-  portfolioId: "81d01d6c-dba4-4921-bab9-576fd323d9b1",
-  stats: [
-    { num: "300K+", label: "상품 데이터" },
-    { num: "83.2%", label: "QA 정확도" },
-  ],
-  features: ["하이브리드 검색 엔진", "도메인 특화 역질문", "멀티턴 맥락 유지", "멀티 LLM 아키텍처"],
-};
-
-const FEATURED_SW: FeaturedProject = {
-  name: "Mission 코드이썬",
-  type: "게이미피케이션 코딩 교육 플랫폼",
-  video: "/videos/mission-codeison.webm",
-  portfolioId: "27a117dd-ad77-4d1b-8da5-979e5b118a1e",
-  stats: [
-    { num: "80+", label: "미션 콘텐츠" },
-    { num: "AI 초·중·고 교육", label: "교육 과정" },
-  ],
-  features: ["초·중·고 맞춤 커리큘럼", "학생 학습 분석", "게이미피케이션", "EduTech 교육 프로그램"],
-};
-
-const GAME_PROJECTS = [
-  {
-    name: "총검소녀 키우기",
-    genre: "방치형 RPG",
-    video: "/videos/gunblade.webm",
-    platforms: [
-      { name: "Android", icon: "android", url: "https://play.google.com/store/apps/details?id=com.hadeul.gunblader" },
-    ],
-  },
-  {
-    name: "머지머지 디펜스",
-    genre: "디펜스",
-    video: "/videos/roof.webm",
-    platforms: [
-      { name: "Android", icon: "android", url: "#" },
-    ],
-  },
-];
-
-const SERVICES = [
-  {
-    num: "01",
-    title: "AI Solutions",
-    subtitle: "인공지능 솔루션",
-    desc: "LLM, 컴퓨터 비전, 생성형 AI 등 최첨단 인공지능 기술로\n기업 맞춤형 솔루션을 설계하고 구축합니다.",
-    tags: ["LLM", "RAG", "Vision", "NLP", "Fine-tuning", "MLOps"],
-    href: "#",
-    accent: "from-purple-500 to-indigo-500",
-    accentText: "text-purple-400",
-    bgGlow: "bg-purple-500/[0.06]",
-    featuredProject: FEATURED_AI,
-  },
-  {
-    num: "02",
-    title: "Software Solutions",
-    subtitle: "소프트웨어 솔루션",
-    desc: "엔터프라이즈급 웹·앱, 클라우드 인프라,\n데이터 파이프라인을 설계하고 구축합니다.",
-    tags: ["React", "Next.js", "Flutter", "Node.js", "Cloud", "DevOps"],
-    href: "/services/software",
-    accent: "from-cyan-500 to-emerald-500",
-    accentText: "text-cyan-400",
-    bgGlow: "bg-cyan-500/[0.06]",
-    featuredProject: FEATURED_SW,
-  },
-  {
-    num: "03",
-    title: "Contents",
-    subtitle: "자체 컨텐츠",
-    desc: "몰입감 넘치는 게임 경험을 설계하고,\n크로스 플랫폼 개발부터 라이브 서비스 운영까지.",
-    tags: ["Unity", "Unreal", "Cocos", "Godot", "Live Ops"],
-    href: "/services/game",
-    accent: "from-pink-500 to-amber-500",
-    accentText: "text-pink-400",
-    bgGlow: "bg-pink-500/[0.06]",
-    hasGameProjects: true,
-    hideCTA: true,
-  },
-];
-
-function FeaturedProjectCard({ project, accent, accentText }: { project: FeaturedProject; accent: string; accentText: string }) {
+function FeaturedProjectCard({ project, accent, accentText, locale, viewMoreLabel }: { project: FeaturedProject; accent: string; accentText: string; locale: string; viewMoreLabel: string }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -156,10 +74,10 @@ function FeaturedProjectCard({ project, accent, accentText }: { project: Feature
           </div>
 
           <Link
-            href="/portfolio"
+            href={`/${locale}/portfolio`}
             className={`inline-flex items-center gap-2 text-xs font-bold ${accentText} opacity-60 hover:opacity-100 transition-opacity`}
           >
-            더보기 →
+            {viewMoreLabel} →
           </Link>
         </div>
       </motion.div>
@@ -190,9 +108,16 @@ function PlatformIcon({ type }: { type: string }) {
   );
 }
 
-function GameProjectSlider() {
+interface GameProject {
+  name: string;
+  genre: string;
+  video: string;
+  platforms: { name: string; icon: string; url: string }[];
+}
+
+function GameProjectSlider({ gameProjects }: { gameProjects: GameProject[] }) {
   const [current, setCurrent] = useState(0);
-  const game = GAME_PROJECTS[current];
+  const game = gameProjects[current];
 
   return (
     <motion.div
@@ -248,10 +173,10 @@ function GameProjectSlider() {
                   Game {String(current + 1).padStart(2, "0")}
                 </span>
                 {/* Navigation arrows */}
-                {GAME_PROJECTS.length > 1 && (
+                {gameProjects.length > 1 && (
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => setCurrent((p) => (p - 1 + GAME_PROJECTS.length) % GAME_PROJECTS.length)}
+                      onClick={() => setCurrent((p) => (p - 1 + gameProjects.length) % gameProjects.length)}
                       className="w-7 h-7 rounded-full border border-white/[0.08] flex items-center justify-center text-white/30 hover:text-white hover:border-pink-500/30 transition-all"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -259,7 +184,7 @@ function GameProjectSlider() {
                       </svg>
                     </button>
                     <button
-                      onClick={() => setCurrent((p) => (p + 1) % GAME_PROJECTS.length)}
+                      onClick={() => setCurrent((p) => (p + 1) % gameProjects.length)}
                       className="w-7 h-7 rounded-full border border-white/[0.08] flex items-center justify-center text-white/30 hover:text-white hover:border-pink-500/30 transition-all"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -295,9 +220,9 @@ function GameProjectSlider() {
           </AnimatePresence>
 
           {/* Dots */}
-          {GAME_PROJECTS.length > 1 && (
+          {gameProjects.length > 1 && (
             <div className="flex gap-1.5 mt-auto pt-3">
-              {GAME_PROJECTS.map((_, i) => (
+              {gameProjects.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setCurrent(i)}
@@ -411,7 +336,7 @@ const PROCESS_STEPS = [
   },
 ];
 
-function ServiceSection({ service, index }: { service: typeof SERVICES[0]; index: number }) {
+function ServiceSection({ service, index, locale, gameProjects, viewMoreLabel }: { service: typeof SERVICES_STATIC[0] & { subtitle: string; desc: string; featuredProject?: FeaturedProject }; index: number; locale: string; gameProjects?: GameProject[]; viewMoreLabel: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -509,7 +434,7 @@ function ServiceSection({ service, index }: { service: typeof SERVICES[0]; index
                   </span>
                 ) : (
                   <a
-                    href="/inquiry"
+                    href={`/${locale}/inquiry`}
                     className="group/cta relative inline-flex items-center gap-3 px-8 py-4 rounded-full text-white font-bold text-base btn-glow overflow-hidden"
                   >
                     <motion.div
@@ -535,9 +460,9 @@ function ServiceSection({ service, index }: { service: typeof SERVICES[0]; index
           {/* Right: Project Preview Cards */}
           <div className={`${index % 2 === 1 ? "md:order-1" : ""}`}>
             {"featuredProject" in service && service.featuredProject ? (
-              <FeaturedProjectCard project={service.featuredProject} accent={service.accent} accentText={service.accentText} />
-            ) : "hasGameProjects" in service && service.hasGameProjects ? (
-              <GameProjectSlider />
+              <FeaturedProjectCard project={service.featuredProject} accent={service.accent} accentText={service.accentText} locale={locale} viewMoreLabel={viewMoreLabel} />
+            ) : "hasGameProjects" in service && service.hasGameProjects && gameProjects ? (
+              <GameProjectSlider gameProjects={gameProjects} />
             ) : (
               /* Placeholder for coming soon */
               <motion.div
@@ -883,7 +808,111 @@ function InteractiveProcess() {
   );
 }
 
+/* Static service data (non-translatable fields) */
+const SERVICES_STATIC = [
+  {
+    num: "01",
+    title: "AI Solutions",
+    tags: ["LLM", "RAG", "Vision", "NLP", "Fine-tuning", "MLOps"],
+    href: "#",
+    accent: "from-purple-500 to-indigo-500",
+    accentText: "text-purple-400",
+    bgGlow: "bg-purple-500/[0.06]",
+    hasFeaturedAI: true,
+  },
+  {
+    num: "02",
+    title: "Software Solutions",
+    tags: ["React", "Next.js", "Flutter", "Node.js", "Cloud", "DevOps"],
+    href: "/services/software",
+    accent: "from-cyan-500 to-emerald-500",
+    accentText: "text-cyan-400",
+    bgGlow: "bg-cyan-500/[0.06]",
+    hasFeaturedSW: true,
+  },
+  {
+    num: "03",
+    title: "Contents",
+    tags: ["Unity", "Unreal", "Cocos", "Godot", "Live Ops"],
+    href: "/services/game",
+    accent: "from-pink-500 to-amber-500",
+    accentText: "text-pink-400",
+    bgGlow: "bg-pink-500/[0.06]",
+    hasGameProjects: true,
+    hideCTA: true,
+  },
+];
+
 export default function ServicesPage() {
+  const { locale, t } = useLocale();
+
+  const FEATURED_AI: FeaturedProject = {
+    name: "AI Aigents",
+    type: t.services.aiAgent,
+    video: "/videos/kolabshop-aigents.webm",
+    portfolioId: "81d01d6c-dba4-4921-bab9-576fd323d9b1",
+    stats: [
+      { num: "300K+", label: t.services.productData },
+      { num: "83.2%", label: t.services.qaAccuracy },
+    ],
+    features: [t.services.hybridSearch, t.services.domainQuestions, t.services.multiTurn, t.services.multiLlm],
+  };
+
+  const FEATURED_SW: FeaturedProject = {
+    name: "Mission 코드이썬",
+    type: t.services.codingPlatform,
+    video: "/videos/mission-codeison.webm",
+    portfolioId: "27a117dd-ad77-4d1b-8da5-979e5b118a1e",
+    stats: [
+      { num: "80+", label: t.services.missionContent },
+      { num: t.services.k12Education, label: t.services.educationPrograms },
+    ],
+    features: [t.services.curriculum, t.services.learningAnalytics, t.services.gamification, t.services.edutech],
+  };
+
+  const GAME_PROJECTS: GameProject[] = [
+    {
+      name: t.services.gunbladeGirl,
+      genre: t.services.idleRpg,
+      video: "/videos/gunblade.webm",
+      platforms: [
+        { name: "Android", icon: "android", url: "https://play.google.com/store/apps/details?id=com.hadeul.gunblader" },
+      ],
+    },
+    {
+      name: t.services.mergeMerge,
+      genre: t.services.defense,
+      video: "/videos/roof.webm",
+      platforms: [
+        { name: "Android", icon: "android", url: "#" },
+      ],
+    },
+  ];
+
+  const SERVICES = SERVICES_STATIC.map((s) => {
+    if ("hasFeaturedAI" in s && s.hasFeaturedAI) {
+      return {
+        ...s,
+        subtitle: t.services.aiSolutions,
+        desc: t.services.aiSolutionsDesc,
+        featuredProject: FEATURED_AI,
+      };
+    }
+    if ("hasFeaturedSW" in s && s.hasFeaturedSW) {
+      return {
+        ...s,
+        subtitle: t.services.softwareSolutions,
+        desc: t.services.softwareSolutionsDesc,
+        featuredProject: FEATURED_SW,
+      };
+    }
+    return {
+      ...s,
+      subtitle: t.services.ownContent,
+      desc: t.services.ownContentDesc,
+    };
+  });
+
   return (
     <div className="bg-[#0a0a0a] text-white min-h-screen snap-y snap-mandatory">
       <Nav />
@@ -956,7 +985,7 @@ export default function ServicesPage() {
               />
             </div>
           )}
-          <ServiceSection service={service} index={i} />
+          <ServiceSection service={service} index={i} locale={locale} viewMoreLabel={t.services.viewMore} />
         </div>
       ))}
 
@@ -967,7 +996,7 @@ export default function ServicesPage() {
 
       {/* Contents Section (Game) */}
       {SERVICES.filter((s) => "hasGameProjects" in s && s.hasGameProjects).map((service, i) => (
-        <ServiceSection key={service.num} service={service} index={i} />
+        <ServiceSection key={service.num} service={service} index={i} locale={locale} gameProjects={GAME_PROJECTS} viewMoreLabel={t.services.viewMore} />
       ))}
 
       {/* CTA */}
@@ -989,7 +1018,7 @@ export default function ServicesPage() {
             프로젝트 문의는 언제든 환영합니다.
           </p>
           <a
-            href="/inquiry"
+            href={`/${locale}/inquiry`}
             className="group relative inline-flex items-center gap-3 px-12 py-5 rounded-full text-white font-bold text-lg btn-glow overflow-hidden"
           >
             <motion.div

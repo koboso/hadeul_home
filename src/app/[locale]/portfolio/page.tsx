@@ -6,6 +6,7 @@ import Link from "next/link";
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
 import { PortfolioHeroBg, VideoHeroBg } from "@/components/HeroBackgrounds";
+import { useLocale } from "@/i18n/LocaleContext";
 
 const PORTFOLIO_HERO_VIDEO = "/videos/portfolio-hero.mp4";
 
@@ -29,6 +30,7 @@ const GAME_SLUG = "game";
 const PAGE_SIZE = 12;
 
 export default function PortfolioPage() {
+  const { locale, t } = useLocale();
   const [categories, setCategories] = useState<Category[]>([]);
   const [allItems, setAllItems] = useState<PortfolioItem[]>([]);
   const [items, setItems] = useState<PortfolioItem[]>([]);
@@ -237,7 +239,7 @@ export default function PortfolioPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
           >
-            산업 분야별 대표 프로젝트를 확인하세요.
+            {t.portfolio.heroDesc}
           </motion.p>
 
           {/* Scroll indicator */}
@@ -247,7 +249,7 @@ export default function PortfolioPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2 }}
           >
-            <span className="text-white/20 text-[10px] tracking-[0.3em] uppercase">Scroll</span>
+            <span className="text-white/20 text-[10px] tracking-[0.3em] uppercase">{t.portfolio.scroll}</span>
             <motion.div
               className="w-px h-8 bg-gradient-to-b from-purple-500/50 to-transparent"
               animate={{ scaleY: [0.5, 1, 0.5], opacity: [0.3, 0.7, 0.3] }}
@@ -270,7 +272,7 @@ export default function PortfolioPage() {
                   activeTab === tab ? "text-white" : "text-white/30 hover:text-white/50"
                 }`}
               >
-                {tab === "project" ? "프로젝트" : "컨텐츠"}
+                {tab === "project" ? t.portfolio.tabProject : t.portfolio.tabContents}
                 {activeTab === tab && (
                   <motion.div
                     className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full"
@@ -355,7 +357,7 @@ export default function PortfolioPage() {
               ))}
             </div>
           ) : items.length === 0 ? (
-            <div className="text-center py-20 text-white/20">등록된 프로젝트가 없습니다.</div>
+            <div className="text-center py-20 text-white/20">{t.portfolio.empty}</div>
           ) : (
             <>
               <AnimatePresence mode="wait">
@@ -376,7 +378,7 @@ export default function PortfolioPage() {
                       transition={{ type: "spring", stiffness: 300, damping: 25 }}
                     >
                       <Link
-                        href={`/portfolio/${item.id}`}
+                        href={`/${locale}/portfolio/${item.id}`}
                         className="group block relative rounded-3xl overflow-hidden bg-white/[0.02] border border-white/[0.06] hover:border-purple-500/20 transition-all duration-500 hover:shadow-[0_8px_60px_rgba(139,92,246,0.1)]"
                       >
                         {/* Image area — larger */}
