@@ -166,12 +166,22 @@ export default function Nav({ transparent = true }: { transparent?: boolean }) {
                 ))}
               </nav>
 
+              {/* Background watermark */}
+              <motion.p
+                className="absolute bottom-16 left-0 right-0 text-center text-[80px] font-black tracking-tighter text-white/[0.03] select-none pointer-events-none leading-none"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                HADEUL
+              </motion.p>
+
               {/* Bottom info */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="absolute bottom-safe-b text-center pb-8"
+                className="absolute bottom-0 left-0 right-0 text-center pb-8"
               >
                 <p className="text-white/15 text-[10px] tracking-[0.3em] uppercase">
                   HADEUL SOFT CO. LTD.

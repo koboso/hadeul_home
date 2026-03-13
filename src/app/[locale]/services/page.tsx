@@ -397,7 +397,7 @@ function ServiceSection({ service, index, locale, gameProjects, viewMoreLabel }:
             </motion.p>
 
             <motion.p
-              className="text-white/45 text-lg leading-relaxed mb-8 whitespace-pre-line"
+              className="text-white/45 text-lg leading-relaxed mb-8 whitespace-pre-line word-keep-all"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
@@ -666,22 +666,149 @@ function InteractiveProcess() {
         })}
       </div>
 
-      {/* Expanded detail panel */}
+      {/* Expanded detail panel — modal on mobile, inline on desktop */}
       <AnimatePresence mode="wait">
         {activeStep !== null && (
-          <motion.div
-            key={activeStep}
-            initial={{ opacity: 0, y: 20, scaleY: 0.95 }}
-            animate={{ opacity: 1, y: 0, scaleY: 1 }}
-            exit={{ opacity: 0, y: -10, scaleY: 0.95 }}
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            style={{ transformOrigin: "top" }}
-          >
+          <>
+            {/* Mobile modal overlay */}
+            <motion.div
+              className="fixed inset-0 z-50 md:hidden bg-black/80 backdrop-blur-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setActiveStep(null)}
+            />
+            <motion.div
+              key={activeStep}
+              className="fixed inset-0 z-50 md:hidden flex items-center justify-center p-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              {(() => {
+                const step = translatedSteps[activeStep];
+                const c = STEP_COLORS[step.color];
+                return (
+                  <motion.div
+                    className={`w-full max-h-[85vh] overflow-y-auto rounded-2xl border ${c.border} bg-[#0a0a0a] p-5 relative overflow-hidden`}
+                    initial={{ scale: 0.9, y: 30 }}
+                    animate={{ scale: 1, y: 0 }}
+                    exit={{ scale: 0.9, y: 30 }}
+                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <motion.div className={`absolute -top-20 -right-20 w-72 h-72 ${c.bg} rounded-full blur-[120px]`} />
+                    <div className="relative z-10">
+                      <div className="flex items-start justify-between mb-5">
+                        <div>
+                          <span className={`text-xs font-mono ${c.text} tracking-wider`}>STEP {step.num}</span>
+                          <h3 className="text-xl font-black tracking-tight mt-1">
+                            {step.title}{" "}
+                            <span className="text-white/20 font-medium text-sm">{step.subtitle}</span>
+                          </h3>
+                        </div>
+                        <button
+                          onClick={() => setActiveStep(null)}
+                          className="w-9 h-9 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all shrink-0 ml-3"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                      <div className="space-y-5">
+                        <div>
+                          <h4 className={`text-xs font-bold ${c.text} tracking-[0.2em] uppercase mb-3`}>{t.services.activities}</h4>
+                          <div className="space-y-2.5">
+                            {step.details.map((detail, di) => (
+                              <motion.div
+                                key={detail}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.1 + di * 0.05 }}
+                                className="flex items-start gap-2.5"
+                              >
+                                <div className={`mt-1 w-5 h-5 rounded-md bg-gradient-to-br ${c.gradient} flex items-center justify-center shrink-0`}>
+                                  <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                  </svg>
+                                </div>
+                                <span className="text-white/50 text-sm leading-relaxed">{detail}</span>
+                              </motion.div>
+                            ))}
+                          </div>
+                        </div>
+                        <div>
+                          <h4 className={`text-xs font-bold ${c.text} tracking-[0.2em] uppercase mb-3`}>{t.services.deliverablesLabel}</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {step.deliverables.map((d, di) => (
+                              <motion.span
+                                key={d}
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 0.15 + di * 0.05 }}
+                                className={`px-3 py-1.5 text-xs font-bold rounded-xl border ${c.border} ${c.bg} ${c.text}`}
+                              >
+                                {d}
+                              </motion.span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      {/* Step navigation */}
+                      <div className="flex items-center justify-between mt-5 pt-4 border-t border-white/[0.06]">
+                        <button
+                          onClick={() => setActiveStep(activeStep > 0 ? activeStep - 1 : translatedSteps.length - 1)}
+                          className="flex items-center gap-2 text-white/30 hover:text-white/60 transition-colors text-sm"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                          </svg>
+                          <span>{translatedSteps[(activeStep - 1 + translatedSteps.length) % translatedSteps.length].title}</span>
+                        </button>
+                        <div className="flex gap-1.5">
+                          {PROCESS_STEPS.map((s, i) => {
+                            const sc = STEP_COLORS[s.color];
+                            return (
+                              <button
+                                key={i}
+                                onClick={() => setActiveStep(i)}
+                                className={`h-1.5 rounded-full transition-all duration-300 ${i === activeStep ? `w-6 bg-gradient-to-r ${sc.gradient}` : "w-1.5 bg-white/15 hover:bg-white/30"}`}
+                              />
+                            );
+                          })}
+                        </div>
+                        <button
+                          onClick={() => setActiveStep(activeStep < translatedSteps.length - 1 ? activeStep + 1 : 0)}
+                          className="flex items-center gap-2 text-white/30 hover:text-white/60 transition-colors text-sm"
+                        >
+                          <span>{translatedSteps[(activeStep + 1) % translatedSteps.length].title}</span>
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })()}
+            </motion.div>
+
+            {/* Desktop inline panel */}
+            <motion.div
+              key={`desktop-${activeStep}`}
+              className="hidden md:block"
+              initial={{ opacity: 0, y: 20, scaleY: 0.95 }}
+              animate={{ opacity: 1, y: 0, scaleY: 1 }}
+              exit={{ opacity: 0, y: -10, scaleY: 0.95 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              style={{ transformOrigin: "top" }}
+            >
             {(() => {
               const step = translatedSteps[activeStep];
               const c = STEP_COLORS[step.color];
               return (
-                <div className={`mt-6 rounded-2xl sm:rounded-3xl border ${c.border} bg-gradient-to-br from-white/[0.04] to-white/[0.01] backdrop-blur-sm p-5 sm:p-8 md:p-10 relative overflow-hidden`}>
+                <div className={`mt-6 rounded-3xl border ${c.border} bg-gradient-to-br from-white/[0.04] to-white/[0.01] backdrop-blur-sm p-8 md:p-10 relative overflow-hidden`}>
                   {/* Animated background glows */}
                   <motion.div
                     className={`absolute -top-20 -right-20 w-72 h-72 ${c.bg} rounded-full blur-[120px]`}
@@ -696,16 +823,16 @@ function InteractiveProcess() {
 
                   <div className="relative z-10">
                     {/* Header */}
-                    <div className="flex items-start justify-between mb-6 sm:mb-8">
+                    <div className="flex items-start justify-between mb-8">
                       <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.1 }}
                       >
                         <span className={`text-xs font-mono ${c.text} tracking-wider`}>STEP {step.num}</span>
-                        <h3 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight mt-1">
+                        <h3 className="text-2xl md:text-3xl font-black tracking-tight mt-1">
                           {step.title}{" "}
-                          <span className="text-white/20 font-medium text-sm sm:text-lg">{step.subtitle}</span>
+                          <span className="text-white/20 font-medium text-lg">{step.subtitle}</span>
                         </h3>
                       </motion.div>
                       <button
@@ -719,10 +846,10 @@ function InteractiveProcess() {
                     </div>
 
                     {/* Content grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                    <div className="grid grid-cols-2 gap-8">
                       {/* Activities */}
                       <div>
-                        <h4 className={`text-xs font-bold ${c.text} tracking-[0.2em] uppercase mb-3 sm:mb-4`}>{t.services.activities}</h4>
+                        <h4 className={`text-xs font-bold ${c.text} tracking-[0.2em] uppercase mb-4`}>{t.services.activities}</h4>
                         <div className="space-y-3">
                           {step.details.map((detail, di) => (
                             <motion.div
@@ -768,7 +895,7 @@ function InteractiveProcess() {
                     </div>
 
                     {/* Step navigation */}
-                    <div className="flex items-center justify-between mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-white/[0.06]">
+                    <div className="flex items-center justify-between mt-8 pt-6 border-t border-white/[0.06]">
                       <button
                         onClick={() => setActiveStep(activeStep > 0 ? activeStep - 1 : translatedSteps.length - 1)}
                         className="flex items-center gap-2 text-white/30 hover:text-white/60 transition-colors text-sm group/nav"
@@ -785,7 +912,6 @@ function InteractiveProcess() {
                         </motion.svg>
                         <span className="group-hover/nav:text-white/60">{translatedSteps[(activeStep - 1 + translatedSteps.length) % translatedSteps.length].title}</span>
                       </button>
-                      {/* Step indicator */}
                       <div className="flex gap-1.5">
                         {PROCESS_STEPS.map((s, i) => {
                           const sc = STEP_COLORS[s.color];
@@ -820,6 +946,7 @@ function InteractiveProcess() {
               );
             })()}
           </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>
