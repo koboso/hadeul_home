@@ -8,8 +8,8 @@ export default function PageFooter() {
 
   return (
     <footer className="bg-[#050505] border-t border-white/[0.06]">
-      <div className="max-w-7xl mx-auto px-8 md:px-16 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 md:px-16 py-10 sm:py-12">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-8">
           {/* Left — Logo + Nav */}
           <div className="md:col-span-4">
             <Link href={`/${locale}`}>
@@ -28,7 +28,7 @@ export default function PageFooter() {
           </div>
 
           {/* Center — Company Info */}
-          <div className="md:col-span-5 text-[12px] text-white/40 leading-[1.9] space-y-0">
+          <div className="md:col-span-5 text-[11px] sm:text-[12px] text-white/40 leading-[1.9] space-y-0">
             <p className="text-white/60 text-[13px] font-semibold mb-2">{t.footer.companyName}</p>
             <p>{t.footer.ceo}</p>
             <p>{t.footer.address}</p>
@@ -47,7 +47,7 @@ export default function PageFooter() {
               {t.footer.privacyPolicy}
             </a>
             <a href="/my/market_privacy.php" className="text-[12px] text-white/45 hover:text-purple-400 transition-colors">
-              Mobile Privacy Policy
+              {t.footer.mobilePrivacyPolicy}
             </a>
           </div>
         </div>

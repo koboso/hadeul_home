@@ -138,10 +138,10 @@ export default function CompanyPage() {
 
           <motion.div
             style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
-            className="relative z-10 text-center px-6 max-w-5xl mx-auto"
+            className="relative z-10 text-center px-5 sm:px-6 max-w-5xl mx-auto"
           >
             <motion.p
-              className="text-purple-400 text-sm tracking-[0.5em] uppercase mb-8"
+              className="text-purple-400 text-xs sm:text-sm tracking-[0.4em] sm:tracking-[0.5em] uppercase mb-6 sm:mb-8"
               initial={{ opacity: 0, y: 20, letterSpacing: "0.2em" }}
               animate={{ opacity: 1, y: 0, letterSpacing: "0.5em" }}
               transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
@@ -151,7 +151,7 @@ export default function CompanyPage() {
 
             <div className="overflow-hidden py-1">
               <motion.h1
-                className="text-6xl md:text-8xl lg:text-9xl font-black leading-[0.9] tracking-tighter"
+                className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-black leading-[0.9] tracking-tighter"
                 initial={{ y: 120, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
@@ -163,7 +163,7 @@ export default function CompanyPage() {
             </div>
             <div className="overflow-hidden py-1">
               <motion.h1
-                className="text-6xl md:text-8xl lg:text-9xl font-black leading-[0.9] tracking-tighter"
+                className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-black leading-[0.9] tracking-tighter"
                 initial={{ y: 120, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 1.2, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
@@ -173,7 +173,7 @@ export default function CompanyPage() {
             </div>
 
             <motion.p
-              className="text-xl text-white/30 max-w-2xl mx-auto mt-10"
+              className="text-base sm:text-xl text-white/30 max-w-2xl mx-auto mt-6 sm:mt-10 word-keep-all"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8, duration: 1 }}
@@ -231,10 +231,10 @@ export default function CompanyPage() {
                 className="relative z-10 max-w-7xl mx-auto px-8 md:px-16 w-full"
                 style={{ opacity: missionOpacity, scale: missionScale }}
               >
-                <div className="grid md:grid-cols-2 gap-16 items-center">
+                <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
                   <motion.div style={{ x: leftX }}>
-                    <p className="text-purple-400 text-sm tracking-[0.4em] uppercase mb-4">Our Mission</p>
-                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-black leading-[0.9] tracking-tighter mb-8">
+                    <p className="text-purple-400 text-xs sm:text-sm tracking-[0.4em] uppercase mb-4">Our Mission</p>
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-[0.9] tracking-tighter mb-6 sm:mb-8">
                       {missionParts.slice(0, 2).join(" ")}
                       <br />
                       <span className="text-transparent" style={{ WebkitTextStroke: "1.5px rgba(139,92,246,0.6)" }}>
@@ -287,7 +287,7 @@ export default function CompanyPage() {
       {/* ═══ CEO Message — Hidden ═══ */}
 
       {/* ═══ Core Competence — Interactive cards ═══ */}
-      <section className="relative py-32 px-6 bg-[#050505] overflow-hidden">
+      <section className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 bg-[#050505] overflow-hidden">
         {/* Background watermark */}
         <div className="absolute inset-0 pointer-events-none select-none flex items-center justify-center">
           <motion.span
@@ -303,7 +303,7 @@ export default function CompanyPage() {
         <div className="max-w-6xl mx-auto relative z-10">
           <ParallaxReveal>
             <p className="text-purple-400 text-sm tracking-[0.4em] uppercase mb-4 text-center">Core Competence</p>
-            <h2 className="text-4xl md:text-6xl font-black text-center mb-6 tracking-tighter">
+            <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-center mb-6 tracking-tighter">
               {(() => {
                 const core = t.company.coreTitle;
                 /* Expected: "우리가 잘하는 것들" — apply gradient to last word */
@@ -353,7 +353,7 @@ export default function CompanyPage() {
       </AnimatePresence>
 
       {/* ═══ Confident CTA — Staff expertise ═══ */}
-      <section className="relative py-32 px-6 bg-[#050505] overflow-hidden">
+      <section className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 bg-[#050505] overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <motion.div
             className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-purple-500/[0.04] rounded-full blur-[200px]"
@@ -380,7 +380,7 @@ export default function CompanyPage() {
           </ParallaxReveal>
 
           <ParallaxReveal delay={0.1}>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-[0.95] mb-8">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-[0.95] mb-6 sm:mb-8 word-keep-all">
               {(() => {
                 const cta = t.company.ctaTitle;
                 /* Expected: "최고의 경험을 가진 전문가가 함께합니다" — apply gradient to "전문가" */
@@ -667,7 +667,7 @@ function CompetenceModal({
 
       {/* Modal — wide 2-column on PC */}
       <motion.div
-        className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#111] border border-white/[0.08]"
+        className="relative w-full max-w-5xl max-h-[85vh] overflow-y-auto rounded-3xl bg-[#111] border border-white/[0.08]"
         initial={{ scale: 0.9, y: 30 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.9, y: 30 }}
@@ -676,9 +676,9 @@ function CompetenceModal({
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 z-10 w-8 h-8 rounded-full bg-black/40 hover:bg-white/[0.12] flex items-center justify-center transition-colors"
+          className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/10 border border-white/20 hover:bg-white/20 flex items-center justify-center transition-colors"
         >
-          <svg className="w-4 h-4 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>

@@ -4,6 +4,13 @@ import Analytics from "@/components/Analytics";
 import MaintenanceGuard from "@/components/MaintenanceGuard";
 import { TransitionProvider, PageContent } from "@/components/PageTransition";
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover" as const,
+};
+
 export const metadata: Metadata = {
   title: {
     default: "HADEUL - AI & Software Solutions | 주식회사 하들소프트",

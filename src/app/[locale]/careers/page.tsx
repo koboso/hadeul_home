@@ -257,7 +257,7 @@ export default function CareersPage() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           >
-            <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black leading-[0.95] tracking-tighter mb-8">
+            <h1 className="text-4xl sm:text-7xl md:text-8xl lg:text-9xl font-black leading-[0.95] tracking-tighter mb-6 sm:mb-8">
               {heroLines.map((line, i) => (
                 <span key={i}>
                   {i > 0 && <br />}
@@ -311,11 +311,11 @@ export default function CareersPage() {
       </section>
 
       {/* ── Hadeul Way (Values) ── */}
-      <section className="py-32 px-6 bg-black">
+      <section className="py-16 sm:py-24 md:py-32 px-4 sm:px-6 bg-black">
         <div className="max-w-6xl mx-auto">
           <FadeIn>
             <p className="text-purple-400 text-sm tracking-[0.4em] uppercase mb-4">Hadeul Way</p>
-            <h2 className="text-4xl md:text-6xl font-black tracking-tight mb-6">
+            <h2 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tight mb-6">
               {t.careers.wayTitle}
             </h2>
             <p className="text-white/35 text-lg max-w-xl mb-20">
@@ -332,12 +332,12 @@ export default function CareersPage() {
       </section>
 
       {/* ── Hiring Process ── */}
-      <section className="py-24 px-6 bg-[#050505]">
+      <section className="py-16 sm:py-24 px-4 sm:px-6 bg-[#050505]">
         <div className="max-w-5xl mx-auto">
           <FadeIn>
-            <div className="text-center mb-16">
-              <p className="text-pink-400 text-sm tracking-[0.4em] uppercase mb-4">Process</p>
-              <h2 className="text-4xl md:text-5xl font-black tracking-tight">{t.careers.processTitle}</h2>
+            <div className="text-center mb-12 sm:mb-16">
+              <p className="text-pink-400 text-xs sm:text-sm tracking-[0.4em] uppercase mb-4">Process</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight">{t.careers.processTitle}</h2>
             </div>
           </FadeIn>
           <div className="relative">
@@ -379,13 +379,13 @@ export default function CareersPage() {
       </section>
 
       {/* ── Open Positions ── */}
-      <section className="py-24 px-6 bg-black" id="positions">
+      <section className="py-16 sm:py-24 px-4 sm:px-6 bg-black" id="positions">
         <div className="max-w-5xl mx-auto">
           <FadeIn>
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10 sm:mb-12">
               <div>
-                <p className="text-purple-400 text-sm tracking-[0.4em] uppercase mb-4">Open Positions</p>
-                <h2 className="text-4xl md:text-5xl font-black tracking-tight">{t.careers.openPositions}</h2>
+                <p className="text-purple-400 text-xs sm:text-sm tracking-[0.4em] uppercase mb-4">Open Positions</p>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight">{t.careers.openPositions}</h2>
               </div>
               {positions.length > 0 && (
                 <p className="text-white/30 text-sm">
@@ -435,12 +435,12 @@ export default function CareersPage() {
       </section>
 
       {/* ── FAQ ── */}
-      <section className="py-24 px-6 bg-[#050505]">
+      <section className="py-16 sm:py-24 px-4 sm:px-6 bg-[#050505]">
         <div className="max-w-3xl mx-auto">
           <FadeIn>
-            <div className="text-center mb-16">
-              <p className="text-cyan-400 text-sm tracking-[0.4em] uppercase mb-4">FAQ</p>
-              <h2 className="text-4xl md:text-5xl font-black tracking-tight">{t.careers.faq.title}</h2>
+            <div className="text-center mb-12 sm:mb-16">
+              <p className="text-cyan-400 text-xs sm:text-sm tracking-[0.4em] uppercase mb-4">FAQ</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight">{t.careers.faq.title}</h2>
             </div>
           </FadeIn>
           <div>

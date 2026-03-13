@@ -301,9 +301,9 @@ export default function PortfolioDetailClient({ item }: { item: PortfolioDetail 
           animate={{ opacity: 1, y: 0 }}
           className="bg-[#0a0a0a]/85 backdrop-blur-xl border-b border-white/[0.04]"
         >
-          <div className="max-w-7xl mx-auto px-6 py-3">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
             {/* Row 1: Back + Title + Client */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <button
                 onClick={() => router.back()}
                 className="text-white/30 hover:text-purple-400 transition-colors flex-shrink-0"
@@ -312,10 +312,10 @@ export default function PortfolioDetailClient({ item }: { item: PortfolioDetail 
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
-              <h1 className="text-lg md:text-2xl font-black tracking-tight break-keep">
+              <h1 className="text-base sm:text-lg md:text-2xl font-black tracking-tight break-keep line-clamp-1">
                 {item.title}
               </h1>
-              <span className="ml-auto text-white/30 text-xs font-bold whitespace-nowrap flex-shrink-0">
+              <span className="ml-auto text-white/30 text-xs font-bold whitespace-nowrap flex-shrink-0 hidden sm:inline">
                 {t.portfolioDetail.client} : <span className="text-purple-400/70">{item.client}</span>
               </span>
             </div>
@@ -350,7 +350,7 @@ export default function PortfolioDetailClient({ item }: { item: PortfolioDetail 
       </div>
 
       {/* ── Main Content ── */}
-      <section className="relative px-6">
+      <section className="relative px-4 sm:px-6">
         {/* Background glow — contained in own overflow wrapper */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <motion.div
@@ -370,77 +370,96 @@ export default function PortfolioDetailClient({ item }: { item: PortfolioDetail 
             {item.description}
           </motion.p>
 
-          {/* ─── PC Layout: Monitor top → Detail below ─── */}
-          {!isMobile && (
-            <div>
-              {/* Media — full width, top */}
-              {showMedia && (
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
-                  className="max-w-5xl mx-auto mb-12 md:mb-16"
-                >
-                  {frameEnabled ? (
-                    <PCMonitorFrame images={allImages} video={item.video || undefined} />
-                  ) : (
-                    <PlainImageGallery images={allImages} video={item.video || undefined} />
-                  )}
-                </motion.div>
-              )}
+          {/* ─── Mobile viewport: simplified gallery (no device frames) ─── */}
+          <div className="block lg:hidden">
+            {showMedia && (
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="mb-10"
+              >
+                <PlainImageGallery images={allImages} video={item.video || undefined} />
+              </motion.div>
+            )}
+            {hasDetail && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <DetailContent architecture={item.architecture} textOnlyDetail={textOnlyDetail} />
+              </motion.div>
+            )}
+          </div>
 
-              {/* Detail — below monitor */}
-              {hasDetail && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="max-w-4xl mx-auto"
-                >
-                  <DetailContent architecture={item.architecture} textOnlyDetail={textOnlyDetail} />
-                </motion.div>
-              )}
-            </div>
-          )}
+          {/* ─── Desktop: PC Layout — Monitor top → Detail below ─── */}
+          <div className="hidden lg:block">
+            {!isMobile && (
+              <div>
+                {showMedia && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="max-w-5xl mx-auto mb-12 md:mb-16"
+                  >
+                    {frameEnabled ? (
+                      <PCMonitorFrame images={allImages} video={item.video || undefined} />
+                    ) : (
+                      <PlainImageGallery images={allImages} video={item.video || undefined} />
+                    )}
+                  </motion.div>
+                )}
+                {hasDetail && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="max-w-4xl mx-auto"
+                  >
+                    <DetailContent architecture={item.architecture} textOnlyDetail={textOnlyDetail} />
+                  </motion.div>
+                )}
+              </div>
+            )}
 
-          {/* ─── Mobile Layout: Left=Detail scroll + Right=Phone sticky ─── */}
-          {isMobile && (
-            <div className="flex flex-col-reverse lg:flex-row gap-10 lg:gap-14">
-              {/* Left — Detail */}
-              {hasDetail ? (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="flex-1 min-w-0"
-                >
-                  <DetailContent architecture={item.architecture} textOnlyDetail={textOnlyDetail} />
-                </motion.div>
-              ) : (
-                <div className="flex-1" />
-              )}
-
-              {/* Right — Phone sticky */}
-              {showMedia && (
-                <div className="lg:flex-shrink-0">
-                  <div className="lg:sticky lg:top-[7.5rem]">
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.8, delay: 0.3 }}
-                      className="flex justify-center"
-                    >
-                      {frameEnabled ? (
-                        <MobilePhoneFrame images={allImages} video={item.video || undefined} />
-                      ) : (
-                        <PlainImageGallery images={allImages} video={item.video || undefined} />
-                      )}
-                    </motion.div>
+            {/* ─── Desktop: Mobile Layout — Left=Detail + Right=Phone sticky ─── */}
+            {isMobile && (
+              <div className="flex flex-row gap-14">
+                {hasDetail ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="flex-1 min-w-0"
+                  >
+                    <DetailContent architecture={item.architecture} textOnlyDetail={textOnlyDetail} />
+                  </motion.div>
+                ) : (
+                  <div className="flex-1" />
+                )}
+                {showMedia && (
+                  <div className="flex-shrink-0">
+                    <div className="sticky top-[7.5rem]">
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.3 }}
+                        className="flex justify-center"
+                      >
+                        {frameEnabled ? (
+                          <MobilePhoneFrame images={allImages} video={item.video || undefined} />
+                        ) : (
+                          <PlainImageGallery images={allImages} video={item.video || undefined} />
+                        )}
+                      </motion.div>
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          )}
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </section>
 

@@ -8,18 +8,19 @@
     "inquiry": "Inquiry"
   },
   "footer": {
-    "company": "회사소개",
-    "services": "서비스",
-    "portfolio": "포트폴리오",
-    "news": "뉴스",
-    "careers": "인재채용",
-    "inquiry": "문의",
+    "company": "Company",
+    "services": "Services",
+    "portfolio": "Portfolio",
+    "news": "News",
+    "careers": "Careers",
+    "inquiry": "Inquiry",
     "companyName": "주식회사 하들소프트",
     "ceo": "대표 : 김재식",
     "address": "대전시 유성구 대학로 31, 2118호(봉명동, 한진리조트)",
     "bizNumber": "사업자등록번호 : 244-81-01030",
     "privacyOfficer": "개인정보책임관리자 : 김재식",
-    "privacyPolicy": "개인정보처리방침"
+    "privacyPolicy": "개인정보처리방침",
+    "mobilePrivacyPolicy": "모바일 개인정보처리방침"
   },
   "home": {
     "heroSub": "Portfolio",
@@ -159,7 +160,59 @@
     "softwareSolutionsDesc": "엔터프라이즈급 웹·앱, 클라우드 인프라, 데이터 파이프라인을 설계하고 구축합니다.",
     "ownContent": "자체 컨텐츠",
     "ownContentDesc": "몰입감 넘치는 게임 경험을 설계하고, 크로스 플랫폼 개발부터 라이브 서비스 운영까지.",
-    "viewMore": "더보기"
+    "viewMore": "더보기",
+    "heroSubtitle": "기술을 넘어 가치 있는 경험으로\n함께 성장하는 내일을 만듭니다.",
+    "genreLabel": "장르",
+    "videoPreparing": "영상 준비 중",
+    "preparing": "준비 중입니다",
+    "projectInquiry": "프로젝트 문의",
+    "processTitle": "개발",
+    "processTitleHighlight": "프로세스",
+    "processHint": "각 단계를 클릭하여 상세 내용을 확인하세요",
+    "activities": "주요 활동",
+    "deliverablesLabel": "산출물",
+    "ctaTitle": "프로젝트를 함께",
+    "ctaHighlight": "시작해볼까요?",
+    "ctaDesc": "프로젝트 문의는 언제든 환영합니다.",
+    "ctaButton": "문의하기",
+    "process": {
+      "step1": {
+        "title": "기획",
+        "desc": "요구 분석",
+        "details": ["비즈니스 목표 및 KPI 정의", "사용자 리서치 & 페르소나 분석", "기술 타당성 검토 (PoC)", "프로젝트 로드맵 & 마일스톤 수립"],
+        "deliverables": ["요구사항 명세서", "프로젝트 계획서", "PoC 리포트"]
+      },
+      "step2": {
+        "title": "설계",
+        "desc": "아키텍처",
+        "details": ["시스템 아키텍처 설계", "UI/UX 와이어프레임 & 프로토타입", "데이터베이스 & API 스키마 설계", "기술 스택 선정 & 인프라 구성"],
+        "deliverables": ["아키텍처 문서", "UI/UX 프로토타입", "ERD & API 명세"]
+      },
+      "step3": {
+        "title": "개발",
+        "desc": "구현·코드",
+        "details": ["애자일 스프린트 기반 개발", "CI/CD 파이프라인 구축", "코드 리뷰 & 페어 프로그래밍", "주간 데모 & 진행 리포트"],
+        "deliverables": ["소스 코드", "기술 문서", "주간 데모"]
+      },
+      "step4": {
+        "title": "QA",
+        "desc": "테스트",
+        "details": ["단위·통합·E2E 테스트 자동화", "성능·부하 테스트 (Load Testing)", "보안 취약점 스캐닝", "사용자 수용 테스트 (UAT)"],
+        "deliverables": ["테스트 리포트", "성능 벤치마크", "보안 감사 결과"]
+      },
+      "step5": {
+        "title": "배포",
+        "desc": "런칭",
+        "details": ["스테이징 환경 최종 검증", "무중단 배포 (Blue-Green / Canary)", "모니터링 & 알럿 시스템 구축", "런칭 체크리스트 최종 확인"],
+        "deliverables": ["배포 가이드", "인프라 구성도", "런칭 리포트"]
+      },
+      "step6": {
+        "title": "운영",
+        "desc": "유지보수",
+        "details": ["24/7 시스템 모니터링", "정기 업데이트 & 기능 개선", "데이터 분석 & 성과 리포팅", "스케일링 & 인프라 최적화"],
+        "deliverables": ["월간 리포트", "SLA 대시보드", "개선 로드맵"]
+      }
+    }
   },
   "portfolio": {
     "heroDesc": "산업 분야별 대표 프로젝트를 확인하세요.",
@@ -263,8 +316,15 @@
     "preparing": "준비 중입니다"
   },
   "inquiry": {
-    "heroTitle": "Contact",
-    "heroDesc": "프로젝트, 파트너십, 채용 등 무엇이든 편하게 연락하세요.",
+    "heroTitle": "비즈니스 문제\n해결해 드립니다",
+    "heroDesc": "어려운 기술 과제, 복잡한 프로젝트.\n하들소프트가 함께 고민하고 해결합니다.\n편하게 문의해 주세요.",
+    "valueTitle": "기술로 문제를 해결합니다\n비즈니스 성장을 돕습니다",
+    "valueDesc": "AI, 소프트웨어, 콘텐츠 분야에서 축적한 기술력으로\n고객의 비즈니스 문제를 정확히 진단하고 최적의 솔루션을 제안합니다.",
+    "values": {
+      "consulting": { "title": "전문 컨설팅", "desc": "프로젝트 기획부터 기술 검토까지, 전문가가 직접 상담하여 최적의 방향을 제시합니다." },
+      "execution": { "title": "빠른 실행력", "desc": "검증된 개발 프로세스로 빠르게 프로토타입을 만들고, 정해진 일정 안에 결과물을 전달합니다." },
+      "growth": { "title": "지속적 성장 지원", "desc": "프로젝트 완료 후에도 운영, 유지보수, 기능 확장을 지속적으로 지원합니다." }
+    },
     "typeHeading": "어떤 문의를 하시겠어요?",
     "types": {
       "project": { "title": "프로젝트 문의", "desc": "AI, 게임, 소프트웨어 개발 프로젝트에 대해 상담하세요." },
@@ -273,25 +333,40 @@
       "other": { "title": "기타 문의", "desc": "그 외 일반적인 문의사항을 남겨주세요." }
     },
     "formTitle": "직접 문의하기",
-    "labelName": "이름 / 회사명",
-    "placeholderName": "홍길동 / (주)하들소프트",
+    "formDesc": "아래 양식을 작성해 주시면 담당자가 빠르게 연락드리겠습니다.",
+    "privacyConsentText": "개인정보 수집 및 이용에 동의합니다.",
+    "privacyPolicyLink": "개인정보처리방침 보기",
+    "labelCompany": "회사/연구소 (소속)",
+    "placeholderCompany": "(주)하들소프트",
+    "labelName": "성함",
+    "placeholderName": "홍길동",
+    "labelPhone": "연락처",
+    "placeholderPhone": "010-0000-0000",
     "labelEmail": "이메일",
     "labelType": "문의 유형",
     "selectPlaceholder": "선택하세요",
     "optProject": "프로젝트 문의",
-    "optPartnership": "파트너십",
+    "optPublishing": "퍼블리싱",
+    "optPartnership": "파트너십 문의",
     "optRecruitment": "채용 문의",
-    "optOther": "기타",
-    "labelMessage": "내용",
-    "placeholderMessage": "프로젝트 내용이나 문의사항을 자유롭게 작성해주세요.",
+    "optOther": "기타 문의",
+    "labelContent": "견적 / 문의 내용",
+    "placeholderContent": "프로젝트 내용, 예산, 일정 등을 자유롭게 작성해 주세요.",
+    "fillRequired": "필수 항목을 입력해주세요",
     "sending": "전송 중...",
-    "submit": "문의 보내기",
+    "submit": "문의하기",
     "successTitle": "문의가 접수되었습니다",
     "successDesc": "빠른 시일 내에 답변 드리겠습니다.",
     "submitAnother": "추가 문의하기",
     "errorSend": "전송에 실패했습니다.",
     "errorNetwork": "네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
-    "address": "대전시 유성구 대학로 31, 2118호(봉명동, 한진리조트)",
+    "errorTooMany": "너무 많은 요청입니다. 잠시 후 다시 시도해주세요.",
+    "errorTurnstile": "보안 인증에 실패했습니다. 페이지를 새로고침해주세요.",
+    "errorRequired": "필수 항목을 모두 입력해주세요.",
+    "errorPrivacy": "개인정보 수집에 동의해주세요.",
+    "errorEmail": "올바른 이메일 주소를 입력해주세요.",
+    "errorTooLong": "내용이 너무 깁니다. (최대 5000자)",
+    "address": "대전시 유성구 대학로 31, 2118호\n(봉명동, 한진리조트)",
     "hours": "Mon — Fri, 09:00 — 18:00"
   }
 }

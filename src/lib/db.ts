@@ -87,6 +87,21 @@ function initTables() {
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS inquiries (
+      id TEXT PRIMARY KEY,
+      type TEXT DEFAULT '',
+      company TEXT DEFAULT '',
+      name TEXT NOT NULL,
+      phone TEXT DEFAULT '',
+      email TEXT NOT NULL,
+      content TEXT DEFAULT '',
+      privacy_agreed INTEGER DEFAULT 0,
+      ip TEXT DEFAULT '',
+      is_read INTEGER DEFAULT 0,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+    CREATE INDEX IF NOT EXISTS idx_inquiries_created ON inquiries(created_at);
   `);
 
   // Migrate: add columns if missing (for existing DBs)

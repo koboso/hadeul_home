@@ -100,7 +100,7 @@ function Hero() {
                 delay: 0.3 + i * 0.25,
                 ease: [0.16, 1, 0.3, 1],
               }}
-              className="text-[15vw] font-black leading-[0.85] tracking-tighter select-none"
+              className="text-[13vw] sm:text-[15vw] font-black leading-[0.85] tracking-tighter select-none"
               style={{
                 color: i === 1 ? "transparent" : "white",
                 WebkitTextStroke: i === 1 ? "2px rgba(255,255,255,0.8)" : "none",
@@ -167,8 +167,8 @@ function ScrollTextReveal() {
             <div className="absolute inset-0 bg-black/60" />
             <motion.div className="absolute inset-0" style={{ background: bgGradient }} />
 
-            <div className="relative z-10 max-w-6xl mx-auto px-8 md:px-16">
-              <p className="text-3xl md:text-5xl lg:text-6xl font-black leading-[1.2] tracking-tight flex flex-wrap gap-x-[0.35em] gap-y-1 justify-center text-center">
+            <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-16">
+              <p className="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-black leading-[1.3] sm:leading-[1.2] tracking-tight flex flex-wrap gap-x-[0.3em] sm:gap-x-[0.35em] gap-y-1 sm:gap-y-1 justify-center text-center">
                 {words.map((word, i) => (
                   <ScrollWord
                     key={`${word}-${i}`}
@@ -355,27 +355,30 @@ function SplitReveal() {
 
   return (
     <section ref={ref} className="relative h-screen overflow-hidden bg-[#0a0a0a]" id="work">
-      {/* Left image */}
+      {/* Left image — hidden on mobile */}
       <motion.div
-        className="absolute top-0 left-0 w-1/2 h-full overflow-hidden"
+        className="absolute top-0 left-0 w-1/2 h-full overflow-hidden hidden sm:block"
         initial={{ x: 0, clipPath: "inset(0 0% 0 0)" }}
-        animate={isInView ? { x: -120, clipPath: "inset(0 30% 0 0)" } : {}}
+        animate={isInView ? { x: -60, clipPath: "inset(0 20% 0 0)" } : {}}
         transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
       >
         <img src="/images/home-3-01.jpg" alt="" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black/40" />
       </motion.div>
 
-      {/* Right image */}
+      {/* Right image — hidden on mobile */}
       <motion.div
-        className="absolute top-0 right-0 w-1/2 h-full overflow-hidden"
+        className="absolute top-0 right-0 w-1/2 h-full overflow-hidden hidden sm:block"
         initial={{ x: 0, clipPath: "inset(0 0 0 0%)" }}
-        animate={isInView ? { x: 120, clipPath: "inset(0 0 0 30%)" } : {}}
+        animate={isInView ? { x: 60, clipPath: "inset(0 0 0 20%)" } : {}}
         transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
       >
         <img src="/images/home-3-02.jpg" alt="" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black/40" />
       </motion.div>
+
+      {/* Mobile dark background (replaces images) */}
+      <div className="absolute inset-0 bg-[#0a0a0a] sm:hidden" />
 
       {/* Center text */}
       <motion.div
@@ -384,15 +387,15 @@ function SplitReveal() {
         animate={isInView ? { opacity: 1, scale: 1 } : {}}
         transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
       >
-        <div className="text-center max-w-3xl px-8">
+        <div className="text-center max-w-3xl px-6 sm:px-8">
           <motion.p
-            className="text-purple-400 text-sm tracking-[0.4em] uppercase font-bold mb-6"
+            className="text-purple-400 text-xs sm:text-sm tracking-[0.4em] uppercase font-bold mb-4 sm:mb-6"
             animate={{ opacity: [0.6, 1, 0.6] }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           >
             Our Philosophy
           </motion.p>
-          <h2 className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter mb-8">
+          <h2 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter mb-6 sm:mb-8">
             TECHNOLOGY
             <br />
             <motion.span
@@ -447,16 +450,16 @@ function LargeStats() {
         </motion.span>
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-8 md:px-16">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 md:px-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
           {stats.map((stat, i) => (
             <div
               key={stat.label}
-              className={`relative py-14 md:py-20 px-4 md:px-8 text-center ${
-                i < stats.length - 1 ? "border-r" : ""
-              } border-white/5`}
+              className={`relative py-10 sm:py-14 md:py-20 px-2 sm:px-4 md:px-8 text-center border-white/5 ${
+                i % 2 === 0 ? "border-r" : ""
+              } ${i < 2 ? "border-b md:border-b-0" : ""} ${i < stats.length - 1 ? "md:border-r" : "md:border-r-0"}`}
             >
-              <div className="relative h-[1em] flex items-baseline justify-center" style={{ fontSize: "clamp(3rem, 8vw, 7rem)" }}>
+              <div className="relative h-[1em] flex items-baseline justify-center" style={{ fontSize: "clamp(2.5rem, 8vw, 7rem)" }}>
                 <span className="font-black leading-none tracking-tighter bg-gradient-to-br from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
                   <Counter target={stat.target} suffix={stat.suffix} />
                 </span>
@@ -502,8 +505,8 @@ const PARTNERS: { nameKey: string | null; fallback: string; logo: string }[] = [
 
 function PartnerLogo({ name, logo }: { name: string; logo: string }) {
   return (
-    <div className="flex-shrink-0 flex items-center justify-center w-[180px] h-[70px] mx-4 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/[0.12] transition-all duration-300">
-      <img src={logo} alt={name} className="w-[140px] h-[50px] object-contain" draggable={false} />
+    <div className="flex-shrink-0 flex items-center justify-center w-[140px] sm:w-[180px] h-[55px] sm:h-[70px] mx-2 sm:mx-4 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/[0.12] transition-all duration-300">
+      <img src={logo} alt={name} className="w-[110px] sm:w-[140px] h-[40px] sm:h-[50px] object-contain" draggable={false} />
     </div>
   );
 }
@@ -591,10 +594,10 @@ function CTASection() {
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
         >
           <p className="text-white/20 text-sm tracking-[0.5em] uppercase mb-8">Ready to Start?</p>
-          <h2 className="text-6xl md:text-8xl lg:text-[10vw] font-black text-white leading-[0.85] tracking-tighter mb-4">
+          <h2 className="text-4xl sm:text-6xl md:text-8xl lg:text-[10vw] font-black text-white leading-[0.85] tracking-tighter mb-4">
             BUILD YOUR
           </h2>
-          <h2 className="text-6xl md:text-8xl lg:text-[10vw] font-black leading-[0.85] tracking-tighter mb-12 bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
+          <h2 className="text-4xl sm:text-6xl md:text-8xl lg:text-[10vw] font-black leading-[0.85] tracking-tighter mb-8 sm:mb-12 bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
             VISION
           </h2>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

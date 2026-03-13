@@ -116,6 +116,7 @@ interface GameProject {
 }
 
 function GameProjectSlider({ gameProjects }: { gameProjects: GameProject[] }) {
+  const { t } = useLocale();
   const [current, setCurrent] = useState(0);
   const game = gameProjects[current];
 
@@ -149,7 +150,7 @@ function GameProjectSlider({ gameProjects }: { gameProjects: GameProject[] }) {
                 />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/60">
-                  <p className="text-white/20 text-sm font-bold tracking-wide">영상 준비 중</p>
+                  <p className="text-white/20 text-sm font-bold tracking-wide">{t.services.videoPreparing}</p>
                 </div>
               )}
             </motion.div>
@@ -197,7 +198,7 @@ function GameProjectSlider({ gameProjects }: { gameProjects: GameProject[] }) {
               <h3 className="text-xl font-black tracking-tight mb-1">
                 {game.name}
               </h3>
-              <p className="text-white/35 text-sm mb-4">장르 : {game.genre}</p>
+              <p className="text-white/35 text-sm mb-4">{t.services.genreLabel} : {game.genre}</p>
 
               {/* Platform links */}
               <div className="flex gap-3">
@@ -337,6 +338,7 @@ const PROCESS_STEPS = [
 ];
 
 function ServiceSection({ service, index, locale, gameProjects, viewMoreLabel }: { service: typeof SERVICES_STATIC[0] & { subtitle: string; desc: string; featuredProject?: FeaturedProject }; index: number; locale: string; gameProjects?: GameProject[]; viewMoreLabel: string }) {
+  const { t } = useLocale();
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -349,7 +351,7 @@ function ServiceSection({ service, index, locale, gameProjects, viewMoreLabel }:
   return (
     <section
       ref={ref}
-      className="relative flex items-center py-16 md:py-24 px-6 snap-start overflow-hidden"
+      className="relative flex items-center py-12 sm:py-16 md:py-24 px-4 sm:px-6 snap-start overflow-hidden"
     >
       {/* Background glow */}
       <motion.div
@@ -375,7 +377,7 @@ function ServiceSection({ service, index, locale, gameProjects, viewMoreLabel }:
             </motion.span>
 
             <motion.h2
-              className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] mb-3"
+              className="text-3xl sm:text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] mb-3"
               initial={{ opacity: 0, y: 40, skewY: 3 }}
               whileInView={{ opacity: 1, y: 0, skewY: 0 }}
               viewport={{ once: true }}
@@ -443,7 +445,7 @@ function ServiceSection({ service, index, locale, gameProjects, viewMoreLabel }:
                       animate={{ backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"] }}
                       transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                     />
-                    <span className="relative">프로젝트 문의</span>
+                    <span className="relative">{t.services.projectInquiry}</span>
                     <motion.span
                       className="relative inline-block"
                       animate={{ x: [0, 4, 0] }}
@@ -482,7 +484,7 @@ function ServiceSection({ service, index, locale, gameProjects, viewMoreLabel }:
                       <span className="text-3xl font-black text-white/10">{service.num}</span>
                     </div>
                   </motion.div>
-                  <p className="text-white/15 text-sm font-bold tracking-wide">준비 중입니다</p>
+                  <p className="text-white/15 text-sm font-bold tracking-wide">{t.services.preparing}</p>
                 </div>
               </motion.div>
             )}
@@ -503,7 +505,23 @@ const STEP_COLORS: Record<string, { bg: string; border: string; text: string; gl
 };
 
 function InteractiveProcess() {
+  const { t } = useLocale();
   const [activeStep, setActiveStep] = useState<number | null>(null);
+
+  const STEP_KEYS = ["step1", "step2", "step3", "step4", "step5", "step6"] as const;
+  const processT = t.services.process as Record<string, { title: string; desc: string; details: string[]; deliverables: string[] }>;
+
+  const translatedSteps = PROCESS_STEPS.map((step, i) => {
+    const key = STEP_KEYS[i];
+    const translated = processT[key];
+    return {
+      ...step,
+      title: translated?.title ?? step.title,
+      desc: translated?.desc ?? step.desc,
+      details: translated?.details ?? step.details,
+      deliverables: translated?.deliverables ?? step.deliverables,
+    };
+  });
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -514,20 +532,20 @@ function InteractiveProcess() {
         viewport={{ once: true }}
       >
         <p className="text-purple-400 text-sm tracking-[0.4em] uppercase mb-4 text-center">How We Work</p>
-        <h2 className="text-4xl md:text-6xl font-black text-center mb-6 tracking-tighter">
-          개발{" "}
+        <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-center mb-6 tracking-tighter">
+          {t.services.processTitle}{" "}
           <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
-            프로세스
+            {t.services.processTitleHighlight}
           </span>
         </h2>
         <p className="text-white/25 text-center text-sm mb-16 max-w-md mx-auto">
-          각 단계를 클릭하여 상세 내용을 확인하세요
+          {t.services.processHint}
         </p>
       </motion.div>
 
       {/* Step nodes */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 lg:gap-3 relative z-10">
-        {PROCESS_STEPS.map((step, i) => {
+        {translatedSteps.map((step, i) => {
           const c = STEP_COLORS[step.color];
           const isActive = activeStep === i;
 
@@ -660,10 +678,10 @@ function InteractiveProcess() {
             style={{ transformOrigin: "top" }}
           >
             {(() => {
-              const step = PROCESS_STEPS[activeStep];
+              const step = translatedSteps[activeStep];
               const c = STEP_COLORS[step.color];
               return (
-                <div className={`mt-6 rounded-3xl border ${c.border} bg-gradient-to-br from-white/[0.04] to-white/[0.01] backdrop-blur-sm p-8 md:p-10 relative overflow-hidden`}>
+                <div className={`mt-6 rounded-2xl sm:rounded-3xl border ${c.border} bg-gradient-to-br from-white/[0.04] to-white/[0.01] backdrop-blur-sm p-5 sm:p-8 md:p-10 relative overflow-hidden`}>
                   {/* Animated background glows */}
                   <motion.div
                     className={`absolute -top-20 -right-20 w-72 h-72 ${c.bg} rounded-full blur-[120px]`}
@@ -678,21 +696,21 @@ function InteractiveProcess() {
 
                   <div className="relative z-10">
                     {/* Header */}
-                    <div className="flex items-start justify-between mb-8">
+                    <div className="flex items-start justify-between mb-6 sm:mb-8">
                       <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.1 }}
                       >
                         <span className={`text-xs font-mono ${c.text} tracking-wider`}>STEP {step.num}</span>
-                        <h3 className="text-2xl md:text-3xl font-black tracking-tight mt-1">
+                        <h3 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight mt-1">
                           {step.title}{" "}
-                          <span className="text-white/20 font-medium text-lg">{step.subtitle}</span>
+                          <span className="text-white/20 font-medium text-sm sm:text-lg">{step.subtitle}</span>
                         </h3>
                       </motion.div>
                       <button
                         onClick={() => setActiveStep(null)}
-                        className="w-8 h-8 rounded-full border border-white/[0.08] flex items-center justify-center text-white/30 hover:text-white hover:border-white/20 transition-all shrink-0 ml-4"
+                        className="w-9 h-9 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all shrink-0 ml-3"
                       >
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -701,10 +719,10 @@ function InteractiveProcess() {
                     </div>
 
                     {/* Content grid */}
-                    <div className="grid md:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                       {/* Activities */}
                       <div>
-                        <h4 className={`text-xs font-bold ${c.text} tracking-[0.2em] uppercase mb-4`}>주요 활동</h4>
+                        <h4 className={`text-xs font-bold ${c.text} tracking-[0.2em] uppercase mb-3 sm:mb-4`}>{t.services.activities}</h4>
                         <div className="space-y-3">
                           {step.details.map((detail, di) => (
                             <motion.div
@@ -732,7 +750,7 @@ function InteractiveProcess() {
 
                       {/* Deliverables */}
                       <div>
-                        <h4 className={`text-xs font-bold ${c.text} tracking-[0.2em] uppercase mb-4`}>산출물</h4>
+                        <h4 className={`text-xs font-bold ${c.text} tracking-[0.2em] uppercase mb-4`}>{t.services.deliverablesLabel}</h4>
                         <div className="flex flex-wrap gap-2">
                           {step.deliverables.map((d, di) => (
                             <motion.span
@@ -750,9 +768,9 @@ function InteractiveProcess() {
                     </div>
 
                     {/* Step navigation */}
-                    <div className="flex items-center justify-between mt-8 pt-6 border-t border-white/[0.06]">
+                    <div className="flex items-center justify-between mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-white/[0.06]">
                       <button
-                        onClick={() => setActiveStep(activeStep > 0 ? activeStep - 1 : PROCESS_STEPS.length - 1)}
+                        onClick={() => setActiveStep(activeStep > 0 ? activeStep - 1 : translatedSteps.length - 1)}
                         className="flex items-center gap-2 text-white/30 hover:text-white/60 transition-colors text-sm group/nav"
                       >
                         <motion.svg
@@ -765,7 +783,7 @@ function InteractiveProcess() {
                         >
                           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                         </motion.svg>
-                        <span className="group-hover/nav:text-white/60">{PROCESS_STEPS[(activeStep - 1 + PROCESS_STEPS.length) % PROCESS_STEPS.length].title}</span>
+                        <span className="group-hover/nav:text-white/60">{translatedSteps[(activeStep - 1 + translatedSteps.length) % translatedSteps.length].title}</span>
                       </button>
                       {/* Step indicator */}
                       <div className="flex gap-1.5">
@@ -781,10 +799,10 @@ function InteractiveProcess() {
                         })}
                       </div>
                       <button
-                        onClick={() => setActiveStep(activeStep < PROCESS_STEPS.length - 1 ? activeStep + 1 : 0)}
+                        onClick={() => setActiveStep(activeStep < translatedSteps.length - 1 ? activeStep + 1 : 0)}
                         className="flex items-center gap-2 text-white/30 hover:text-white/60 transition-colors text-sm group/nav"
                       >
-                        <span className="group-hover/nav:text-white/60">{PROCESS_STEPS[(activeStep + 1) % PROCESS_STEPS.length].title}</span>
+                        <span className="group-hover/nav:text-white/60">{translatedSteps[(activeStep + 1) % translatedSteps.length].title}</span>
                         <motion.svg
                           className="w-4 h-4"
                           fill="none"
@@ -923,16 +941,16 @@ export default function ServicesPage() {
           <VideoHeroBg src={SERVICES_HERO_VIDEO} overlay={0.65} />
         ) : null}
         <ServicesHeroBg />
-        <div className="relative z-10 text-center px-6">
+        <div className="relative z-10 text-center px-5 sm:px-6">
           <motion.p
-            className="text-cyan-400 text-sm tracking-[0.4em] uppercase mb-6"
+            className="text-cyan-400 text-xs sm:text-sm tracking-[0.4em] uppercase mb-4 sm:mb-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
             Services
           </motion.p>
           <motion.h1
-            className="text-6xl md:text-8xl font-black leading-[0.9] tracking-tighter mb-6"
+            className="text-4xl sm:text-6xl md:text-8xl font-black leading-[0.9] tracking-tighter mb-6"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
@@ -944,13 +962,12 @@ export default function ServicesPage() {
             </span>
           </motion.h1>
           <motion.p
-            className="text-white/40 text-lg max-w-lg mx-auto mb-12"
+            className="text-white/40 text-lg max-w-lg mx-auto mb-12 whitespace-pre-line"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
           >
-            기술을 넘어 가치 있는 경험으로
-            함께 성장하는 내일을 만듭니다.
+            {t.services.heroSubtitle}
           </motion.p>
 
           {/* Scroll indicator */}
@@ -990,7 +1007,7 @@ export default function ServicesPage() {
       ))}
 
       {/* Development Process */}
-      <section className="py-20 md:py-24 px-6 bg-[#050505] overflow-hidden snap-start">
+      <section className="py-16 sm:py-20 md:py-24 px-4 sm:px-6 bg-[#050505] overflow-hidden snap-start">
         <InteractiveProcess />
       </section>
 
@@ -1000,22 +1017,22 @@ export default function ServicesPage() {
       ))}
 
       {/* CTA */}
-      <section className="py-20 md:py-24 px-6 snap-start">
+      <section className="py-16 sm:py-20 md:py-24 px-4 sm:px-6 snap-start">
         <motion.div
           className="max-w-3xl mx-auto text-center"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-4xl md:text-6xl font-black tracking-tight mb-6">
-            프로젝트를 함께
+          <h2 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tight mb-6">
+            {t.services.ctaTitle}
             <br />
             <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
-              시작해볼까요?
+              {t.services.ctaHighlight}
             </span>
           </h2>
           <p className="text-white/40 text-lg mb-10">
-            프로젝트 문의는 언제든 환영합니다.
+            {t.services.ctaDesc}
           </p>
           <a
             href={`/${locale}/inquiry`}
@@ -1027,7 +1044,7 @@ export default function ServicesPage() {
               animate={{ backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             />
-            <span className="relative">문의하기</span>
+            <span className="relative">{t.services.ctaButton}</span>
           </a>
         </motion.div>
       </section>

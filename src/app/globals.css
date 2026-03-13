@@ -63,6 +63,54 @@ body {
   overflow-wrap: break-word;
 }
 
+/* ─── Mobile / Tablet / Foldable safe area ─── */
+.pt-safe { padding-top: env(safe-area-inset-top); }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+.px-safe { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+.bottom-safe-b { bottom: env(safe-area-inset-bottom, 0px); }
+
+/* Prevent text overflow on mobile */
+.mobile-text-balance {
+  text-wrap: balance;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
+/* Touch interaction optimization */
+@media (hover: none) and (pointer: coarse) {
+  /* Ensure tap targets are at least 44px (Apple HIG) */
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  /* Disable hover effects that cause sticky states on mobile */
+  .group:hover .group-hover\:opacity-\[0\.08\] {
+    opacity: 0 !important;
+  }
+}
+
+/* Cross-browser smooth scrolling */
+html {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Foldable device support (Galaxy Fold, Flip) */
+@media (max-width: 319px) {
+  html { font-size: 13px; }
+}
+
+/* Galaxy Z Fold unfolded inner display (~7.6") */
+@media (min-width: 600px) and (max-width: 767px) {
+  .fold-grid-2 { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Prevent horizontal overflow globally on mobile */
+@media (max-width: 767px) {
+  body {
+    overflow-x: hidden;
+  }
+}
+
 /* Glassmorphism card */
 .glass-card {
   background: rgba(255, 255, 255, 0.03);

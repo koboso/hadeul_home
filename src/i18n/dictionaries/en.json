@@ -8,7 +8,7 @@
     "inquiry": "Inquiry"
   },
   "footer": {
-    "company": "About Us",
+    "company": "Company",
     "services": "Services",
     "portfolio": "Portfolio",
     "news": "News",
@@ -19,7 +19,8 @@
     "address": "31 Daehak-ro, Yuseong-gu, Daejeon, Room 2118, South Korea",
     "bizNumber": "Business Reg. No.: 244-81-01030",
     "privacyOfficer": "Privacy Officer: Kim Jae-sik",
-    "privacyPolicy": "Privacy Policy"
+    "privacyPolicy": "Privacy Policy",
+    "mobilePrivacyPolicy": "Mobile Privacy Policy"
   },
   "home": {
     "heroSub": "Portfolio",
@@ -159,7 +160,59 @@
     "softwareSolutionsDesc": "We design and build enterprise-grade web/apps, cloud infrastructure, and data pipelines.",
     "ownContent": "Original Content",
     "ownContentDesc": "Crafting immersive gaming experiences — from cross-platform development to live service operations.",
-    "viewMore": "View More"
+    "viewMore": "View More",
+    "heroSubtitle": "Beyond technology, we create valuable experiences\nand build a tomorrow of shared growth.",
+    "genreLabel": "Genre",
+    "videoPreparing": "Video coming soon",
+    "preparing": "Coming soon",
+    "projectInquiry": "Project Inquiry",
+    "processTitle": "Development",
+    "processTitleHighlight": "Process",
+    "processHint": "Click each step to explore the details",
+    "activities": "Key Activities",
+    "deliverablesLabel": "Deliverables",
+    "ctaTitle": "Let's Start Your",
+    "ctaHighlight": "Project Together",
+    "ctaDesc": "We welcome project inquiries anytime.",
+    "ctaButton": "Contact Us",
+    "process": {
+      "step1": {
+        "title": "Planning",
+        "desc": "Requirements",
+        "details": ["Define business goals & KPIs", "User research & persona analysis", "Technical feasibility review (PoC)", "Project roadmap & milestone planning"],
+        "deliverables": ["Requirements spec", "Project plan", "PoC report"]
+      },
+      "step2": {
+        "title": "Design",
+        "desc": "Architecture",
+        "details": ["System architecture design", "UI/UX wireframes & prototypes", "Database & API schema design", "Tech stack selection & infra setup"],
+        "deliverables": ["Architecture doc", "UI/UX prototype", "ERD & API spec"]
+      },
+      "step3": {
+        "title": "Develop",
+        "desc": "Build",
+        "details": ["Agile sprint-based development", "CI/CD pipeline setup", "Code review & pair programming", "Weekly demos & progress reports"],
+        "deliverables": ["Source code", "Technical docs", "Weekly demo"]
+      },
+      "step4": {
+        "title": "QA",
+        "desc": "Testing",
+        "details": ["Unit/integration/E2E test automation", "Performance & load testing", "Security vulnerability scanning", "User acceptance testing (UAT)"],
+        "deliverables": ["Test report", "Performance benchmark", "Security audit"]
+      },
+      "step5": {
+        "title": "Deploy",
+        "desc": "Launch",
+        "details": ["Final staging environment verification", "Zero-downtime deploy (Blue-Green/Canary)", "Monitoring & alerting system setup", "Launch checklist final review"],
+        "deliverables": ["Deploy guide", "Infra diagram", "Launch report"]
+      },
+      "step6": {
+        "title": "Operate",
+        "desc": "Maintenance",
+        "details": ["24/7 system monitoring", "Regular updates & feature improvements", "Data analysis & performance reporting", "Scaling & infrastructure optimization"],
+        "deliverables": ["Monthly report", "SLA dashboard", "Improvement roadmap"]
+      }
+    }
   },
   "portfolio": {
     "heroDesc": "Explore our featured projects across industries.",
@@ -240,8 +293,15 @@
     "preparing": "Coming Soon"
   },
   "inquiry": {
-    "heroTitle": "Contact",
-    "heroDesc": "Feel free to reach out about projects, partnerships, recruitment, or anything else.",
+    "heroTitle": "We Solve Your\nBusiness Challenges",
+    "heroDesc": "Complex technical challenges, ambitious projects.\nHADEUL SOFT works with you to find the solution.\nLet's talk.",
+    "valueTitle": "Solving Problems\nwith Technology",
+    "valueDesc": "With proven expertise in AI, software, and content,\nwe diagnose your business challenges and deliver optimal solutions.",
+    "values": {
+      "consulting": { "title": "Expert Consulting", "desc": "From project planning to technical review, our experts provide personalized guidance for the best approach." },
+      "execution": { "title": "Rapid Execution", "desc": "We rapidly prototype with proven development processes and deliver results on schedule." },
+      "growth": { "title": "Continuous Growth", "desc": "Even after project completion, we provide ongoing support for operations, maintenance, and feature expansion." }
+    },
     "typeHeading": "What would you like to inquire about?",
     "types": {
       "project": { "title": "Project Inquiry", "desc": "Consult about AI, game, and software development projects." },
@@ -249,25 +309,40 @@
       "recruitment": { "title": "Recruitment", "desc": "Send recruitment inquiries or resumes." },
       "other": { "title": "Other", "desc": "Leave any other general inquiries." }
     },
-    "formTitle": "Contact Us Directly",
-    "labelName": "Name / Company",
-    "placeholderName": "John Doe / HADEUL SOFT",
+    "formTitle": "Contact Us",
+    "formDesc": "Fill out the form below and we'll get back to you promptly.",
+    "privacyConsentText": "I agree to the collection and use of personal information.",
+    "privacyPolicyLink": "View Privacy Policy",
+    "labelCompany": "Company / Organization",
+    "placeholderCompany": "HADEUL SOFT",
+    "labelName": "Name",
+    "placeholderName": "John Doe",
+    "labelPhone": "Phone",
+    "placeholderPhone": "+82-10-0000-0000",
     "labelEmail": "Email",
     "labelType": "Inquiry Type",
     "selectPlaceholder": "Select",
     "optProject": "Project Inquiry",
+    "optPublishing": "Publishing",
     "optPartnership": "Partnership",
     "optRecruitment": "Recruitment",
     "optOther": "Other",
-    "labelMessage": "Message",
-    "placeholderMessage": "Describe your project or inquiry freely.",
+    "labelContent": "Estimate / Details",
+    "placeholderContent": "Please describe your project, budget, timeline, etc.",
+    "fillRequired": "Please fill in required fields",
     "sending": "Sending...",
-    "submit": "Send Inquiry",
+    "submit": "Submit Inquiry",
     "successTitle": "Inquiry Received",
     "successDesc": "We'll get back to you shortly.",
     "submitAnother": "Submit Another Inquiry",
     "errorSend": "Failed to send.",
     "errorNetwork": "A network error occurred. Please try again later.",
+    "errorTooMany": "Too many requests. Please try again later.",
+    "errorTurnstile": "Security verification failed. Please refresh the page.",
+    "errorRequired": "Please fill in all required fields.",
+    "errorPrivacy": "Please agree to the privacy policy.",
+    "errorEmail": "Please enter a valid email address.",
+    "errorTooLong": "Content is too long. (Max 5000 characters)",
     "address": "31 Daehak-ro, Yuseong-gu, Daejeon, Room 2118, South Korea",
     "hours": "Mon — Fri, 9:00 AM — 6:00 PM"
   }

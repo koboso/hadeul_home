@@ -201,7 +201,7 @@ function ListCard({ item, t }: { item: NewsItem; t: any }) {
   return (
     <div
       onClick={() => openNews(item)}
-      className="flex gap-5 items-start rounded-2xl bg-white/[0.02] border border-white/[0.05] p-5 cursor-pointer group hover:border-purple-500/20 hover:bg-white/[0.04] transition-all duration-300"
+      className="flex gap-3 sm:gap-5 items-start rounded-2xl bg-white/[0.02] border border-white/[0.05] p-4 sm:p-5 cursor-pointer group hover:border-purple-500/20 hover:bg-white/[0.04] transition-all duration-300"
     >
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-2">
@@ -211,10 +211,10 @@ function ListCard({ item, t }: { item: NewsItem; t: any }) {
             </span>
           )}
         </div>
-        <h3 className="text-base font-bold text-white tracking-tight mb-1.5 group-hover:text-purple-300 transition-colors line-clamp-1">
+        <h3 className="text-sm sm:text-base font-bold text-white tracking-tight mb-1.5 group-hover:text-purple-300 transition-colors line-clamp-2 sm:line-clamp-1">
           {item.title}
         </h3>
-        <p className="text-white/30 text-sm leading-relaxed line-clamp-1 mb-3">
+        <p className="text-white/30 text-sm leading-relaxed line-clamp-1 mb-3 hidden sm:block">
           {item.summary}
         </p>
         <div className="flex items-center gap-2 text-xs text-white/20">
@@ -226,7 +226,7 @@ function ListCard({ item, t }: { item: NewsItem; t: any }) {
             </>
           )}
           {item.source_url && (
-            <span className="ml-auto text-purple-400/50 group-hover:text-purple-400 transition-colors flex items-center gap-1">
+            <span className="ml-auto text-purple-400/50 group-hover:text-purple-400 transition-colors flex items-center gap-1 hidden sm:flex">
               {t.news.viewOriginal}
               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -235,7 +235,7 @@ function ListCard({ item, t }: { item: NewsItem; t: any }) {
           )}
         </div>
       </div>
-      <div className="w-28 h-20 flex-shrink-0 rounded-xl overflow-hidden bg-white/5">
+      <div className="w-20 h-16 sm:w-28 sm:h-20 flex-shrink-0 rounded-xl overflow-hidden bg-white/5">
         <img
           src={thumb}
           alt={item.title}
