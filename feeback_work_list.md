@@ -73,7 +73,29 @@
 
 ---
 
-### 3. Cloudflare Tunnel 설정
+### 3. 메인 페이지 수정
+
+**작업 내용:**
+
+#### 3-1. 2번 섹션 텍스트 변경
+- "specialized e-commerce" → "complex corporate challenges"
+- "gaming" 하이라이트 추가
+
+#### 3-2. 4번 SplitReveal 즉시 표시
+- StickyScene(250vh 스크롤 연동) 제거
+- `useInView`로 뷰포트 30% 진입 시 즉시 이미지 좌우 분리 + 텍스트 등장
+- `once: false`로 설정하여 벗어났다 돌아오면 닫혔다 다시 열리는 트릭 효과
+
+#### 3-3. Nav 하단 보더 제거
+- 스크롤 시 나타나는 `border-b border-white/5` 제거 (로딩바처럼 보이던 이슈)
+
+**수정 파일:**
+- `src/app/page.tsx` — 텍스트 변경, SplitReveal 리팩터링
+- `src/components/Nav.tsx` — 하단 보더 제거
+
+---
+
+### 4. Cloudflare Tunnel 설정
 
 **작업 내용:**
 - ngrok 무료 플랜 대역폭 초과로 대안 필요

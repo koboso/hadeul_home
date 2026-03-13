@@ -27,7 +27,7 @@ export default function Nav({ transparent = true }: { transparent?: boolean }) {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        showBg ? "bg-black/70 backdrop-blur-xl border-b border-white/5" : "bg-transparent"
+        showBg ? "bg-black/70 backdrop-blur-xl" : "bg-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-8 md:px-16 flex items-center justify-between h-16">

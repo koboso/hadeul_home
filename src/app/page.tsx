@@ -142,9 +142,9 @@ function Hero() {
 function ScrollTextReveal() {
   const words = [
     "Transforming", "bold", "ideas", "into", "intelligent", "solutions.",
-    "Beyond", "simple", "development—we", "architect", "the", "future",
-    "of", "specialized", "e-commerce", "and", "gaming", "through",
-    "cutting-edge", "AI.",
+    "Beyond", "simple", "development—we", "solve", "complex",
+    "corporate", "challenges", "and", "architect", "the", "future",
+    "of", "gaming", "through", "cutting-edge", "AI.",
   ];
 
   return (
@@ -175,7 +175,7 @@ function ScrollTextReveal() {
                     progress={scrollYProgress}
                     start={Math.max(0, ((i - 1) / words.length) * 0.6)}
                     end={((i + 1) / words.length) * 0.6}
-                    isHighlight={["intelligent", "solutions.", "AI."].includes(word)}
+                    isHighlight={["intelligent", "solutions.", "AI.", "gaming"].includes(word)}
                   />
                 ))}
               </p>
@@ -347,75 +347,73 @@ function Portfolio() {
 
 /* ─── 4. Split-Reveal Section ─── */
 function SplitReveal() {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: false, amount: 0.3 });
+
   return (
-    <StickyScene height="250vh">
-      {(scrollYProgress) => {
-        const leftX = useTransform(scrollYProgress, [0, 0.4], [0, -120]);
-        const rightX = useTransform(scrollYProgress, [0, 0.4], [0, 120]);
-        const leftClip = useTransform(scrollYProgress, [0, 0.4], ["inset(0 0% 0 0)", "inset(0 30% 0 0)"]);
-        const rightClip = useTransform(scrollYProgress, [0, 0.4], ["inset(0 0 0 0%)", "inset(0 0 0 30%)"]);
-        const centerOpacity = useTransform(scrollYProgress, [0.2, 0.45], [0, 1]);
-        const centerScale = useTransform(scrollYProgress, [0.2, 0.45], [0.85, 1]);
-        const imgParallax = useTransform(scrollYProgress, [0, 1], [-40, 40]);
+    <section ref={ref} className="relative h-screen overflow-hidden bg-[#0a0a0a]" id="work">
+      {/* Left image */}
+      <motion.div
+        className="absolute top-0 left-0 w-1/2 h-full overflow-hidden"
+        initial={{ x: 0, clipPath: "inset(0 0% 0 0)" }}
+        animate={isInView ? { x: -120, clipPath: "inset(0 30% 0 0)" } : {}}
+        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <img src="/images/home-3-01.jpg" alt="" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-black/40" />
+      </motion.div>
 
-        return (
-          <div className="relative w-full h-full overflow-hidden bg-[#0a0a0a]" id="work">
-            <motion.div
-              className="absolute top-0 left-0 w-1/2 h-full overflow-hidden"
-              style={{ x: leftX, clipPath: leftClip }}
-            >
-              <motion.img src="/images/home-3-01.jpg" alt="" className="w-full h-full object-cover" style={{ y: imgParallax }} />
-              <div className="absolute inset-0 bg-black/40" />
-            </motion.div>
+      {/* Right image */}
+      <motion.div
+        className="absolute top-0 right-0 w-1/2 h-full overflow-hidden"
+        initial={{ x: 0, clipPath: "inset(0 0 0 0%)" }}
+        animate={isInView ? { x: 120, clipPath: "inset(0 0 0 30%)" } : {}}
+        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <img src="/images/home-3-02.jpg" alt="" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-black/40" />
+      </motion.div>
 
-            <motion.div
-              className="absolute top-0 right-0 w-1/2 h-full overflow-hidden"
-              style={{ x: rightX, clipPath: rightClip }}
+      {/* Center text */}
+      <motion.div
+        className="absolute inset-0 flex items-center justify-center z-20"
+        initial={{ opacity: 0, scale: 0.85 }}
+        animate={isInView ? { opacity: 1, scale: 1 } : {}}
+        transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <div className="text-center max-w-3xl px-8">
+          <motion.p
+            className="text-purple-400 text-sm tracking-[0.4em] uppercase font-bold mb-6"
+            animate={{ opacity: [0.6, 1, 0.6] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          >
+            Our Philosophy
+          </motion.p>
+          <h2 className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter mb-8">
+            TECHNOLOGY
+            <br />
+            <motion.span
+              className="inline-block text-transparent"
+              style={{ WebkitTextStroke: "2px rgba(139,92,246,0.6)" }}
+              animate={{ letterSpacing: ["-0.05em", "0.05em", "-0.05em"] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             >
-              <motion.img src="/images/home-3-02.jpg" alt="" className="w-full h-full object-cover" style={{ y: imgParallax }} />
-              <div className="absolute inset-0 bg-black/40" />
-            </motion.div>
-
-            <motion.div
-              className="absolute inset-0 flex items-center justify-center z-20"
-              style={{ opacity: centerOpacity, scale: centerScale }}
-            >
-              <div className="text-center max-w-3xl px-8">
-                <motion.p
-                  className="text-purple-400 text-sm tracking-[0.4em] uppercase font-bold mb-6"
-                  animate={{ opacity: [0.6, 1, 0.6] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  Our Philosophy
-                </motion.p>
-                <h2 className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter mb-8">
-                  TECHNOLOGY
-                  <br />
-                  <motion.span
-                    className="inline-block text-transparent"
-                    style={{ WebkitTextStroke: "2px rgba(139,92,246,0.6)" }}
-                    animate={{ letterSpacing: ["-0.05em", "0.05em", "-0.05em"] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    MEETS
-                  </motion.span>
-                  <br />
-                  ARTISTRY
-                </h2>
-                <motion.p
-                  className="text-white/30 text-lg max-w-lg mx-auto"
-                  animate={{ y: [0, -4, 0] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  기술과 예술의 교차점에서 새로운 가능성을 창조합니다.
-                  우리는 단순한 개발을 넘어 경험을 설계합니다.
-                </motion.p>
-              </div>
-            </motion.div>
-          </div>
-        );
-      }}
-    </StickyScene>
+              MEETS
+            </motion.span>
+            <br />
+            ARTISTRY
+          </h2>
+          <motion.p
+            className="text-white/30 text-lg max-w-lg mx-auto"
+            animate={{ y: [0, -4, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          >
+            기술과 예술의 교차점에서 새로운 가능성을 창조합니다.
+            우리는 단순한 개발을 넘어 경험을 설계합니다.
+          </motion.p>
+        </div>
+      </motion.div>
+    </section>
   );
 }
 
