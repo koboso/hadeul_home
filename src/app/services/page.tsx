@@ -5,7 +5,10 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
-import { ServicesHeroBg } from "@/components/HeroBackgrounds";
+import { ServicesHeroBg, VideoHeroBg } from "@/components/HeroBackgrounds";
+
+/* 📹 Envato 영상 다운로드 후 경로 설정 (빈 문자열이면 CSS 애니메이션만) */
+const SERVICES_HERO_VIDEO = "/videos/services-hero.mp4";
 
 interface FeaturedProject {
   name: string;
@@ -70,7 +73,6 @@ const SERVICES = [
     accent: "from-purple-500 to-indigo-500",
     accentText: "text-purple-400",
     bgGlow: "bg-purple-500/[0.06]",
-    projects: [],
     featuredProject: FEATURED_AI,
   },
   {
@@ -83,7 +85,6 @@ const SERVICES = [
     accent: "from-cyan-500 to-emerald-500",
     accentText: "text-cyan-400",
     bgGlow: "bg-cyan-500/[0.06]",
-    projects: [],
     featuredProject: FEATURED_SW,
   },
   {
@@ -96,7 +97,6 @@ const SERVICES = [
     accent: "from-pink-500 to-amber-500",
     accentText: "text-pink-400",
     bgGlow: "bg-pink-500/[0.06]",
-    projects: [],
     hasGameProjects: true,
     hideCTA: true,
   },
@@ -414,11 +414,17 @@ function ServiceSection({ service, index }: { service: typeof SERVICES[0]; index
                 ) : (
                   <a
                     href="/inquiry"
-                    className={`inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r ${service.accent} rounded-full text-white font-bold text-base btn-glow group`}
+                    className="group/cta relative inline-flex items-center gap-3 px-8 py-4 rounded-full text-white font-bold text-base btn-glow overflow-hidden"
                   >
-                    프로젝트 문의
+                    <motion.div
+                      className="absolute inset-0 bg-[length:200%_200%]"
+                      style={{ backgroundImage: "linear-gradient(135deg, #8b5cf6, #ec4899, #06b6d4, #8b5cf6)" }}
+                      animate={{ backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"] }}
+                      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    />
+                    <span className="relative">프로젝트 문의</span>
                     <motion.span
-                      className="inline-block"
+                      className="relative inline-block"
                       animate={{ x: [0, 4, 0] }}
                       transition={{ duration: 1.5, repeat: Infinity }}
                     >
@@ -436,56 +442,6 @@ function ServiceSection({ service, index }: { service: typeof SERVICES[0]; index
               <FeaturedProjectCard project={service.featuredProject} accent={service.accent} accentText={service.accentText} />
             ) : "hasGameProjects" in service && service.hasGameProjects ? (
               <GameProjectSlider />
-            ) : service.projects.length > 0 ? (
-              <div className="space-y-4">
-                {service.projects.map((project, pi) => (
-                  <motion.div
-                    key={project.name}
-                    className="group relative rounded-2xl overflow-hidden bg-white/[0.03] border border-white/[0.06] hover:border-purple-500/30 transition-all duration-500 p-8"
-                    initial={{ opacity: 0, y: 30, scale: 0.95 }}
-                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.3 + pi * 0.15 }}
-                    whileHover={{ y: -4 }}
-                  >
-                    <div className={`absolute -top-20 -right-20 w-40 h-40 rounded-full bg-gradient-to-br ${service.accent} opacity-0 group-hover:opacity-[0.08] blur-[60px] transition-opacity duration-500`} />
-                    <div className="relative z-10">
-                      <span className="text-[10px] tracking-[0.2em] uppercase text-white/20 font-bold">
-                        Featured Project {String(pi + 1).padStart(2, "0")}
-                      </span>
-                      <h3 className="text-2xl font-black tracking-tight mt-2 mb-2 group-hover:text-purple-300 transition-colors">
-                        {project.name}
-                      </h3>
-                      <p className="text-white/35 text-sm">{project.type}</p>
-                      <div className="mt-6 flex items-center gap-4">
-                        <div className={`h-px flex-1 bg-gradient-to-r ${service.accent} opacity-20`} />
-                        <span className={`text-xs font-bold ${service.accentText} opacity-60`}>VIEW</span>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            ) : "youtubeId" in service && service.youtubeId ? (
-              /* YouTube embed */
-              <motion.div
-                className="relative rounded-2xl overflow-hidden border border-white/[0.06] bg-black"
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.3 }}
-              >
-                <div className="relative aspect-[16/9]">
-                  <iframe
-                    src={`https://www.youtube.com/embed/${service.youtubeId}?autoplay=1&mute=1&loop=1&playlist=${service.youtubeId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&disablekb=1`}
-                    className="absolute inset-0 w-full h-full"
-                    allow="autoplay; encrypted-media"
-                    allowFullScreen={false}
-                    title="Game Preview"
-                  />
-                  {/* Click blocker overlay */}
-                  <div className="absolute inset-0 z-10" />
-                </div>
-              </motion.div>
             ) : (
               /* Placeholder for coming soon */
               <motion.div
@@ -564,6 +520,9 @@ export default function ServicesPage() {
 
       {/* Hero */}
       <section className="relative h-screen flex items-center justify-center snap-start overflow-hidden">
+        {SERVICES_HERO_VIDEO ? (
+          <VideoHeroBg src={SERVICES_HERO_VIDEO} overlay={0.65} />
+        ) : null}
         <ServicesHeroBg />
         <div className="relative z-10 text-center px-6">
           <motion.p
@@ -670,9 +629,15 @@ export default function ServicesPage() {
           </p>
           <a
             href="/inquiry"
-            className="inline-block px-10 py-4 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 rounded-full text-white font-bold text-lg btn-glow"
+            className="group relative inline-flex items-center gap-3 px-12 py-5 rounded-full text-white font-bold text-lg btn-glow overflow-hidden"
           >
-            문의하기
+            <motion.div
+              className="absolute inset-0 bg-[length:200%_200%]"
+              style={{ backgroundImage: "linear-gradient(135deg, #8b5cf6, #ec4899, #06b6d4, #8b5cf6)" }}
+              animate={{ backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <span className="relative">문의하기</span>
           </a>
         </motion.div>
       </section>

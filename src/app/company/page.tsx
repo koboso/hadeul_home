@@ -4,7 +4,10 @@ import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { useRef } from "react";
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
-import { CompanyHeroBg } from "@/components/HeroBackgrounds";
+import { CompanyHeroBg, VideoHeroBg } from "@/components/HeroBackgrounds";
+
+/* 📹 Envato 영상 다운로드 후 경로 설정 (빈 문자열이면 CSS 애니메이션 fallback) */
+const COMPANY_HERO_VIDEO = "/videos/company-hero.mp4";
 
 
 const ceoMessage = [
@@ -114,7 +117,10 @@ export default function CompanyPage() {
       {/* ═══ Hero — Kinetic Typography ═══ */}
       <section ref={heroRef} className="relative h-screen">
         <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden">
-          {/* Animated gradient orbs + particles */}
+          {/* Video background + CSS fallback */}
+          {COMPANY_HERO_VIDEO ? (
+            <VideoHeroBg src={COMPANY_HERO_VIDEO} overlay={0.65} />
+          ) : null}
           <CompanyHeroBg />
 
           <motion.div

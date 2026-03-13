@@ -8,15 +8,8 @@ import PageFooter from "@/components/PageFooter";
 
 /* ─── HADEUL Corporate Site ─── */
 
-const IMG = {
-  ai: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1600&q=80",
-  game: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1600&q=80",
-  dev: "https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=1600&q=80",
-  team: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1600&q=80",
-  space: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600&q=80",
-};
-
-const VID_HERO = "https://videos.pexels.com/video-files/8721940/8721940-uhd_2560_1440_24fps.mp4";
+const VID_HERO = "/videos/home-hero.mp4";
+const VID_ABOUT = "/videos/home-about.mp4";
 
 /* ─── Counter ─── */
 function Counter({ target, suffix = "" }: { target: number; suffix?: string }) {
@@ -168,6 +161,9 @@ function ScrollTextReveal() {
 
         return (
           <div className="relative w-full h-full flex items-center justify-center overflow-hidden" id="about">
+            {/* Video background */}
+            <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover" src={VID_ABOUT} />
+            <div className="absolute inset-0 bg-black/60" />
             <motion.div className="absolute inset-0" style={{ background: bgGradient }} />
 
             <div className="relative z-10 max-w-6xl mx-auto px-8 md:px-16">
@@ -237,6 +233,7 @@ interface PortfolioProject {
   description: string;
   image: string;
   category_name: string;
+  category_slug: string;
 }
 
 function Portfolio() {
@@ -245,7 +242,10 @@ function Portfolio() {
   useEffect(() => {
     fetch("/api/portfolio")
       .then((r) => r.json())
-      .then((d) => setProjects(d.data || []));
+      .then((d) => {
+        const all: PortfolioProject[] = d.data || [];
+        setProjects(all.filter((p) => p.category_slug !== "game"));
+      });
   }, []);
 
   if (projects.length === 0) return null;
@@ -295,12 +295,19 @@ function Portfolio() {
                 className="group block rounded-2xl overflow-hidden bg-white/[0.03] border border-white/[0.06] hover:border-purple-500/30 transition-all duration-300"
               >
                 <div className="relative h-52 overflow-hidden bg-white/[0.02]">
-                  <img
-                    src={project.image || "/images/default-portfolio.svg"}
-                    alt={project.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    onError={(e) => { (e.target as HTMLImageElement).src = "/images/default-portfolio.svg"; }}
-                  />
+                  {(() => {
+                    const thumb = (project.image ? project.image.split(",")[0].trim() : "") || "/images/default-portfolio.svg";
+                    return thumb.endsWith(".webm") ? (
+                      <video src={thumb} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" autoPlay loop muted playsInline />
+                    ) : (
+                      <img
+                        src={thumb}
+                        alt={project.title}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        onError={(e) => { (e.target as HTMLImageElement).src = "/images/default-portfolio.svg"; }}
+                      />
+                    );
+                  })()}
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
                   <span className="absolute top-4 right-4 text-white/10 text-5xl font-black leading-none">
                     {String(i + 1).padStart(2, "0")}
@@ -357,7 +364,7 @@ function SplitReveal() {
               className="absolute top-0 left-0 w-1/2 h-full overflow-hidden"
               style={{ x: leftX, clipPath: leftClip }}
             >
-              <motion.img src={IMG.space} alt="" className="w-full h-full object-cover" style={{ y: imgParallax }} />
+              <motion.img src="/images/home-3-01.jpg" alt="" className="w-full h-full object-cover" style={{ y: imgParallax }} />
               <div className="absolute inset-0 bg-black/40" />
             </motion.div>
 
@@ -365,7 +372,7 @@ function SplitReveal() {
               className="absolute top-0 right-0 w-1/2 h-full overflow-hidden"
               style={{ x: rightX, clipPath: rightClip }}
             >
-              <motion.img src={IMG.dev} alt="" className="w-full h-full object-cover" style={{ y: imgParallax }} />
+              <motion.img src="/images/home-3-02.jpg" alt="" className="w-full h-full object-cover" style={{ y: imgParallax }} />
               <div className="absolute inset-0 bg-black/40" />
             </motion.div>
 
@@ -466,31 +473,25 @@ const PARTNERS = [
   { name: "KRISO", logo: "/images/partners/kriso.svg" },
   { name: "충남대학교", logo: "/images/partners/cnu.svg" },
   { name: "KAIST", logo: "/images/partners/kaist.svg" },
-  { name: "중소벤처기업부", logo: "/images/partners/msv.svg" },
+  { name: "이앤애드", logo: "/images/partners/enad.svg" },
+  { name: "중소기업벤처기업부", logo: "/images/partners/msv.svg" },
   { name: "대전광역시", logo: "/images/partners/daejeon.svg" },
-  { name: "LG화학", logo: "/images/partners/lg-chem.svg" },
   { name: "항공우주연구원", logo: "/images/partners/kari.svg" },
   { name: "대전정보문화산업진흥원", logo: "/images/partners/dicia.svg" },
   { name: "KCCA", logo: "/images/partners/kcca.svg" },
   { name: "코레일네트웍스", logo: "/images/partners/korail.svg" },
-  { name: "원스토어", logo: "/images/partners/onestore.svg" },
-  { name: "Unity", logo: "/images/partners/unity.svg" },
-  { name: "Cocos", logo: "/images/partners/cocos.svg" },
-  { name: "OpenAI", logo: "/images/partners/openai.svg" },
-  { name: "Google DeepMind", logo: "/images/partners/deepmind.svg" },
-  { name: "Anthropic", logo: "/images/partners/anthropic.svg" },
-  { name: "업스테이지", logo: "/images/partners/upstage.svg" },
   { name: "국립축산연구원", logo: "/images/partners/nias.svg" },
   { name: "코리아사이언스", logo: "/images/partners/korea-science.svg" },
   { name: "효문화진흥원", logo: "/images/partners/hyomun.svg" },
-  { name: "TMD", logo: "/images/partners/tmd.svg" },
-  { name: "국방부", logo: "/images/partners/mod.svg" },
+  { name: "(주)티엠디 교육그룹", logo: "/images/partners/tmd.svg" },
   { name: "세무그룹명성", logo: "/images/partners/tax-ms.svg" },
   { name: "지란지교", logo: "/images/partners/jiranjigy.svg" },
   { name: "금단비가", logo: "/images/partners/gdb.svg" },
-  { name: "티디아", logo: "/images/partners/tdia.svg" },
+  { name: "TDEA", logo: "/images/partners/tdea.svg" },
   { name: "표면분석학회", logo: "/images/partners/kssa.svg" },
   { name: "엠텍", logo: "/images/partners/mtech.svg" },
+  { name: "FIBER PRO", logo: "/images/partners/fiberpro.svg" },
+  { name: "주식회사근옥", logo: "/images/partners/geunok.svg" },
 ];
 
 function PartnerLogo({ name, logo }: { name: string; logo: string }) {
@@ -519,7 +520,7 @@ function PartnerMarquee() {
           animate={{ x: ["0%", "-50%"] }}
           transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
         >
-          {[...PARTNERS.slice(0, 15), ...PARTNERS.slice(0, 15)].map((p, i) => (
+          {[...PARTNERS.slice(0, 12), ...PARTNERS.slice(0, 12)].map((p, i) => (
             <PartnerLogo key={`a-${i}`} name={p.name} logo={p.logo} />
           ))}
         </motion.div>
@@ -534,7 +535,7 @@ function PartnerMarquee() {
           animate={{ x: ["-50%", "0%"] }}
           transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
         >
-          {[...PARTNERS.slice(15), ...PARTNERS.slice(15)].map((p, i) => (
+          {[...PARTNERS.slice(12), ...PARTNERS.slice(12)].map((p, i) => (
             <PartnerLogo key={`b-${i}`} name={p.name} logo={p.logo} />
           ))}
         </motion.div>

@@ -1,35 +1,37 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { useRef, useState } from "react";
 import Nav from "@/components/Nav";
 import PageFooter from "@/components/PageFooter";
-import { InquiryHeroBg } from "@/components/HeroBackgrounds";
+import { InquiryHeroBg, VideoHeroBg } from "@/components/HeroBackgrounds";
+
+const INQUIRY_HERO_VIDEO = "/videos/contact-hero.mp4";
 
 const inquiryTypes = [
   {
     title: "프로젝트 문의",
     desc: "AI, 게임, 소프트웨어 개발 프로젝트에 대해 상담하세요.",
-    email: "info@hadeul.com",
     icon: "01",
+    gradient: "from-purple-500 to-indigo-600",
   },
   {
     title: "파트너십",
     desc: "기술 파트너십, 공동 사업, 투자 등의 협력을 논의합니다.",
-    email: "biz@hadeul.com",
     icon: "02",
+    gradient: "from-pink-500 to-rose-600",
   },
   {
     title: "채용 문의",
     desc: "채용 관련 문의나 이력서를 보내주세요.",
-    email: "careers@hadeul.com",
     icon: "03",
+    gradient: "from-cyan-500 to-blue-600",
   },
   {
     title: "기타 문의",
     desc: "그 외 일반적인 문의사항을 남겨주세요.",
-    email: "info@hadeul.com",
     icon: "04",
+    gradient: "from-amber-500 to-orange-600",
   },
 ];
 
@@ -193,62 +195,109 @@ function InquiryForm() {
 }
 
 export default function InquiryPage() {
+  const heroRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: heroScroll } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const heroOpacity = useTransform(heroScroll, [0, 0.6], [1, 0]);
+  const heroScale = useTransform(heroScroll, [0, 0.6], [1, 0.92]);
+  const heroY = useTransform(heroScroll, [0, 0.6], [0, -80]);
+
   return (
     <div className="bg-[#0a0a0a] text-white min-h-screen">
       <Nav />
 
-      {/* Hero */}
-      <section className="relative min-h-[60vh] flex items-center justify-center pt-16 overflow-hidden">
+      {/* Hero — Fullscreen */}
+      <section ref={heroRef} className="relative h-screen flex items-center justify-center overflow-hidden">
+        {INQUIRY_HERO_VIDEO && <VideoHeroBg src={INQUIRY_HERO_VIDEO} overlay={0.65} />}
         <InquiryHeroBg />
-        <div className="relative z-10 text-center px-6">
+
+        <motion.div
+          style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
+          className="relative z-10 text-center px-6 max-w-5xl mx-auto"
+        >
           <motion.p
-            className="text-purple-400 text-sm tracking-[0.4em] uppercase mb-6"
+            className="text-purple-400 text-sm tracking-[0.5em] uppercase mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
             Inquiry
           </motion.p>
-          <motion.h1
-            className="text-6xl md:text-8xl font-black leading-[0.9] tracking-tighter mb-6"
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-          >
-            LET&apos;S
-            <br />
-            <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
+
+          <div className="overflow-hidden">
+            <motion.h1
+              className="text-7xl md:text-9xl lg:text-[10rem] font-black leading-[0.85] tracking-tighter"
+              initial={{ y: 120, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            >
+              LET&apos;S
+            </motion.h1>
+          </div>
+          <div className="overflow-hidden">
+            <motion.h1
+              className="text-7xl md:text-9xl lg:text-[10rem] font-black leading-[0.85] tracking-tighter bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent"
+              initial={{ y: 120, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 1.2, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            >
               TALK
-            </span>
-          </motion.h1>
+            </motion.h1>
+          </div>
+
           <motion.p
-            className="text-white/40 text-lg max-w-lg mx-auto"
+            className="text-white/35 text-lg md:text-xl max-w-lg mx-auto mt-10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.6 }}
           >
             프로젝트, 파트너십, 채용 등 무엇이든 편하게 연락하세요.
           </motion.p>
-        </div>
+
+          {/* Scroll indicator */}
+          <motion.div
+            className="mt-16 flex flex-col items-center gap-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2 }}
+          >
+            <span className="text-white/20 text-[10px] tracking-[0.3em] uppercase">Scroll</span>
+            <motion.div
+              className="w-px h-8 bg-gradient-to-b from-purple-500/50 to-transparent"
+              animate={{ scaleY: [0.5, 1, 0.5], opacity: [0.3, 0.7, 0.3] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* Inquiry Types */}
       <section className="py-24 px-6">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-          {inquiryTypes.map((t, i) => (
-            <FadeIn key={t.title} delay={i * 0.1}>
-              <a
-                href={`mailto:${t.email}`}
-                className="group block rounded-2xl p-8 bg-white/[0.03] border border-white/[0.06] hover:border-purple-500/30 transition-all duration-300"
-              >
-                <span className="text-white/10 text-5xl font-black">{t.icon}</span>
-                <h3 className="text-xl font-black mt-4 mb-2 tracking-tight group-hover:text-purple-400 transition-colors">
-                  {t.title}
-                </h3>
-                <p className="text-white/40 text-sm mb-4">{t.desc}</p>
-                <span className="text-purple-400/60 text-sm font-mono">{t.email}</span>
-              </a>
-            </FadeIn>
-          ))}
+        <div className="max-w-5xl mx-auto">
+          <FadeIn>
+            <p className="text-purple-400 text-sm tracking-[0.4em] uppercase mb-4">Services</p>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-16">어떤 문의를 하시겠어요?</h2>
+          </FadeIn>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {inquiryTypes.map((t, i) => (
+              <FadeIn key={t.title} delay={i * 0.08}>
+                <div className="group relative rounded-2xl p-8 bg-white/[0.02] border border-white/[0.06] hover:border-white/[0.12] transition-all duration-500 overflow-hidden">
+                  <div className={`absolute inset-0 bg-gradient-to-br ${t.gradient} opacity-0 group-hover:opacity-[0.05] transition-opacity duration-500`} />
+                  <span className={`absolute -right-3 -top-4 text-[7rem] font-black leading-none bg-gradient-to-br ${t.gradient} bg-clip-text text-transparent opacity-[0.06] select-none pointer-events-none`}>
+                    {t.icon}
+                  </span>
+                  <div className="relative">
+                    <h3 className="text-2xl font-black tracking-tight mb-3 group-hover:text-white transition-colors">
+                      {t.title}
+                    </h3>
+                    <p className="text-white/45 text-base leading-relaxed">{t.desc}</p>
+                  </div>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -273,15 +322,15 @@ export default function InquiryPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
               <div>
                 <p className="text-purple-400 text-xs tracking-[0.3em] uppercase mb-3">Address</p>
-                <p className="text-white/60 leading-relaxed">경기도 성남시 분당구<br />판교역로 000, 0층</p>
+                <p className="text-white/60 leading-relaxed">대전시 유성구 대학로 31,<br /> 2118호(봉명동, 한진리조트)</p>
               </div>
               <div>
                 <p className="text-purple-400 text-xs tracking-[0.3em] uppercase mb-3">Email</p>
-                <p className="text-white/60">info@hadeul.com</p>
+                <p className="text-white/60">hadeulsoft@gmail.com</p>
               </div>
               <div>
                 <p className="text-purple-400 text-xs tracking-[0.3em] uppercase mb-3">Hours</p>
-                <p className="text-white/60">Mon — Fri, 10:00 — 19:00</p>
+                <p className="text-white/60">Mon — Fri, 09:00 — 18:00</p>
               </div>
             </div>
           </FadeIn>

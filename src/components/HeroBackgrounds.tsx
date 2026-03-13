@@ -2,6 +2,33 @@
 
 import { motion } from "framer-motion";
 
+/* ─── Video background layer (shared by Company / Services / Careers) ─── */
+export function VideoHeroBg({
+  src,
+  overlay = 0.7,
+}: {
+  src: string;
+  overlay?: number;
+}) {
+  return (
+    <>
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
+        src={src}
+      />
+      {/* Dark overlay — keeps neon text readable */}
+      <div
+        className="absolute inset-0"
+        style={{ backgroundColor: `rgba(0,0,0,${overlay})` }}
+      />
+    </>
+  );
+}
+
 /* ─── Portfolio: Floating grid nodes ─── */
 export function PortfolioHeroBg() {
   const nodes = Array.from({ length: 20 }, (_, i) => ({

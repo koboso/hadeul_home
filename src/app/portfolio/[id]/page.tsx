@@ -9,6 +9,7 @@ interface PortfolioRow {
   description: string;
   detail: string;
   image: string;
+  video: string;
   tech_stack: string;
   architecture: string;
   target_device: string;
