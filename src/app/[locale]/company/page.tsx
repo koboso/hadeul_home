@@ -173,7 +173,7 @@ export default function CompanyPage() {
             </div>
 
             <motion.p
-              className="text-base sm:text-xl text-white/30 max-w-2xl mx-auto mt-6 sm:mt-10 word-keep-all"
+              className="text-base sm:text-xl text-white/30 max-w-2xl mx-auto mt-6 sm:mt-10 word-keep-all whitespace-pre-line"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8, duration: 1 }}
@@ -406,13 +406,13 @@ export default function CompanyPage() {
           </ParallaxReveal>
 
           <ParallaxReveal delay={0.2}>
-            <p className="text-white/40 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-6 word-keep-all">
+            <p className="text-white/40 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-6 word-keep-all whitespace-pre-line">
               {t.company.ctaDesc}
             </p>
           </ParallaxReveal>
 
           <ParallaxReveal delay={0.3}>
-            <p className="text-white/25 text-base leading-relaxed max-w-xl mx-auto mb-12 word-keep-all">
+            <p className="text-white/25 text-base leading-relaxed max-w-xl mx-auto mb-12 word-keep-all whitespace-pre-line">
               {t.company.ctaSubDesc}
             </p>
           </ParallaxReveal>

@@ -461,7 +461,7 @@ export default function InquiryPage() {
                     </svg>
                   </div>
                   <h3 className="text-xl font-black tracking-tight mb-3">{t.inquiry.values[item.key].title}</h3>
-                  <p className="text-white/40 text-sm leading-relaxed">{t.inquiry.values[item.key].desc}</p>
+                  <p className="text-white/40 text-sm leading-relaxed whitespace-pre-line word-keep-all">{t.inquiry.values[item.key].desc}</p>
                 </div>
               </FadeIn>
             ))}
